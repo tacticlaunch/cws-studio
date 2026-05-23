@@ -103,6 +103,26 @@ python references/dolphin-cli.py stop <profileId>
 python references/dolphin-cli.py list --folder cws-studio
 ```
 
+### Find a provider + auto-buy
+
+The agent does not have a baked-in proxy supply. Two paths:
+
+```bash
+# 1. print curated provider table (Space Proxy, Proxy6, Proxyline, Proxy-Sale,
+#    iProxy, Smartproxy) with prices, payment options, who has an API.
+python references/dolphin-cli.py proxies-suggest
+
+# 2. autonomous purchase via Proxy6 (only provider with a public buy API):
+export PROXY6_API_KEY=…   # from https://proxy6.net/user/developers
+python references/dolphin-cli.py proxy6-buy --country us --period 7 --count 2
+#    → dry-run price check; add --yes to actually buy.
+#    The purchased proxies are auto-imported into Dolphin's proxy library.
+```
+
+For providers without an API (Space Proxy is the bootcamp default — buy 2-week
+static IPv4 labeled "for Facebook"): buy in the browser, paste credentials into
+`proxies.txt`, then `bulk-add-proxies` (below).
+
 ### Bulk-import proxies from a provider export
 
 ```bash

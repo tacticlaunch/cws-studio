@@ -362,6 +362,137 @@ def cmd_check_proxy(args):
         sys.exit(1)
 
 
+# ----- provider catalog + Proxy6 auto-buy -----------------------------------
+
+PROVIDERS = [
+    {
+        "name": "Space Proxy",
+        "url": "https://spaceproxy.net/",
+        "type": "static residential, IPv4",
+        "pay": "RUB / crypto / card",
+        "api": False,
+        "good_for": "CWS dev account (bootcamp pick #1)",
+        "notes": "Buy 2-week static IP, label 'for Facebook'. IP:port:login:password.",
+    },
+    {
+        "name": "Proxy6",
+        "url": "https://proxy6.net/",
+        "type": "IPv4 / IPv6 / mobile",
+        "pay": "RUB / crypto / card",
+        "api": True,
+        "good_for": "automation — has public buy API",
+        "notes": "Set PROXY6_API_KEY then `dolphin-cli proxy6-buy --country us --period 7 --count 1`.",
+    },
+    {
+        "name": "Proxyline",
+        "url": "https://panel.proxyline.net/",
+        "type": "IPv4 static",
+        "pay": "RUB / crypto",
+        "api": True,
+        "good_for": "RU users; alt to Space Proxy if payment fails",
+        "notes": "Has REST API (see panel docs). Output format compatible with bulk-add-proxies.",
+    },
+    {
+        "name": "Proxy-Sale",
+        "url": "https://proxy-sale.com/ru/proxy-for-facebook/",
+        "type": "IPv4 static",
+        "pay": "RUB / crypto",
+        "api": True,
+        "good_for": "alt to Space Proxy",
+        "notes": "Buy 'for Facebook' tier — works for CWS too.",
+    },
+    {
+        "name": "iProxy.online",
+        "url": "https://iproxy.online/",
+        "type": "Mobile 4G (sticky)",
+        "pay": "USD / RUB",
+        "api": True,
+        "good_for": "ad-account warm-up & high-trust ranking accounts",
+        "notes": "Mobile IPs are the strongest signal but ~10× more expensive.",
+    },
+    {
+        "name": "Smartproxy / Decodo",
+        "url": "https://smartproxy.com/",
+        "type": "Residential rotating + static",
+        "pay": "USD card",
+        "api": True,
+        "good_for": "EN-speaking users with USD card",
+        "notes": "Per-GB pricing; for ranking pick the 'static' tier, not rotating.",
+    },
+]
+
+
+def cmd_proxies_suggest(args):
+    print("Where to buy CWS-grade proxies\n" + "=" * 32)
+    print()
+    for p in PROVIDERS:
+        print(f"## {p['name']}  —  {p['url']}")
+        print(f"  type:     {p['type']}")
+        print(f"  payment:  {p['pay']}")
+        print(f"  API:      {'yes' if p['api'] else 'no (manual buy)'}")
+        print(f"  good for: {p['good_for']}")
+        print(f"  notes:    {p['notes']}")
+        print()
+    print("Recommended workflow:")
+    print("  1. Pick one provider, buy (manual UI) OR run `proxy6-buy` for Proxy6.")
+    print("  2. Save credentials in proxies.txt (host:port:user:pass per line).")
+    print("  3. `dolphin-cli bulk-add-proxies --file proxies.txt`")
+    print("  4. `dolphin-cli check-proxy --id <id>` on each — green country flag = keep.")
+    print("  5. Attach to a Dolphin profile via `dolphin-cli create --proxy-host …`.")
+
+
+def cmd_proxy6_buy(args):
+    """Buy proxies via Proxy6 API and auto-import into Dolphin."""
+    key = os.environ.get("PROXY6_API_KEY", "").strip()
+    if not key:
+        sys.exit("error: PROXY6_API_KEY not set. Grab key from "
+                 "https://proxy6.net/user/developers and `export PROXY6_API_KEY=...`")
+    base = f"https://px6.link/api/{key}"
+    # 1. price check
+    pr = json.loads(urllib.request.urlopen(
+        f"{base}/getprice?count={args.count}&period={args.period}&version={args.version}",
+        timeout=15).read().decode())
+    if pr.get("status") != "yes":
+        sys.exit(f"getprice failed: {pr}")
+    print(f"price: {pr.get('price')} {pr.get('currency')}  "
+          f"(count={args.count} period={args.period}d country={args.country})", file=sys.stderr)
+    if not args.yes:
+        sys.exit("dry-run — pass --yes to actually purchase")
+    # 2. buy
+    url = (f"{base}/buy?count={args.count}&period={args.period}"
+           f"&country={args.country}&version={args.version}&type={args.type}")
+    res = json.loads(urllib.request.urlopen(url, timeout=30).read().decode())
+    if res.get("status") != "yes":
+        sys.exit(f"buy failed: {res}")
+    bought = res.get("list", {})
+    print(json.dumps({"order_id": res.get("order_id"),
+                      "balance_after": res.get("balance"),
+                      "currency": res.get("currency"),
+                      "count": len(bought)}, indent=2), file=sys.stderr)
+    # 3. import into Dolphin
+    imported = []
+    for _, p in bought.items():
+        body = {
+            "type": "socks5" if args.type == "socks" else "http",
+            "host": p["host"],
+            "port": int(p["port"]),
+            "login": p["user"],
+            "password": p["pass"],
+            "name": f"cws · proxy6 · {p['host']}:{p['port']}",
+            "countryCode": args.country.lower(),
+            "provider": "proxy6.net",
+        }
+        try:
+            r = _req("POST", f"{CLOUD}/proxy", body=body)
+            pid = r.get("id") or r.get("data", {}).get("id")
+            imported.append({"host": body["host"], "port": body["port"],
+                             "proxy6_id": p.get("id"), "dolphin_id": pid, "ok": True})
+        except SystemExit as e:
+            imported.append({"host": body["host"], "ok": False, "error": str(e)})
+        time.sleep(0.3)
+    print(json.dumps(imported, indent=2))
+
+
 # ----- argparse --------------------------------------------------------------
 
 
@@ -443,6 +574,21 @@ def main():
     sp.add_argument("--dry-run", action="store_true")
     sp.add_argument("--strict", action="store_true", help="fail if any line is unparseable")
     sp.set_defaults(func=cmd_bulk_add_proxies)
+
+    sp = sub.add_parser("proxies-suggest",
+                        help="print curated list of CWS-grade proxy providers")
+    sp.set_defaults(func=cmd_proxies_suggest)
+
+    sp = sub.add_parser("proxy6-buy",
+                        help="buy proxies via Proxy6 API and auto-import into Dolphin")
+    sp.add_argument("--count", type=int, default=1)
+    sp.add_argument("--period", type=int, default=7, help="days")
+    sp.add_argument("--country", default="us", help="ISO-2 lowercase")
+    sp.add_argument("--version", type=int, default=4, choices=[3, 4, 6],
+                    help="3=IPv4 shared, 4=IPv4, 6=IPv6")
+    sp.add_argument("--type", default="http", choices=["http", "socks"])
+    sp.add_argument("--yes", action="store_true", help="actually purchase (default: dry-run price check)")
+    sp.set_defaults(func=cmd_proxy6_buy)
 
     sp = sub.add_parser("check-proxy", help="validate a proxy by routing ipinfo.io through it")
     sp.add_argument("--id", help="id of a saved proxy")
