@@ -48,6 +48,15 @@ Schema and the re-entry protocol live in
 
 This directory is a Claude Code marketplace. From any Claude Code session:
 
+From the GitHub repo (requires GitHub auth in Claude Code):
+
+```
+/plugin marketplace add tacticlaunch/cws-studio
+/plugin install cws-studio@cws-studio
+```
+
+Or from a local clone:
+
 ```
 /plugin marketplace add ~/Projects/orgs/TacticLaunch/cws-studio
 /plugin install cws-studio@cws-studio
