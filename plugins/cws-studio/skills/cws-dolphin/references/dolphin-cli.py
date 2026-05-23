@@ -212,6 +212,156 @@ def cmd_list_proxies(args):
     print(json.dumps(_req("GET", f"{CLOUD}/proxy"), indent=2))
 
 
+# ----- proxy parsing / bulk import ------------------------------------------
+
+PROXY_SCHEMES = ("http", "https", "socks4", "socks5", "ssh")
+
+
+def parse_proxy_line(line):
+    """Parse one proxy line into a dict. Returns None for blank/comment lines.
+
+    Accepted shapes (most-permissive parser):
+      socks5://user:pass@host:port
+      http://host:port
+      host:port:user:pass
+      host:port@user:pass
+      user:pass@host:port
+      host:port
+    Any trailing fields separated by `|` are kept as a name hint, e.g.
+      host:port:user:pass|us|provider-x
+    """
+    raw = line.strip()
+    if not raw or raw.startswith("#"):
+        return None
+
+    extras = ""
+    if "|" in raw:
+        raw, extras = raw.split("|", 1)
+
+    ptype = "http"
+    for scheme in PROXY_SCHEMES:
+        prefix = scheme + "://"
+        if raw.lower().startswith(prefix):
+            ptype = "socks5" if scheme in ("socks5", "socks4") and scheme == "socks5" else (
+                scheme if scheme in ("socks5", "socks4", "ssh") else "http"
+            )
+            raw = raw[len(prefix):]
+            break
+
+    login = password = ""
+    host = port = ""
+
+    # Try colon-form first (host:port:user:pass). Common provider export shape;
+    # passwords with `@` inside are common so handle this before @-form.
+    parts = raw.split(":")
+    if len(parts) >= 4 and parts[1].isdigit():
+        host, port, login = parts[0], parts[1], parts[2]
+        password = ":".join(parts[3:])
+    elif len(parts) == 2 and parts[1].isdigit():
+        host, port = parts
+    elif "@" in raw:
+        left, right = raw.rsplit("@", 1)
+        # decide which side is creds vs host:port
+        if ":" in right and right.rsplit(":", 1)[-1].isdigit():
+            cred_part, hp = left, right
+        elif ":" in left and left.rsplit(":", 1)[-1].isdigit():
+            cred_part, hp = right, left
+        else:
+            return {"__err": f"unparseable proxy line: {line!r}"}
+        if ":" in cred_part:
+            login, password = cred_part.split(":", 1)
+        else:
+            login = cred_part
+        host, port = hp.rsplit(":", 1)
+    else:
+        return {"__err": f"unparseable proxy line: {line!r}"}
+
+    if not host or not port.isdigit():
+        return {"__err": f"unparseable proxy line: {line!r}"}
+
+    extras_parts = [p for p in extras.split("|") if p.strip()] if extras else []
+    country = (extras_parts[0].strip() if extras_parts else "")
+    provider = (extras_parts[1].strip() if len(extras_parts) > 1 else "")
+
+    out = {
+        "type": ptype,
+        "host": host,
+        "port": int(port),
+        "name": f"cws · {host}:{port}",
+    }
+    if login:
+        out["login"] = login
+    if password:
+        out["password"] = password
+    if country:
+        out["countryCode"] = country.lower()
+    if provider:
+        out["provider"] = provider
+    return out
+
+
+def cmd_bulk_add_proxies(args):
+    lines = open(args.file).read().splitlines()
+    parsed = [parse_proxy_line(l) for l in lines]
+    parsed = [p for p in parsed if p is not None]
+    errors = [p for p in parsed if "__err" in p]
+    bodies = [p for p in parsed if "__err" not in p]
+
+    if errors:
+        for e in errors:
+            print(e["__err"], file=sys.stderr)
+        if args.strict:
+            sys.exit(f"{len(errors)} unparseable lines (strict mode)")
+
+    if args.dry_run:
+        print(json.dumps({"would_create": bodies, "errors": errors}, indent=2))
+        return
+
+    out = []
+    for i, body in enumerate(bodies, 1):
+        print(f"[{i}/{len(bodies)}] add {body['host']}:{body['port']} …", file=sys.stderr)
+        try:
+            res = _req("POST", f"{CLOUD}/proxy", body=body)
+            pid = res.get("id") or res.get("data", {}).get("id")
+            out.append({"host": body["host"], "port": body["port"], "id": pid, "ok": True})
+        except SystemExit as e:
+            out.append({"host": body["host"], "port": body["port"], "ok": False, "error": str(e)})
+        time.sleep(0.3)
+    print(json.dumps(out, indent=2))
+
+
+def cmd_check_proxy(args):
+    """Validate a saved proxy by hitting an IP-echo through it via local agent.
+
+    Requires local Dolphin agent (start it via `open -a 'Dolphin Anty'`).
+    Falls back to plain HTTPS GET via urllib through the proxy if local agent
+    is offline.
+    """
+    if args.id:
+        proxies = _req("GET", f"{CLOUD}/proxy").get("data", [])
+        match = [p for p in proxies if str(p.get("id")) == str(args.id)]
+        if not match:
+            sys.exit(f"proxy id {args.id} not found")
+        p = match[0]
+    else:
+        p = {"type": args.type, "host": args.host, "port": args.port,
+             "login": args.login, "password": args.password}
+
+    scheme = "socks5" if p["type"].startswith("socks") else "http"
+    auth = f"{p.get('login','')}:{p.get('password','')}@" if p.get("login") else ""
+    url = f"{scheme}://{auth}{p['host']}:{p['port']}"
+    handler = urllib.request.ProxyHandler({"http": url, "https": url})
+    opener = urllib.request.build_opener(handler)
+    try:
+        with opener.open("https://ipinfo.io/json", timeout=10) as r:
+            data = json.loads(r.read().decode())
+        print(json.dumps({"ok": True, "ip": data.get("ip"),
+                          "country": data.get("country"), "asn": data.get("org")}, indent=2))
+    except Exception as e:
+        print(json.dumps({"ok": False, "error": str(e)}, indent=2))
+        sys.exit(1)
+
+
 # ----- argparse --------------------------------------------------------------
 
 
@@ -286,6 +436,22 @@ def main():
 
     sp = sub.add_parser("list-proxies", help="list saved proxies")
     sp.set_defaults(func=cmd_list_proxies)
+
+    sp = sub.add_parser("bulk-add-proxies",
+                        help="bulk-add proxies from a file (one per line; see parse_proxy_line)")
+    sp.add_argument("--file", required=True)
+    sp.add_argument("--dry-run", action="store_true")
+    sp.add_argument("--strict", action="store_true", help="fail if any line is unparseable")
+    sp.set_defaults(func=cmd_bulk_add_proxies)
+
+    sp = sub.add_parser("check-proxy", help="validate a proxy by routing ipinfo.io through it")
+    sp.add_argument("--id", help="id of a saved proxy")
+    sp.add_argument("--type", default="http", choices=list(PROXY_SCHEMES))
+    sp.add_argument("--host")
+    sp.add_argument("--port", type=int)
+    sp.add_argument("--login")
+    sp.add_argument("--password")
+    sp.set_defaults(func=cmd_check_proxy)
 
     args = p.parse_args()
     args.func(args)

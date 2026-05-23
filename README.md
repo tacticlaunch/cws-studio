@@ -25,7 +25,7 @@ It is a **gstack-style set of skills** — six pipeline-stage skills plus a
 | Skill | What it does |
 |---|---|
 | `cws-init` | Scaffold `./.cws/` skeleton in a fresh project (state.json + artifact stubs). |
-| `cws-dolphin` | Dolphin{anty} antidetect profile automation via REST API (create + start/stop + proxy + cookies). Bundles the Dolphin docs MCP. |
+| `cws-dolphin` | Dolphin{anty} antidetect profile automation via REST API (create + start/stop + bulk proxy import & validation + cookies). Bundles the Dolphin docs MCP and the official Semrush MCP. |
 | `cws-autoplan` | Run the sprint as autonomously as possible — only taste decisions surface. |
 | `cws-challenge` | Adversarial second-opinion on a finalized stage decision. Run before every irreversible commitment. |
 | `cws-careful` | Pre-flight guardrail on irreversible actions (submit moderation, enable paywall, expand host permissions). Required confirmation. |

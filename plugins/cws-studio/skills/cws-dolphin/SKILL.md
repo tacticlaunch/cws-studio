@@ -103,6 +103,30 @@ python references/dolphin-cli.py stop <profileId>
 python references/dolphin-cli.py list --folder cws-studio
 ```
 
+### Bulk-import proxies from a provider export
+
+```bash
+# accepted line shapes (one per line; blank/`#`-prefixed lines skipped):
+#   host:port:user:pass
+#   user:pass@host:port
+#   socks5://user:pass@host:port
+#   host:port
+#   host:port:user:pass|us|provider-name   ← optional country|provider hints
+python references/dolphin-cli.py bulk-add-proxies --file proxies.txt --dry-run
+python references/dolphin-cli.py bulk-add-proxies --file proxies.txt
+```
+
+After import, sanity-check each one before attaching to a profile:
+
+```bash
+python references/dolphin-cli.py check-proxy --id <proxyId>
+# → {ok: true, ip, country, asn} via ipinfo.io routed through the proxy
+```
+
+Fail = drop the proxy or contact provider before wasting it on a ranking
+profile. The check uses `urllib`'s proxy handler — it works without the
+Dolphin local agent running.
+
 ### Backup cookies before re-uploading the extension
 
 ```bash
