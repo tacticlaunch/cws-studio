@@ -27,6 +27,12 @@ Install **Dolphin Anty** (free tier ≈ 10 profiles). Add a new proxy in the for
 connection shows the correct country flag (green arrows). Launch the profile and
 check anonymity on whoer.net / pixelscan.net — 70–100% green is acceptable.
 
+**Or automate it** — invoke the `cws-dolphin` skill to scaffold the profile +
+proxy + fingerprint end-to-end via the Dolphin{anty} REST API. Get a JWT token
+from [dolphin-anty.com/panel](https://dolphin-anty.com/panel/index.html#/api),
+export `DOLPHIN_API_TOKEN`, then ask Claude to run `cws-dolphin create` with
+the launch params.
+
 ## Step 3 — Google account
 
 Register a **new Google account** — ideally one per extension. If one account is
