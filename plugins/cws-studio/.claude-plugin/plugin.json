@@ -3,8 +3,13 @@
   "description": "End-to-end system for launching profitable Chrome Web Store browser extensions. Six pipeline-stage skills (idea validation, packaging, development, store assets & publishing, paid promotion, monetization) plus a /cws-sprint orchestrator that runs the whole launch.",
   "version": "1.2.0",
   "author": {
-    "name": "alex.elizarov1"
+    "name": "Alexey Elizarov",
+    "email": "alex.elizarov1@gmail.com",
+    "url": "https://github.com/beautyfree"
   },
+  "homepage": "https://github.com/tacticlaunch/cws-studio",
+  "repository": "https://github.com/tacticlaunch/cws-studio",
+  "license": "MIT",
   "keywords": [
     "chrome-extension",
     "chrome-web-store",

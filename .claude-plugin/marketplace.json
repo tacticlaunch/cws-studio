@@ -1,7 +1,8 @@
 {
   "name": "cws-studio",
   "owner": {
-    "name": "alex.elizarov1"
+    "name": "Alexey Elizarov",
+    "email": "alex.elizarov1@gmail.com"
   },
   "metadata": {
     "description": "Chrome Web Store extension launch system — idea to monetization."
