@@ -1,0 +1,327 @@
+# Stage 2 — Listing copy (name, short & full description)
+
+The **meta-information** = name + short description + full description. A
+well-built name (across languages) drives ~70% of SEO success; the short + full
+description the remaining ~30%. Track all of it in a working doc as you go.
+
+## Character limits
+
+| Element | manifest key | Max chars (incl. spaces) | Target |
+|---|---|---|---|
+| Name / title | `name` | 75 | the chosen keyword |
+| Short description | `description` | 132 | name + 2 keywords |
+| Full description | (uploaded in CWS, not manifest) | 16,000 | **~4,500** |
+
+## 1. Name
+
+Most of the work was done in Stage 1 (choosing the name keyword). Put that
+keyword into `name` in `manifest.json`.
+
+- More popular query → more potential audience, but harder to rank #1. Don't use
+  ultra-popular 1-word names (`adblocker`, `screenshot`). You can start mid-popular
+  and rename to a fatter query once the extension grows.
+- You can **mix two popular queries** in one name (`Free and fair adblocker`) to
+  rank for both — but ranking for two at once is always harder than one. Best
+  used in low-competition niches and non-English languages.
+- **Never** use `best`, `recommended`, `premium`, `free`, `#1` in name or
+  descriptions — moderation rejects them.
+
+## 2. Short description
+
+Ask ChatGPT for a short description that uses the name once and ~2 other
+keywords. Keep it plain. Specifics:
+- The single most important word of the name ~3×; any other keyword ≤2× (don't
+  let two different words both hit 3×).
+- Fill near the **132-char max** (~130) — extra words space the keywords apart,
+  which helps pass moderation.
+
+## 3. Full description (~4,500 chars)
+
+Write it with ChatGPT, then **edit by hand** — ChatGPT swallows keywords, forgets
+lists, makes mistakes. Generate it a few times and assemble the best paragraphs.
+
+Prompt template:
+```
+Work as a professional SEO specialist. Write description for google chrome
+extension: about 4500 characters, 10-16 paragraphs. Sometimes use emojis, but
+not more than one per line. Don't use quotation marks. Use lists at least 5
+times, for example: 1, 2, 3 and 1️⃣, 2️⃣, 3️⃣ and -, ➤, ▸, •. Separate
+paragraphs with spaces. Also, use the following keywords exactly as they are
+written and as often as possible. List of the keywords:
+[your keyword list, one per line]
+```
+
+Quality checklist for the final text:
+- **Structured lists, multiple types**: numbered (1,2,3 / 1️⃣,2️⃣,3️⃣), bullets
+  (➤ ▸ •), dashes (-), emoji markers (💡 📌 📍), question-answer (FAQ).
+  Structure and "air" (short paragraphs, no walls of 4–5+ lines) boost SEO.
+- **Main keyword** (name keyword + its long-tail variations) used ~15–20 times.
+  ~Half as the exact name keyword, ~half as variations with tails (`ai email
+  generator tool`, `ai email response generator`).
+- **Extra keywords** (other Semrush keywords) also used ~15–20 times. ~30
+  keywords total for a 4,500-char text. Keep 15–20 rows of keywords per category.
+- Use keywords as **whole phrases** (`color code picker`, `pick color code`), not
+  bare single words (`code`, `pick`).
+- Always put a **space between emoji and word** or numbered lists may not parse.
+- Lowercase keywords in ~50% of occurrences in short + full description — all-caps
+  keys can slightly pessimize ranking (people search `bpm finder`, not `BPM
+  Finder`).
+- When counting a keyword's uses, also count it inside longer keywords (e.g.
+  `incognito mode` counts inside `chrome incognito mode`).
+
+See `references/listing-examples.md` for three full real descriptions that
+passed CWS moderation and ranked well (Temp Phone Number, Youtube to Text,
+Youtube repeat).
+
+### Main vs Extra keywords — where each comes from
+
+- **Main keywords** = everything from the Semrush **Broad Match** tab — the name
+  keyword and its tails, *including* phrases where another word breaks the name
+  (`convert pages file to word` for the name `convert pages to word`). How-to
+  question keywords on-topic also go here.
+- **Extra keywords** = the **Related** tab — phrases where a word is missing,
+  changed to a synonym, or the whole phrase differs.
+- A keyword differing by one letter / article / word form counts as a **separate
+  keyword** — take both.
+- **Never** take keywords about a *different* product even if they look similar
+  (`pdf pages` when your product is `pages file to word`). Verify by opening the
+  keyword's SERP — wrong-topic results mean wrong keyword.
+
+### The iron rule — 8–10 name-keyword occurrences = no overspam
+
+Using the name keyword **8–10 times** across the meta (name + short + full
+description) **guarantees** no overspam. This is mandatory. Procedure: do the
+maximum optimization (fill Main + Extra, weave everything in), then **trim
+keywords from the *end* of the list** until overspam is gone. **Avoiding overspam
+beats using every keyword.** If too few keywords exist, **do not shorten the
+text** — just use the name more often.
+
+### Keyword density per paragraph
+
+Max **3** occurrences of the same keyword per paragraph in the first 1–2
+paragraphs; **max 2** per paragraph after that. More than 3 close together = very
+likely moderation rejection.
+
+## 4. Spam check — turgenev.ashmanov.com
+
+Spamminess = too-frequent repeats of the same words; Google pessimizes
+over-spammed pages. Register at turgenev.ashmanov.com, paste name + short + full
+description as one text, click check.
+
+- Watch the **"повторы" (repeats)** score, the text window, and the repeats
+  table with red flags. **Remove the red flags** — reduce each keyword's
+  frequency to ≤3%.
+- Reduce spamminess by **both** cutting keyword count **and lengthening the
+  text** (if under 4,500 chars; add structured lists). Longer text lowers the
+  per-word percentage.
+- A small overspam (1–2 occurrences into the red) is tolerable — Google favors
+  extensions in its own ecosystem — but don't allow heavy overspam.
+- No more than 3 identical keywords standing close together in one paragraph.
+  Above the CWS "read more" fold: ≤2–3 of the same keyword per text chunk; below
+  the fold: 1–2 per chunk.
+- **A purple/violet word in Turgenev = the same as red** — overspam, reduce it.
+- **Ignore the site-only metrics** Turgenev shows — academic nausea (тошнота),
+  word-combination nausea, linkbuilding. Those apply to websites; extensions are
+  forgiven on them. Watch **only**: the repeats/red-flag column, overall risk
+  (must be low/insignificant), and name words in the top (below).
+
+## 5. Pessimization risk
+
+In the same service, the left-sidebar **"общий риск пессимизации" (overall
+pessimization risk)** must read **insignificant / low**. It drops once overspam
+is removed.
+
+## 6. Compare against competitors
+
+If you have well-optimized competitors, check their text too and beat them on:
+- **Length** — yours longer (aim 4,500 chars).
+- **Structure** — more list types, emoji markers.
+- **Keyword count + percentage** — higher than the competitor, *without* red
+  flags. Use the keywords they use, then exceed their counts.
+If a competitor isn't optimized, there's nothing to compare against — just get
+clean Turgenev results and good optimization of your own.
+
+## 7. Name-keyword saturation check
+
+In Turgenev's **Words** and **Phrases** tabs, the words/phrases from your name
+must be near the top (ignore grey "service words"). Turgenev sometimes swallows a
+word (`temp`) or grey-marks a real word (`youtube`, `html`) — count those
+manually. If name words aren't on top, redistribute their occurrences in the text.
+
+- The **name keyword must rank top** — other phrases may be high but must stay
+  *below* it.
+- For a **multi-word name**, *each individual word* of the name should be in the
+  top, and the 2-word combinations from the name should rank high too.
+
+## 8. List structure (full description)
+
+- Use **multiple list types**: numbered (1,2,3), dashes (-), bullet-points
+  (➤ ▸ •), and 2–3 different emoji-marker styles. Always include at least one
+  numbered list.
+- **Within one list**, items should be roughly **equal length**; **across
+  different lists**, vary the length (one list of short 2-word items, another of
+  full-line items). Equal-length items help Google read it as a structured list.
+- A list has **3–6 items** — not 2 (not a list), not 10.
+- Within one list keep the **bullet type consistent** (all emoji, or all numbers).
+- **Mix paragraphs and lists** — alternate them; never a wall of 10 paragraphs in
+  a row.
+
+## 9. Capitalization
+
+- **Name** — written grammatically correct (proper case).
+- **Short description** — some keyword occurrences lowercase.
+- **Full description** — mix ~30% proper-case / ~70% lowercase (as people
+  actually search). Search engines claim case doesn't matter; mixing observably
+  works best.
+
+## 10. Don't fake reviews or over-promise
+
+- **Never write reviews inside the description** — moderation dislikes
+  in-text "reviews"; remove them. Politely asking for a review at the very end
+  is fine. Links to your other products/site are allowed but ~99% of users never
+  read the description, so don't expect traffic from there.
+- **Don't describe features that don't exist yet**, and never write "coming
+  soon". Rewording the same real feature with different keywords is fine;
+  inventing absent features risks moderation rejection.
+
+
+## Case-study insights from product reviews
+
+### Name — additions
+
+- **Trademarked-looking compound names**: a two-word name made of two ordinary
+  English words but with no natural meaning (e.g. "Content Keeper") is almost
+  certainly a brand. The "ask a native speaker" test — if they can't immediately
+  say what the product is, treat it as a trademark and skip, even with low KD
+  and good traffic.
+- **Sub-100 US searches is fine for tails** — 20 US searches becomes ~200
+  across English-speaking countries and ~2,000 once translated. Don't reject
+  low-volume keywords for the name if the longer tail is a clean fit.
+- **English capitalization is a conversion lever.** Capitalize every content
+  word in the `name` field per English title-case rules; lowercase only
+  articles/prepositions/conjunctions; acronyms uppercase. Native speakers
+  subconsciously distrust a name with bad case.
+- **Two-word keyword in `name`**: only acceptable after ~10K users, usually
+  skipped — it splits weight across two queries and the product ranks for
+  neither.
+- **Indian-skewed keyword is a bonus, not a blocker** — if US has enough
+  volume to justify the keyword, larger volume in IN/SEA is upside (relevant
+  for translation/promotion stages).
+
+### Short description — additions
+
+- **Fill close to 132 chars (~120–130)** even if the prose feels padded —
+  extra symbols pull keywords apart and lower the same-paragraph trigger
+  risk during moderation.
+- **Don't separate keywords with only a comma.** Comma-chained keyword lists
+  inside short or full description are the single most reliable moderation
+  trigger. Insert a period and start a new sentence; do not chain
+  "AI, Description, Generator, Tool".
+- **Two adjacent occurrences of the main keyword in the short description is
+  dangerous.** E.g. "AI ChatGPT Online" sitting beside "AI Text Generation"
+  without separator words risks rejection. Push them apart with intermediate
+  words.
+- **The "3× main word + 2× per other word" formula is hard-capped.** Any
+  single word used 4× in 132 chars is guaranteed overspam. Use 3× only for
+  the single most important word; if another word also hits 3× (e.g. both
+  `compress` and `png`), reduce one to 2×.
+- **A morphologically varied third occurrence reads cleaner.** `Summarizer /
+  Summarize / Summarized` counts as ~2.5× to moderation rather than three
+  identical hits and noticeably reduces overspam risk while keeping SEO
+  weight.
+
+### Full description — keyword tactics
+
+- **Mandatory 8–10 exact-form name occurrences is an ironclad floor.** When
+  removing keywords to clear Turgenev overspam, never cut the name below 8 —
+  sacrifice every other keyword first. If the niche has too few tails, repeat
+  the bare name standalone until the count is met; do not shorten the text.
+- **First two paragraphs may carry 3 keywords each**; from the third paragraph
+  onward, strictly max 2 keywords per paragraph.
+- **The CWS "Read more" fold matters for keyword weighting.** Text visible
+  above the fold has higher SEO weight. Front-load 1–2 extra keyword
+  occurrences in that visible portion (without spamming) and put a list /
+  structured element above the fold rather than only paragraphs.
+- **Prefer keywords that nest the name keyword.** A phrase like
+  `text to speech reader app` simultaneously contributes to the name count
+  AND occupies a tail-keyword slot — two SEO targets in one occurrence. Aim
+  for at least half of Main Keywords to be name-nesting.
+- **Semrush Phrase Match + Exact Match tabs** are where to find more name-
+  containing tails when Broad Match is sparse. Order them inside Main —
+  tails where the name is broken across words (e.g. `convert pages file to
+  word` for name `convert pages to word`) belong in Main, not Extra.
+- **Drop keywords with mismatched SERP.** Click each keyword through to
+  Google SERP and verify top results match your product format. A keyword
+  scoring well in Semrush but returning wrong-product SERP (e.g.
+  `ai generator` returning only image generators when you ship a text
+  generator) must be dropped or used ≤1×.
+- **Adding one or two competitor brand keywords in the full description
+  (not name, not short)** helps Google semantically cluster you with the
+  leader and lift your ranking on your own keyword. Weave them naturally and
+  sparingly, never comma-listed. Never include brands in name or short
+  description.
+- **Acronym / abbreviation niches** (`CPM Calculator`, `BPM`, `SMS Checker`):
+  two case forms (e.g. `SMSChecker` and `SMS Checker`) count as **different**
+  keywords — use both.
+- **`free` rules**: never in name, ≤1× in short description, max 2–3× in
+  full description. Otherwise Google clusters you with the bargain-hunter
+  audience and behavioral signals collapse when you monetize.
+- **`best`, `recommended`, `premium`, `#1`** are hard moderation blockers
+  anywhere in meta.
+- **Zipf's-law check** (why name-words must be top in Turgenev): human-
+  written text has a sharply skewed word frequency. If your name keywords
+  are NOT visibly spiking above the baseline in Turgenev's word/phrase tabs,
+  Google's LLM/AI-text detector pessimizes you. Hand-count words Turgenev
+  silently treats as service words (`HTML`, `youtube`, `temp`) — they still
+  need to be top.
+- **Multi-word name top-check.** Each individual word AND each 2-word
+  combination from the name must be top in their respective Turgenev tabs.
+  Turgenev compares phrases only within the same word-count bucket — 3-word
+  phrases never compete with 2-word phrases.
+
+### Full description — structure
+
+- **List items must be ≤1 line each.** If any item exceeds one line, it
+  stops being a list to Google's parser and degrades to a paragraph.
+  Consistency within one list outranks visual variety.
+- **Don't bullet-mark items with emoji AFTER the list-item text** — emojis
+  at end of a line read as decoration to Google's parser and risk being
+  scored as robotic / spam ornamentation. Emoji prefixes only.
+- **Always a space between emoji and text** (some parsers fail to tokenize
+  the list otherwise).
+- **Lead-emoji within one list must be identical** — varying emoji inside
+  one list destroys the "structured content" signal. Use different emoji
+  types only between separate lists.
+- **Headers above lists must be separated by exactly ONE empty line** —
+  never tabs, never indent. The only allowed formatting in CWS is `\n` and
+  `\n\n`. Strip anything ChatGPT adds.
+- **Single-word column lists** (especially brand or format lists like
+  `JPG / PNG / GIF`) are a strong moderation trigger even when accurate to
+  your product. Distribute these terms inline across paragraphs.
+- **Lists of ≤2 items don't count as lists;** 5–6 items is the upper bound.
+  Don't make the whole description one big list.
+- **Alternate paragraphs and lists.** Never stack >3 paragraphs in a row or
+  >2 lists in a row. Walls of paragraphs are the #1 robotic-text signal
+  Google catches.
+- **Vary list lengths between lists** (one of 2-word items, one of half-line
+  items, one of full-line items) but keep length consistent within each
+  list. Uniform within = "structured"; varied across = "human".
+- **Description length is hard-coupled to the keyword formula.** 4,500
+  chars (with spaces) is the bench. ≥4,700 forces more absolute keyword
+  occurrences to maintain proportion, which the moderator threshold rejects.
+  ≤4,300 has insufficient keyword density. The new Turgenev counter shows
+  *non-space* chars — always read the WITH-space number.
+- **Never write fake / anonymous reviews in the description text** —
+  reviews-inside-description is a fast moderation flag. Asking for a
+  review at the very end is fine; quoting reviews is not.
+- **Don't describe features that don't exist yet** and never write
+  "coming soon" — moderation occasionally cross-checks claims vs the
+  running UI and rejects.
+
+### Turgenev specifics — additions
+
+- **Always paste name + short + full description together** into Turgenev —
+  they sit on the same CWS page and Google indexes them jointly. Submitting
+  only the full description gives misleading proportions.
+- (Already covered: purple = red; ignore academic nausea / linkbuilding;
+  Turgenev swallows service-marked words like `temp`, `youtube`, `html`.)

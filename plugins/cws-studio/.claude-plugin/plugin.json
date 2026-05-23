@@ -1,0 +1,17 @@
+{
+  "name": "cws-studio",
+  "description": "End-to-end system for launching profitable Chrome Web Store browser extensions. Six pipeline-stage skills (idea validation, packaging, development, store assets & publishing, paid promotion, monetization) plus a /cws-sprint orchestrator that runs the whole launch.",
+  "version": "1.0.0",
+  "author": {
+    "name": "alex.elizarov1"
+  },
+  "keywords": [
+    "chrome-extension",
+    "chrome-web-store",
+    "cws",
+    "seo",
+    "product-launch",
+    "micro-product",
+    "monetization"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "cws-studio",
+  "owner": {
+    "name": "alex.elizarov1"
+  },
+  "metadata": {
+    "description": "Chrome Web Store extension launch system — idea to monetization."
+  },
+  "plugins": [
+    {
+      "name": "cws-studio",
+      "source": "./plugins/cws-studio",
+      "description": "End-to-end system for launching profitable Chrome Web Store extensions: idea validation, packaging, development, store assets & publishing, paid promotion, and monetization. Includes a /cws-sprint orchestrator plus six per-stage skills."
+    }
+  ]
+}
