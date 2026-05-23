@@ -37,11 +37,37 @@ what makes the sprint cohesive instead of seven isolated skills: handoffs are
 `references/pipeline-state.md`** — locate or create `.cws/`, read `state.json`,
 diagnose where the user is in the pipeline, never silently skip a gate.
 
-If no `.cws/` exists in the project, route to **cws-init** to scaffold one
-before doing anything else. Don't ad-hoc create the directory yourself.
+If no `.cws/` exists, route to **cws-init** to scaffold, then on return show
+the status block below — never dump a file-creation log. Don't ad-hoc create
+the directory yourself.
 
-When the user asks "where am I in the launch?", read `.cws/state.json` and show:
-current stage, gates passed, last 3 history events, next gate's exit criteria.
+## Output convention — gstack-style, NOT a file dump
+
+Every sprint invocation prints **exactly these blocks, in this order**, and
+nothing else:
+
+```
+CWS sprint status
+─────────────────
+Project:   <project_name>
+Stage:     <human-readable current stage — "Account setup" / "Idea validation" / …>
+Progress:  <bar of 7 gates>   e.g.  ●●○○○○○  account-setup → idea
+Last:      <last 3 history events, oldest first, one line each>
+
+Next:  /cws-<skill>
+Why:   <one sentence — what this step does and why it's next>
+```
+
+Rules:
+- **One next action**, never a menu. Pick by the table in "Proactive next-skill
+  suggestion" below. Override only if the user explicitly asked for something
+  else.
+- **No raw file lists** ("Created 01-idea.md +8 -0"). Summarize: "Scaffold ready
+  — 9 artifact stubs + state.json."
+- **No raw JSON dumps**. Read state.json, render the status block.
+- **No emoji / decoration** unless the user uses them first.
+- When `.cws/` was just scaffolded by cws-init, the status block still applies —
+  show `Stage: not started`, `Progress: ○○○○○○○`, `Next: /cws-idea`.
 
 ## Proactive next-skill suggestion
 
@@ -49,6 +75,9 @@ After every "where am I" answer, propose the **single best next action**:
 
 | Situation | Suggest |
 |---|---|
+| `.cws/` missing | `cws-init` (scaffold first) |
+| Scaffolded but `account-setup` not gated | `cws-idea` (it walks Stage 0 proxy/profile/account first) |
+| Just gated `account-setup` | `cws-idea` (validate the idea) |
 | Just gated `idea` | `cws-challenge` (stress-test before building) |
 | Just gated `package` | `cws-build` (or `cws-challenge` first if listing is borderline) |
 | Both `build` + `package` gated | `cws-launch` |
@@ -95,7 +124,8 @@ to remember to run `cws-learn`.
 
 | # | Stage | Skill | Gate to pass before moving on |
 |---|---|---|---|
-| 0–1 | Account setup + idea validation | **cws-idea** | A scored hypothesis with a winning name keyword that clears all gates (one function, volume, softness, keyword free) |
+| 0 | Account setup (proxy, antidetect profile, Google account) | **cws-idea** (Stage 0 routine; uses cws-dolphin) | Proxy validated (residential ASN, country match), Dolphin profile created, dedicated Google account registered |
+| 1 | Idea validation | **cws-idea** | A scored hypothesis with a winning name keyword that clears all gates (one function, volume, softness, keyword free) |
 | 2a | Listing copy (name, short/full description, SEO) | **cws-package** | Name + descriptions written, spam-checked, name keyword saturated |
 | 2b | Build the minimal extension | **cws-build** | Bug-free manifest v3 build, one clear function, doesn't break pages |
 | 3 | Store assets, translations, publishing | **cws-launch** | Banners + icons + Welcome Page done, 50+ locales, submitted & approved |

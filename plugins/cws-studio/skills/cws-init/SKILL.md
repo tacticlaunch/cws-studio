@@ -29,6 +29,7 @@ known place to read/write.
 ```
 ./.cws/
   state.json                 # schema:1, current_stage:null, gates_passed:[]
+  00-account-setup.md        # proxy + antidetect profile + Google account
   01-idea.md                 # frontmatter only, status:draft
   02a-listing.md             # frontmatter only, status:draft
   02b-build.md               # frontmatter only, status:draft
@@ -60,6 +61,15 @@ known place to read/write.
      "project_name": "<from user or dir name>",
      "current_stage": null,
      "gates_passed": [],
+     "account_setup": {
+       "proxy_provider": null,
+       "proxy_id_in_dolphin": null,
+       "proxy_country": null,
+       "proxy_validated": false,
+       "proxy_residential": null,
+       "dolphin_profile_id": null,
+       "google_account": null
+     },
      "extension": { "id": null, "draft_uploaded": false,
                     "submitted_for_review": false,
                     "moderation_status": null, "store_url": null },
@@ -77,8 +87,18 @@ known place to read/write.
 6. **Optionally collect seed info** — if the user typed a one-liner idea
    description, write it into `01-idea.md` under a `## Seed` section so
    `cws-idea` picks it up on entry.
-7. **End by routing**: tell the user to invoke `cws-sprint` (overview),
-   `cws-idea` (begin Stage 1), or `cws-autoplan` (run autonomously).
+7. **End with one recommended next action — not a menu.** Pattern follows
+   gstack's sprint: narrative status, then a single explicit invocation the
+   user can run next. Choose by state:
+   - Seed idea was provided → "Next: `/cws-idea` to validate `<keyword>`."
+   - No seed, RU/BY context → "Next: `/cws-idea` — Stage 0 (proxy +
+     antidetect) is the first hard gate; the skill will walk you through it."
+   - Schema migrated (existing project) → "Next: `/cws-sprint` to see where
+     you are."
+
+   Keep the file-creation noise minimal in the user-facing output. Do **not**
+   list every file you wrote — say "Scaffold ready: state.json + 8 artifact
+   stubs + learnings + log." A `ls .cws/` is one keystroke away.
 
 ## .cws/.gitignore
 
