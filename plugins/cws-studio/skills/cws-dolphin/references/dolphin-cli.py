@@ -129,13 +129,14 @@ def cmd_create(args):
         proxy_block = {"id": proxy.get("id") or proxy.get("data", {}).get("id")}
         time.sleep(1)
     print("[4/4] create profile …", file=sys.stderr)
+    ua_value = ua if isinstance(ua, str) else ua.get("data") or ua.get("useragent") or fp.get("userAgent", "")
     body = {
         "name": args.name,
         "platform": platform,
         "platformVersion": args.platform_version or "10.15.7",
         "browserType": "anty",
         "fingerprint": fp,
-        "useragent": {"value": ua if isinstance(ua, str) else ua.get("data", "")},
+        "useragent": {"mode": "manual", "value": ua_value},
         "tags": (args.tags or "").split(",") if args.tags else ["cws-studio"],
     }
     if proxy_block:
@@ -168,7 +169,8 @@ def cmd_update(args):
 def cmd_delete(args):
     if not args.force:
         sys.exit("refusing to delete without --force (gate via cws-careful first)")
-    print(json.dumps(_req("DELETE", f"{CLOUD}/browser_profiles/{args.id}"), indent=2))
+    print(json.dumps(_req("DELETE", f"{CLOUD}/browser_profiles/{args.id}",
+                          body={"forceDelete": True}), indent=2))
 
 
 def cmd_start(args):

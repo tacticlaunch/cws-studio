@@ -68,8 +68,9 @@ re-tagging.
 
 ### `DELETE /browser_profiles/{id}` — delete
 
-Permanent. **Gate via `cws-careful` if the profile holds a ranking
-extension's CWS account login.**
+Permanent. Body **must** include `{"forceDelete": true}` or the call returns
+HTTP 403 with `E_BROWSER_PROFILE_FORCE_DELETE`. **Gate via `cws-careful` if the
+profile holds a ranking extension's CWS account login.**
 
 ### `POST /browser_profiles/mass` — bulk create / delete / move
 
