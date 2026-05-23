@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Emit SLUG=<project-slug> and CWS_HOME=<path> for the current repo.
+# `eval "$(cws-slug)"` to load into the calling shell.
+set -e
+TOP=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
+SLUG=$(basename "$TOP" | tr '[:upper:] ' '[:lower:]-' | tr -cd 'a-z0-9-_')
+[ -z "$SLUG" ] && SLUG=unknown
+CWS_HOME="${CWS_HOME:-$HOME/.cws}"
+echo "SLUG=$SLUG"
+echo "CWS_HOME=$CWS_HOME"
+echo "CWS_PROJECT_DIR=$CWS_HOME/projects/$SLUG"

@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Append a JSON line to the per-project timeline.
+# Usage: cws-timeline-log '{"skill":"cws-idea","event":"started",...}'
+set -e
+eval "$($(dirname "$0")/cws-slug)"
+mkdir -p "$CWS_PROJECT_DIR"
+F="$CWS_PROJECT_DIR/timeline.jsonl"
+TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+EVT="${1-}"
+[ -z "$EVT" ] && EVT='{}'
+/usr/bin/python3 -c "import json,sys; d=json.loads(sys.argv[1]); d['ts']=sys.argv[2]; print(json.dumps(d))" "$EVT" "$TS" >> "$F"

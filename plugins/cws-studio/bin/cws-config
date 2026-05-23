@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# Minimal config store at $CWS_HOME/config.json.
+# Usage:
+#   cws-config get <key>          # prints value or empty
+#   cws-config set <key> <value>  # writes value
+#   cws-config list               # dumps all
+set -e
+CWS_HOME="${CWS_HOME:-$HOME/.cws}"
+F="$CWS_HOME/config.json"
+mkdir -p "$CWS_HOME"
+[ ! -f "$F" ] && echo "{}" > "$F"
+
+case "${1:-}" in
+  get)
+    /usr/bin/python3 -c "import json,sys; d=json.load(open('$F')); print(d.get(sys.argv[1],''))" "$2"
+    ;;
+  set)
+    /usr/bin/python3 -c "import json,sys; d=json.load(open('$F')); d[sys.argv[1]]=sys.argv[2]; json.dump(d,open('$F','w'),indent=2)" "$2" "$3"
+    ;;
+  list)
+    cat "$F"
+    ;;
+  *)
+    echo "usage: cws-config get|set|list" >&2; exit 1
+    ;;
+esac

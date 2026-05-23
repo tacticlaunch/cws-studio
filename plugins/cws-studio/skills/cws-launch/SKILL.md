@@ -14,6 +14,31 @@ description: >-
   "pass CWS moderation".
 ---
 
+## Preamble (run first)
+
+Run the standard preamble (see `shared/preamble.md`). It loads `$SLUG`,
+branch, prior learnings (filtered by this stage), and `./.cws/state.json`.
+Skip the rest of this skill if the preamble exits — the preamble is the
+gate.
+
+## AskUserQuestion Format
+
+See `shared/askuserquestion-format.md`. Every interactive decision goes
+through `AskUserQuestion` as a `D<N>` decision brief (ELI10 · Stakes ·
+Recommendation · Completeness · Pros/cons · Net). D-numbering starts at D1
+per invocation.
+
+## Voice
+
+See `shared/voice.md`. Operator voice. No banners. No file-creation dumps.
+Concrete numbers, names, paths. Lead with the point.
+
+## Skill Routing Footer
+
+End every invocation with a single `Next: /cws-<skill>` line per
+`shared/skill-routing.md`. Never a menu.
+
+---
 # CWS Studio — Stage 3: Assets, translations & publishing
 
 Banners, icons, Welcome Page, 50+ locale translations, pre-publish checks, and
