@@ -1,56 +1,56 @@
-# Stage 3 â Store assets, translations & publishing
+# Stage 3 — Store assets, translations & publishing
 
 Banners, icons, Welcome Page, 50+ locale translations, pre-publish checks, and
 uploading to CWS.
 
-## Behavioral factors â the lens for this whole stage
+## Behavioral factors — the lens for this whole stage
 
 Every asset here is judged by one question: does it reduce friction so a tested
 user stays instead of bouncing back to Google? (Behavioral factors — see the
 cws-launch SKILL.md core principles.) Bugs in
 the main function, a product that breaks browser pages, a confusing banner or
-Welcome Page â each tanks behavioral factors and can kill the launch before any
+Welcome Page — each tanks behavioral factors and can kill the launch before any
 traffic shows. Full SEO emerges over ~6 months *if* the launch build tests well.
 
 ## Pre-launch testing (do before anything else)
 
 - **Watch a non-developer use it.** Hand the unpacked extension to a relative /
-  non-IT person, give them only the link, and watch them install and use it â
+  non-IT person, give them only the link, and watch them install and use it —
   **say nothing**. One hint and the test is void; restart with a different
-  person. 2â5 such tests catch ~80% of UX problems.
-- **Dogfood it 1â2 days** â keep the extension installed in your own browser and
+  person. 2—5 such tests catch ~80% of UX problems.
+- **Dogfood it 1—2 days** — keep the extension installed in your own browser and
   just browse normally. Bugs and broken pages surface fast (e.g. a JSON
   prettifier that breaks a local `.html` page).
 - **No bugs in the main function**, and the product must **never break other
-  browser pages** â both are behavioral-factor death. Don't rush to the store.
+  browser pages** — both are behavioral-factor death. Don't rush to the store.
 
 ## Why graphics matter
 
 The small banner, large banner and icon directly affect **conversion to
-install**. A confusing element makes users bounce back to search â behavioral
+install**. A confusing element makes users bounce back to search — behavioral
 factors and ranking drop. So graphics must be: **simple & clear**, **tidy**, **on
 a contrasting background**. Don't be clever or over-creative.
 
-## Small banner (440Ã280)
+## Small banner (440×280)
 
-Shown in the search results app list â its job is to grab attention.
+Shown in the search results app list — its job is to grab attention.
 - Contrasting background (a nice gradient works well).
 - A thematic flat icon from flaticon.com, centered.
 - A short caption conveying what the extension does.
-- Few words â non-native users must still get it.
-- PNG, â¤800 KB.
+- Few words — non-native users must still get it.
+- PNG, —¤800 KB.
 
-## Large banner (1280Ã800)
+## Large banner (1280×800)
 
 Shown on the extension's page. Take a screenshot (or a single UI element) of the
 product; if the raw screenshot already conveys the product, frame it with
 browser UI; otherwise simplify it or enlarge key elements. Add a short caption,
 place it on a tidy contrasting background. Avoid video (users study it, get
-distracted, conversion drops). No complex words. PNG, â¤800 KB.
+distracted, conversion drops). No complex words. PNG, —¤800 KB.
 
 Banner mistakes to avoid:
 - **Don't show every UI element.** Strip clutter (pins, close buttons, rating
-  widgets, gears) â keep only the one core function, simplified beyond your real
+  widgets, gears) — keep only the one core function, simplified beyond your real
   build, with a **bigger font**.
 - **Don't show browser chrome unless it's essential.** It wastes precious banner
   space and conveys nothing. Show it only when the browser context *is* the
@@ -59,17 +59,17 @@ Banner mistakes to avoid:
 - **Caption = the product's essence, not how to use it.** Write "Summarize any
   text instantly", not "Copy, paste and summarize". The user learns interaction
   from the UI; the banner just states what the product does.
-- **Background**: contrasting but roughly **mono-tone** â a gradient that drifts
+- **Background**: contrasting but roughly **mono-tone** — a gradient that drifts
   slightly within one color, not two clashing colors (looks unprofessional).
 
 ## Icons
 
-Don't draw them â grab a tidy minimalist flat 128Ã128 icon from flaticon.com and
+Don't draw them — grab a tidy minimalist flat 128×128 icon from flaticon.com and
 resize. Files: `16x16.png`, `48x48.png`, `64x64.png`, `96x96.png` (the 128 slot
-uses a 96Ã96 image with a transparent margin), `128x128.png`. Transparent
+uses a 96×96 image with a transparent margin), `128x128.png`. Transparent
 background on all.
 
-- The **128Ã128-with-transparent-margin** icon (96Ã96 image inside) goes to the
+- The **128×128-with-transparent-margin** icon (96×96 image inside) goes to the
   **store**; it does **not** need to go into the extension archive.
 - A good icon **contrasts** with other extensions and works on both dark and
   light backgrounds (black-and-white icons do this well).
@@ -77,7 +77,7 @@ background on all.
 ## Welcome Page
 
 CWS hides freshly installed extensions "under the puzzle icon", so many users
-can't find an extension after installing â they bounce to search â ranking
+can't find an extension after installing — they bounce to search — ranking
 drops. Fix it with a **Welcome Page** that opens right after install and explains
 where to find the extension and how to use it. Bonus: it's the perfect place for
 install-counting analytics (it opens exactly once per install).
@@ -91,7 +91,7 @@ preferred.
 In ~90% of cases the goal is "find and pin the extension". Exceptions: new-tab
 extensions ask the user to accept the new-tab replacement; a YouTube transcriber
 sends the user to YouTube to find its widget. If the product has an **artifact**
-(a corner widget on every page), point the Welcome Page at the artifact â that's
+(a corner widget on every page), point the Welcome Page at the artifact — that's
 a one-screen, one-click path, far simpler than "find the puzzle icon and pin".
 Correct **all** copy via ChatGPT (`correct this text in the app UI: [text]`)
 regardless of your English level.
@@ -101,25 +101,25 @@ regardless of your English level.
 - **Screenshots mistaken for the UI.** Users think the Welcome Page *is* the
   product. If a screenshot blends into the page background, is too large, or
   shows only a cropped piece (not the full browser window), users click the
-  *screenshot* instead of going to find the extension â up to **30% of traffic
+  *screenshot* instead of going to find the extension — up to **30% of traffic
   lost**. Fix: frame each screenshot with a clear border on a contrasting
   background, keep it modestly sized, and shrink the screenshot while *enlarging*
   the element the user must find.
-- **No video or GIF** â on the Welcome Page or as a CWS listing asset. Video
+- **No video or GIF** — on the Welcome Page or as a CWS listing asset. Video
   forces study time, distracts, and measurably lowers conversion (to install,
   and to pin). Use a static screenshot.
 - **One uninterrupted flow.** The Welcome Page should lead to a single
-  unbroken action. Don't make a long multi-step flow â extra steps (e.g. "now
+  unbroken action. Don't make a long multi-step flow — extra steps (e.g. "now
   paste the signature into Gmail") belong *inside the product*, not here. The
   shorter the page, the higher the behavioral factors.
 
 Publish on Tilda, set page name + URL. Optionally buy/connect a domain (if you
 already host the extension's server on a main domain, make a subdomain like
-`ext.yourdomain.com` pointing an A-record at Tilda's IP â host all service pages
+`ext.yourdomain.com` pointing an A-record at Tilda's IP — host all service pages
 there: Welcome, Uninstall, "share" pages). With a custom domain, connect SSL and
-set wwwânon-www and httpâhttps redirects, then re-publish all pages.
+set www—non-www and http—https redirects, then re-publish all pages.
 
-Auto-open the Welcome Page after install â ask the developer to add to the
+Auto-open the Welcome Page after install — ask the developer to add to the
 service worker:
 ```js
 chrome.runtime.onInstalled.addListener((details) => {
@@ -129,17 +129,17 @@ chrome.runtime.onInstalled.addListener((details) => {
 });
 ```
 
-## Translations â 50+ locales
+## Translations — 50+ locales
 
 Translating multiplies Google-ranking chances several-fold. Use **Chrome
-Extension Localizer** (localize.camp) â supports ChatGPT/Google/DeepL per-language
+Extension Localizer** (localize.camp) — supports ChatGPT/Google/DeepL per-language
 with optimal model defaults, has a large built-in quota, and can emit a ready
 `_locales` folder.
 
 Request a Secret Key via t.me/localizer_manager_bot, paste it into Localizer, add
 name + short + full description, **verify text structure isn't broken on paste**,
 select all languages (languages where OpenAI struggles are flagged ð¨ and default
-to Google Translate). A full run takes 30â40 min; failed translations are
+to Google Translate). A full run takes 30—40 min; failed translations are
 highlighted for re-run. Export the locales folder, drop it into the extension
 root, and in `manifest.json`:
 ```json
@@ -148,22 +148,22 @@ root, and in `manifest.json`:
 "default_locale": "en"
 ```
 `default_locale` is the fallback when a user's language lacks a string. The full
-description (`storeDesc`) is **not** in the manifest â it's uploaded to CWS
+description (`storeDesc`) is **not** in the manifest — it's uploaded to CWS
 separately (see auto-upload script below).
 
-(BabelEdit was used before Localizer â now obsolete: â¬50, no ChatGPT, per-product
+(BabelEdit was used before Localizer — now obsolete: —¬50, no ChatGPT, per-product
 quota. Skip it.)
 
 ### Manual translation for important languages
 
-Some languages are worth manual name/short-description work â rich countries +
+Some languages are worth manual name/short-description work — rich countries +
 much lower competition than English:
 - **Latin-script, rich** (do all): German, French, Spanish, Italian, Dutch,
   Swedish, Danish, Norwegian, Finnish.
 - **Huge speaker base** (do at least the first 3): Arabic, Indonesian, Russian,
   Portuguese, Japanese, Filipino, Vietnamese, Turkish, Thai, Korean.
 
-The **name** matters most â invest there; less in the short description; just
+The **name** matters most — invest there; less in the short description; just
 ChatGPT-translate the full description. Find national-language name keywords the
 same way as English: ask ChatGPT how the product would be searched in that
 language, use Semrush with the target country selected (collect keywords from
@@ -178,70 +178,70 @@ your English one.
 Transliteration nuance:
 - **Don't literal-translate a "universal" English name** (`ai chat gpt`). Think
   how real people *search* in that language. In Russian, `ÑÐ°Ñ Ð³Ð¿Ñ` (transliter-
-  ated) gets ~1M searches â a different, valuable keyword worth taking.
-- **Non-Latin-script languages** (Cyrillic, Chinese, Arabic) â the *national*
+  ated) gets ~1M searches — a different, valuable keyword worth taking.
+- **Non-Latin-script languages** (Cyrillic, Chinese, Arabic) — the *national*
   spelling usually dominates over the English one, and the gap widens as a tech
-  goes mainstream. **Latin-script languages** (German etc.) â the English
+  goes mainstream. **Latin-script languages** (German etc.) — the English
   variant often dominates.
 - Auto-translate (`localize.camp`) is **much better than nothing** even when it
-  truncates the 132-char short description â other languages have far lower
+  truncates the 132-char short description — other languages have far lower
   competition, so truncation is acceptable for the auto pass. Fix the short
   description only when you do the *manual* pass for an important language.
-- **Anglicism naming pyramid** (best â worst), for a name that's an anglicism:
+- **Anglicism naming pyramid** (best — worst), for a name that's an anglicism:
   (1) the keyword *as people search it*; (2) as people *say* it grammatically;
-  (3) keep the anglicism if it has any traffic; (4) auto-translate; (5) â worst â
+  (3) keep the anglicism if it has any traffic; (4) auto-translate; (5) — worst —
   no translation at all. Even a clumsy auto-translation beats none, because
   Google still tends to glue it to the real local search query.
 - **One English locale only.** Spanish / Portuguese / Chinese near-duplicate
   locales are fine (low competition), but never create UK/US/AU English
-  duplicates â duplicate English pages hurt English SEO. Localizer outputs one
+  duplicates — duplicate English pages hurt English SEO. Localizer outputs one
   English locale by design.
 - **Interface strings.** Auto-translate only handles `appName` / `shortDesc` /
   `storeDesc`. If the extension UI has *other* strings in
   `_locales/en/messages.json`, you must fill those manually in the **en** locale
-  â otherwise buttons render empty. Other locales fall back to `en`, so you only
+  — otherwise buttons render empty. Other locales fall back to `en`, so you only
   need the English ones complete.
 
 ## Pre-publish checks
 
-1. **Differ from the competitor** â different icon, new banners, different
+1. **Differ from the competitor** — different icon, new banners, different
    name/short/full description, optimized text. A full copy-paste gets rejected.
    Name-similarity rules: identical name OR name differing only by word order /
-   1â2 letters â use **only if** the competitor is **not** optimized (not 30+
-   languages and/or not 3,000+ char description). Differ by 1 word â much better.
-   Differ by 2 words or fully â ideal.
+   1—2 letters — use **only if** the competitor is **not** optimized (not 30+
+   languages and/or not 3,000+ char description). Differ by 1 word — much better.
+   Differ by 2 words or fully — ideal.
 2. **Spam check** the texts (Stage 2).
 3. **Translate** (above).
-4. **Antivirus** â upload the extension archive to virustotal.com. A
+4. **Antivirus** — upload the extension archive to virustotal.com. A
    false-positive once got an extension banned. If flags appear (rare),
    investigate what triggers them, rework, rebuild, re-check.
 5. If for some reason you publish English-only (not recommended), remove **all**
-   `_locales` folders except `en` first (save them) â otherwise CWS fills empty
+   `_locales` folders except `en` first (save them) — otherwise CWS fills empty
    descriptions for every language and heavily pessimizes ranking.
-6. **2FA** â Google may require it before upload (Stage 0).
+6. **2FA** — Google may require it before upload (Stage 0).
 
 ## Uploading to CWS
 
 1. Set the Google account interface language to **English (United States)**
-   (account settings â Personal info).
+   (account settings — Personal info).
 2. Go to the developer dashboard
    (chrome.google.com/webstore/developer/dashboard), upload the extension archive.
-3. Fill the store card per language â name and short description pull from the
+3. Fill the store card per language — name and short description pull from the
    archive; **full description must be pasted manually** (CWS can't pull it).
 4. Auto-upload all locale full descriptions with `references/cws-locale-uploader.js`:
-   on the extension's **Store Listing** page, refresh, open DevTools â Console
+   on the extension's **Store Listing** page, refresh, open DevTools — Console
    (type `allow pasting` if blocked), paste the uploader script, click **Choose
    Files** in the green box, select your `_locales` folder; it loads `storeDesc`
    for every locale. Then **Save draft**, refresh, verify each language loaded.
-   (The script lives in lesson 134 of the bootcamp HTML â it reads
-   `_locales/<code>/messages.json` â `storeDesc.message` and drives the CWS
-   language dropdown + 16,000-char textarea â see `references/cws-locale-uploader.js`.)
+   (The script lives at `references/cws-locale-uploader.js` — it reads
+   `_locales/<code>/messages.json` — `storeDesc.message` and drives the CWS
+   language dropdown + 16,000-char textarea — see `references/cws-locale-uploader.js`.)
 5. Upload graphics carefully.
-6. **Save Draft** â **Privacy** tab: set **Single Purpose** (one short sentence);
+6. **Save Draft** — **Privacy** tab: set **Single Purpose** (one short sentence);
    set **No, I am not using remote code**.
-7. **Justify every permission** briefly. Examples: `storage` â store user
-   settings; `tabs` â control sound capturing in tabs; `activeTab` â control sound
-   capturing in active tab; `downloads` â download sound file; host permissions â
+7. **Justify every permission** briefly. Examples: `storage` — store user
+   settings; `tabs` — control sound capturing in tabs; `activeTab` — control sound
+   capturing in active tab; `downloads` — download sound file; host permissions —
    show extension action button on any website. Requesting permissions the
    functionality doesn't need = rejection regardless of justification.
 8. Mark collected data (mark nothing if you collect nothing), tick the 3
@@ -253,30 +253,30 @@ Transliteration nuance:
 ## Launch-time decisions
 
 - **Extension ID** is shown in the dashboard (top-left) right after you upload
-  the first **draft** â before publishing. Grab it then to wire up the review
+  the first **draft** — before publishing. Grab it then to wire up the review
   widget (built in the cws-promote stage), then re-upload the draft.
 - **No auth at launch** for a no-cost product. Auth cuts product usage by
-  **60â80%** in measurements and wrecks behavioral factors. Add auth only later,
-  *together* with monetization (Stage 5) â auth must be Google sign-in, needed to
+  **60—80%** in measurements and wrecks behavioral factors. Add auth only later,
+  *together* with monetization (Stage 5) — auth must be Google sign-in, needed to
   tie payments to a real account. Count users via analytics instead, not auth.
 - **Analytics by extension type:**
-  - *Site-wrapped* extension â you can drop a normal analytics script on the site
-    (and Yandex Webvisor) â fast, rich.
-  - *Local-page / popup* extension â no script allowed; use event-based analytics
-    â GA4 Measurement Protocol, or better **Amplitude** (cleaner, richer
+  - *Site-wrapped* extension — you can drop a normal analytics script on the site
+    (and Yandex Webvisor) — fast, rich.
+  - *Local-page / popup* extension — no script allowed; use event-based analytics
+    — GA4 Measurement Protocol, or better **Amplitude** (cleaner, richer
     out-of-the-box; Mixpanel is an alternative).
 - **Don't disable the product in cheap locations.** Google tests across random
   countries; a product that's broken/blocked in Tier-2/3 kills behavioral factors
   *globally*, including Tier-1. For a product **with running costs**, you must
   serve (and later monetize) **all** countries. For a product **without costs**,
   give it free everywhere and paywall only Tier-1 later.
-- **A/B tests** â skip real A/B infrastructure for simple products (bugs, dev
+- **A/B tests** — skip real A/B infrastructure for simple products (bugs, dev
   time, maintenance). Do a **quasi A/B**: ship version A for a week, then version
   B, compare metrics. Real A/B only for risky monetization changes on large
   products (scope it by country / install-date / time window).
-- **Auxiliary buttons** (settings, support, rate-us) â add only if they don't
+- **Auxiliary buttons** (settings, support, rate-us) — add only if they don't
   overload the main function; hide settings under a gear. Only ~1% of users ever
-  click hidden buttons, so deep-buried buttons add little â the trade-off favors
+  click hidden buttons, so deep-buried buttons add little — the trade-off favors
   a clean main UI.
 
 
