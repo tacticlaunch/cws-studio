@@ -63,6 +63,22 @@ store page, so validation is a keyword/SEO exercise. Deliverable: a ranked
 
 ## Gate to the next stage
 
+Two gates from this stage. **Both** must pass.
+
+### Gate 0 — account-setup (hard gate; precedes idea work for RU/BY)
+
+The proxy is the foundation. A leaky proxy poisons everything downstream
+(Google account flagged, CWS rejection on first impression, ad bans). Run
+`cws-dolphin proxies-suggest` to pick a provider from the vetted list, buy
+(or `proxy6-buy --yes` for autonomous), then **`dolphin-cli check-proxy
+--id <id> --expect-country=<X>`** before attaching it to a profile. The
+command must return `ok:true` AND `is_hosting:false`. Cross-verify with
+whoer.net ≥80% green + pixelscan "consistent". Only then create the Dolphin
+profile and the Google account inside it. See `references/account-setup.md`
+for the full residential-ASN gate and provider table.
+
+### Gate 1 — idea
+
 Don't advance to packaging until one hypothesis has a name keyword that clears
 all gates. If the obvious head keywords are occupied or red-zone, loop back to
 step 4 and generate fresh candidates before declaring the idea dead.

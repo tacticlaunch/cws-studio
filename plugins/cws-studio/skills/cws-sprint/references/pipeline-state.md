@@ -10,6 +10,7 @@ isolated skills — handoffs are *files*, re-entry is *file detection*, gates ar
 ```
 ./.cws/
   state.json                # pipeline state — current stage, gates, IDs
+  00-account-setup.md       # proxy + antidetect profile + Google account (cws-idea Stage 0)
   01-idea.md                # scoring table + chosen hypothesis (cws-idea)
   02a-listing.md            # name, short/full desc, Turgenev results (cws-package)
   02b-build.md              # manifest type, donor, build status (cws-build)
@@ -35,7 +36,17 @@ levels) before creating a new one.
   "schema": 1,
   "project_name": "color-code-picker",
   "current_stage": "cws-promote",
-  "gates_passed": ["idea", "package", "build", "launch"],
+  "gates_passed": ["account-setup", "idea", "package", "build", "launch"],
+  "account_setup": {
+    "proxy_provider": "Space Proxy",
+    "proxy_id_in_dolphin": 624601234,
+    "proxy_country": "US",
+    "proxy_validated": true,
+    "proxy_validated_at": "2026-05-22T18:00:00Z",
+    "proxy_residential": true,
+    "dolphin_profile_id": 795968000,
+    "google_account": "launcher+colorpicker@gmail.com"
+  },
   "extension": {
     "id": "abcdefghijklmnopqrstuvwxyz000000",
     "draft_uploaded": true,
@@ -115,8 +126,24 @@ A stage's gate is *passed* when:
 - The skill writes `gates_passed: [..., "<stage-name>"]` and appends a
   `gate_passed` event to `history`.
 
-Gates in order: `idea` → `package` → `build` → `launch` → `promote` → `monetize`.
+Gates in order:
+`account-setup` → `idea` → `package` → `build` → `launch` → `promote` → `monetize`.
 (`package` and `build` run in parallel; both must pass before `launch`.)
+
+### `account-setup` gate — exit criteria
+
+Refusing to advance past this gate is the most important guardrail in the
+pipeline. A bad proxy / cold profile / shared Google account ruins everything
+that follows. All four MUST hold:
+
+1. `account_setup.proxy_validated == true` (set by `dolphin-cli check-proxy
+   --expect-country=<X>` returning `ok:true` with `is_hosting:false`).
+2. `account_setup.proxy_residential == true` (the `check-proxy` ASN check
+   ruled the IP out of known hosting ASNs).
+3. Dolphin profile created via `cws-dolphin create` and verified on
+   whoer.net ≥80% green / pixelscan consistent.
+4. Dedicated Google account registered through that profile (one per
+   extension; see `account-setup.md`).
 
 ## Writing JSON safely
 

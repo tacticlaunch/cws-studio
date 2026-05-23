@@ -13,12 +13,46 @@ account/extension-publishing Google account, CWS, or Semrush from a normal
 browser** — not even with a VPN (a VPN doesn't truly hide the original address).
 Use an **antidetect browser** instead.
 
-## Step 1 — Proxy
+## Step 1 — Proxy (hard gate; reliability first)
 
-Buy a proxy (e.g. Space Proxy, proxyline, proxy-sale — any works). When ordering:
-pick a country, select the "for Facebook" use case (fine for CWS/Semrush too).
-Buy for ~2 weeks first so you can test it. After purchase you get: IP, port,
-login, password.
+A bad proxy kills the launch later — Google flags the dev account, CWS rejects
+the build, ad accounts ban on first impression. **Pick from the bootcamp-vetted
+list. No free public proxies. No VPNs.**
+
+Bootcamp-vetted (lesson 011, listed best→fallback):
+
+| Provider | Type | Payment | Auto-buy? | Use when |
+|---|---|---|---|---|
+| **Space Proxy** | static residential IPv4 | RUB / crypto / card | manual UI only | default pick |
+| **Proxyline** (`panel.proxyline.net`) | IPv4 static | RUB / crypto | REST API | Space Proxy payment blocked |
+| **Proxy-Sale** (`proxy-sale.com/ru/proxy-for-facebook`) | IPv4 static | RUB / crypto | REST API | fallback #2 |
+| **Proxy6** (`proxy6.net`) | IPv4 / IPv6 / mobile | RUB / crypto | public buy API | only choice if you want fully autonomous buy via `cws-dolphin proxy6-buy` |
+
+Order:
+- pick a country (one country per Google account; never switch the geo later)
+- select the **"for Facebook"** tier (covers CWS + Semrush too)
+- buy **2 weeks first** — most providers only allow swaps in the first 24h
+- save IP, port, login, password
+
+The `cws-dolphin` skill bakes this in:
+- `dolphin-cli proxies-suggest` — re-prints the catalog with live notes
+- `dolphin-cli proxy6-buy --country us --period 7 --count N --yes` — only path
+  that buys without leaving the terminal
+- `dolphin-cli bulk-add-proxies --file proxies.txt` — paste-in for manual buys
+- `dolphin-cli check-proxy --id <id>` — **mandatory** before attaching to a
+  profile. Gate: country flag matches order + ipinfo returns the right ASN.
+  Fail → ask the provider to swap within the 24h window.
+
+### Reliability gate (record in `.cws/01-idea.md` before Stage 1 → 2 handoff)
+
+A proxy is "accepted" only if **all four** hold:
+1. `check-proxy` returns `ok:true` with `country` matching the order
+2. `whoer.net` shows ≥80% green (no DNS leak, no WebRTC leak, no Flash leak)
+3. `pixelscan.net` shows "consistent" + the same country
+4. ASN is **residential** (not a known hosting provider — `AS-CHOOPA`,
+   `AS-DIGITALOCEAN`, `AS-OVH`, `AS-AMAZON-02` etc. fail this gate)
+
+Any fail → swap within 24h or buy from the next provider in the table.
 
 ## Step 2 — Antidetect browser
 

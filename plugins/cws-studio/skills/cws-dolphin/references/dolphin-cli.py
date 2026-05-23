@@ -355,8 +355,30 @@ def cmd_check_proxy(args):
     try:
         with opener.open("https://ipinfo.io/json", timeout=10) as r:
             data = json.loads(r.read().decode())
-        print(json.dumps({"ok": True, "ip": data.get("ip"),
-                          "country": data.get("country"), "asn": data.get("org")}, indent=2))
+        org = (data.get("org") or "").lower()
+        # Known hosting ASNs that fail the residential gate. List is intentionally
+        # broad; add more as you encounter them in the wild.
+        hosting_markers = [
+            "amazon", "aws", "digitalocean", "do-13335", "ovh", "hetzner",
+            "linode", "vultr", "choopa", "leaseweb", "google", "microsoft",
+            "azure", "oracle", "alibaba", "tencent", "contabo", "scaleway",
+            "fastly", "cloudflare", "datacamp", "m247", "psychz",
+        ]
+        is_hosting = any(m in org for m in hosting_markers)
+        country_ok = (not args.expect_country
+                      or (data.get("country", "").lower() == args.expect_country.lower()))
+        verdict_ok = bool(data.get("ip")) and country_ok and not is_hosting
+        print(json.dumps({
+            "ok": verdict_ok,
+            "ip": data.get("ip"),
+            "country": data.get("country"),
+            "asn": data.get("org"),
+            "is_hosting": is_hosting,
+            "country_match": country_ok,
+            "expected_country": args.expect_country or None,
+        }, indent=2))
+        if not verdict_ok:
+            sys.exit(2)
     except Exception as e:
         print(json.dumps({"ok": False, "error": str(e)}, indent=2))
         sys.exit(1)
@@ -590,13 +612,15 @@ def main():
     sp.add_argument("--yes", action="store_true", help="actually purchase (default: dry-run price check)")
     sp.set_defaults(func=cmd_proxy6_buy)
 
-    sp = sub.add_parser("check-proxy", help="validate a proxy by routing ipinfo.io through it")
+    sp = sub.add_parser("check-proxy",
+                        help="validate a proxy via ipinfo.io: reachability + country + residential-ASN gate")
     sp.add_argument("--id", help="id of a saved proxy")
     sp.add_argument("--type", default="http", choices=list(PROXY_SCHEMES))
     sp.add_argument("--host")
     sp.add_argument("--port", type=int)
     sp.add_argument("--login")
     sp.add_argument("--password")
+    sp.add_argument("--expect-country", help="ISO-2 expected country (case-insensitive)")
     sp.set_defaults(func=cmd_check_proxy)
 
     args = p.parse_args()
