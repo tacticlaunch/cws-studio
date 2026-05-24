@@ -54,7 +54,7 @@ gate. The user (or autoplan) holds the trigger.
 
 ## Preamble (run first)
 
-Run the standard preamble (see `shared/preamble.md`). It loads `$SLUG`,
+Run the standard preamble (see `../../shared/preamble.md`). It loads `$SLUG`,
 branch, prior learnings filtered to this stage, and `./.cws/state.json`.
 Skip the rest of this skill if the preamble exits — the preamble is the
 gate. The challenge skill is **stage-aware**: it needs to know which stage
@@ -62,7 +62,7 @@ artifact to attack, and the preamble's `CURRENT_STAGE` + `GATES_PASSED`
 echoes drive that routing.
 
 ```bash
-PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/plugins/cache/cws-studio/cws-studio/2.0.0}"
+PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/plugins/cache/cws-studio/cws-studio/2.1.0}"
 BIN="$PLUGIN_ROOT/bin"
 eval "$("$BIN/cws-slug" 2>/dev/null)"
 _BRANCH=$(git branch --show-current 2>/dev/null || echo "no-git")
@@ -105,7 +105,7 @@ Next: /cws-init
 
 ## AskUserQuestion Format
 
-See `shared/askuserquestion-format.md`. Every interactive decision goes
+See `../../shared/askuserquestion-format.md`. Every interactive decision goes
 through `AskUserQuestion` as a `D<N>` decision brief (ELI10 · Stakes ·
 Recommendation · Completeness · Pros/cons · Net). D-numbering starts at D1
 per invocation and increments every time the challenge needs a taste call
@@ -118,7 +118,7 @@ that itself is a finding worth flagging.
 
 ## Voice
 
-See `shared/voice.md`. Operator voice. No banners. No file-creation dumps.
+See `../../shared/voice.md`. Operator voice. No banners. No file-creation dumps.
 Concrete numbers, names, paths. Lead with the point.
 
 This skill is the most adversarial in the cws-studio set — be direct.
@@ -129,7 +129,7 @@ normalization in some cases."
 ## Skill Routing Footer
 
 End every invocation with a single `Next: /cws-<skill>` line per
-`shared/skill-routing.md`. The routing is **verdict-conditional** (see
+`../../shared/skill-routing.md`. The routing is **verdict-conditional** (see
 Phase 4 below).
 
 ---
@@ -1060,14 +1060,343 @@ the top-50 SERP and the cohort doesn't replenish.
 
 ---
 
+# Phase 2.5 — cross-stage drift checks
+
+These checks run **regardless of which stage was the primary target**. They
+catch the most expensive class of bug in a multi-stage pipeline: the artifact
+for the challenged stage looks internally consistent, but some other artifact
+or external surface has drifted out from under it.
+
+Drift findings use the same severity model as Phase 2 (`red` / `yellow` /
+`info`) and feed into the same verdict computation in Phase 3. The verdict
+section labels them `DRIFT` to distinguish from in-stage findings.
+
+Bootcamp insight: most "we shipped the wrong thing" incidents are not bad
+work inside a stage — they're a stage artifact that silently fell behind the
+canonical state.json (or vice versa). The challenge is the right time to
+catch this; the per-stage checklists do not.
+
+For each check below: detection method, what counts as a fail, severity, and
+the remediation. Almost every drift fix is `/cws-resync` (which re-aligns
+state.json ↔ artifacts ↔ external surfaces); a few need direct artifact
+edits.
+
+## 2.5.1 — Name-keyword drift (state ↔ listing ↔ launch banner)
+
+The head keyword is the spine of the whole launch. Three places must agree:
+`state.json.idea.name_keyword`, the `name_keyword:` / title fields in
+`./.cws/02a-listing.md`, and the banner-copy section of `./.cws/03-launch.md`.
+
+**Detection:**
+
+```bash
+_SK=$(/usr/bin/python3 -c "import json; d=json.load(open('./.cws/state.json')); print(d.get('idea',{}).get('name_keyword',''))" 2>/dev/null)
+_LK=$(grep -m1 '^name_keyword:' ./.cws/02a-listing.md 2>/dev/null | sed 's/^name_keyword: *//')
+_LT=$(grep -m1 '^title:' ./.cws/02a-listing.md 2>/dev/null | sed 's/^title: *//')
+_BC=$(grep -A3 -i 'banner' ./.cws/03-launch.md 2>/dev/null | head -10)
+echo "STATE_KEYWORD: $_SK"
+echo "LISTING_KEYWORD: $_LK"
+echo "LISTING_TITLE: $_LT"
+echo "BANNER_CONTEXT: $_BC"
+```
+
+**Fail criteria:**
+- `_SK` vs `_LK` differ on the head-word token (e.g. state says `pdf
+  converter`, listing says `pdf merger`) → **red DRIFT**. One of them is
+  the truth; the rest of the launch will compound the wrong one.
+- `_SK` head token absent from `_LT` (title doesn't contain the head
+  keyword's primary noun) → **red DRIFT**.
+- `_BC` does not contain the head keyword in the banner copy excerpt →
+  **yellow DRIFT** (banner SEO leverage lost; install rate drops 5–15%).
+
+**Remediation:** `/cws-resync` — it re-reads state.json and overwrites
+artifact frontmatter to match. If the *artifact* is correct and the state is
+stale (operator changed listing intentionally), `cws-resync` will detect and
+ask which is canonical.
+
+**Severity:** HARD fail (red) on state ↔ listing keyword mismatch; WEAK
+PASS surface (yellow) on banner-only drift.
+
+## 2.5.2 — Donor URL drift (state ↔ build artifact ↔ donor liveness)
+
+The donor URL identifies the upstream open-source extension being forked.
+Three places must agree: `state.json.idea.donor_url`, the `donor:` field in
+`./.cws/02b-build.md`, and the donor's **actual last-commit timestamp** on
+GitHub right now.
+
+**Detection:**
+
+```bash
+_SD=$(/usr/bin/python3 -c "import json; d=json.load(open('./.cws/state.json')); print(d.get('idea',{}).get('donor_url',''))" 2>/dev/null)
+_BD=$(grep -m1 '^donor:' ./.cws/02b-build.md 2>/dev/null | sed 's/^donor: *//')
+echo "STATE_DONOR: $_SD"
+echo "BUILD_DONOR: $_BD"
+# If donor is a github URL, fetch last-commit timestamp
+if echo "$_SD" | grep -q 'github.com'; then
+  _OWNER_REPO=$(echo "$_SD" | sed -E 's|.*github.com/([^/]+/[^/]+).*|\1|')
+  _LC=$(curl -sf "https://api.github.com/repos/$_OWNER_REPO/commits?per_page=1" 2>/dev/null | /usr/bin/python3 -c "import json,sys; d=json.load(sys.stdin); print(d[0]['commit']['committer']['date']) if d else print('')" 2>/dev/null)
+  echo "DONOR_LAST_COMMIT: $_LC"
+fi
+```
+
+**Fail criteria:**
+- `_SD` != `_BD` (state and build artifact point to different donors) →
+  **red DRIFT**. The build is forking the wrong upstream.
+- Donor's last commit > 18 months ago AND donor was scored as "actively
+  maintained" in the idea artifact → **red DRIFT** (donor rotted since
+  selection; manifest v2 deprecation risk dominant).
+- Donor's last commit 12–18 months ago → **yellow DRIFT** (monitor; pre-
+  emptive fork to vendored copy before donor disappears).
+- Donor URL returns 404 from GitHub API → **red DRIFT** (donor was deleted
+  or made private; immediate alternative-donor scan).
+
+**Remediation:** `/cws-resync` for state ↔ artifact mismatch. For donor-
+rot, route back to `/cws-idea` step 1.5 (donor health re-check) to either
+re-select or freeze the current donor SHA into a vendored copy.
+
+**Severity:** HARD fail on state ↔ build donor mismatch or donor 404; WEAK
+PASS surface on age-only staleness.
+
+## 2.5.3 — Permission drift (state ↔ manifest ↔ CWS dashboard)
+
+Permissions live in three places: `state.json.extension.permissions` (the
+declared set), the actual `manifest.json` in the build tree, and what the
+CWS dashboard shows as the **currently-published** permission set (which
+may lag a pending submit-for-review).
+
+**Detection:**
+
+```bash
+_SP=$(/usr/bin/python3 -c "import json; d=json.load(open('./.cws/state.json')); print(','.join(sorted(d.get('extension',{}).get('permissions',[]))))" 2>/dev/null)
+_MP=$(find . -name manifest.json -not -path './node_modules/*' -not -path './.cws/*' 2>/dev/null | head -1 | xargs -I{} /usr/bin/python3 -c "import json,sys; d=json.load(open('{}')); print(','.join(sorted(d.get('permissions',[]) + d.get('host_permissions',[]))))" 2>/dev/null)
+echo "STATE_PERMS: $_SP"
+echo "MANIFEST_PERMS: $_MP"
+# Dashboard permissions are read from .cws/dashboard-snapshot.json if present
+_DP=$(/usr/bin/python3 -c "import json,os; p='./.cws/dashboard-snapshot.json'; print(','.join(sorted(json.load(open(p)).get('permissions',[])))) if os.path.exists(p) else print('NO_SNAPSHOT')" 2>/dev/null)
+echo "DASHBOARD_PERMS: $_DP"
+```
+
+**Fail criteria:**
+- `_SP` != `_MP` (state declares set A, manifest ships set B) → **red
+  DRIFT**. Whichever the operator ships is what users see at install — the
+  state.json record is wrong and every downstream check (cws-careful,
+  cws-monetize host-permission gate) is now reading false data.
+- `_MP` adds a permission not in `_SP` → **red DRIFT** (permission creep
+  not declared in state).
+- `_MP` includes `<all_urls>` or `http://*/*` but `state.json` doesn't
+  flag `max_host_permissions: true` → **red DRIFT** (the monetize
+  pre-condition check in `cws-monetize` will give a false negative).
+- `_DP == NO_SNAPSHOT` and extension is published → **yellow DRIFT** (no
+  dashboard snapshot to cross-check; recommend operator run a fetch).
+- `_DP` != `_MP` and `_DP != NO_SNAPSHOT` → **yellow DRIFT** (pending
+  submit not yet reviewed; expected during the 1–3-day review window, but
+  flag for operator awareness).
+
+**Remediation:** `/cws-resync` rewrites `state.json.extension.permissions`
+from the live manifest. If the manifest itself is wrong (permission creep
+not intentional), the operator removes from manifest, rebuilds, then
+re-runs the challenge.
+
+**Severity:** HARD fail on state ↔ manifest mismatch or undeclared
+`<all_urls>`; WEAK PASS surface on dashboard lag.
+
+## 2.5.4 — Locale set drift (state ↔ launch artifact ↔ CWS dashboard)
+
+Locale count drives Tier-1 multiplier. Three places: `state.json` launch
+locale count, `./.cws/03-launch.md` locale section count, and the dashboard
+snapshot's locale list.
+
+**Detection:**
+
+```bash
+_SL=$(/usr/bin/python3 -c "import json; d=json.load(open('./.cws/state.json')); l=d.get('launch',{}).get('locales',[]); print(len(l),','.join(sorted(l)))" 2>/dev/null)
+_LL=$(grep -c -E '^[[:space:]]*-[[:space:]]+(en|de|fr|es|it|pt|nl|sv|no|fi|da|pl|cs|hu|ro|el|ja|ko|zh|ru|tr|uk|ar|he|id|vi|th|hi)([_-][A-Z]{2})?[[:space:]]*$' ./.cws/03-launch.md 2>/dev/null)
+_DL=$(/usr/bin/python3 -c "import json,os; p='./.cws/dashboard-snapshot.json'; l=json.load(open(p)).get('locales',[]) if os.path.exists(p) else None; print(len(l) if l is not None else 'NO_SNAPSHOT')" 2>/dev/null)
+echo "STATE_LOCALES: $_SL"
+echo "LAUNCH_LOCALE_LINES: $_LL"
+echo "DASHBOARD_LOCALES: $_DL"
+```
+
+**Fail criteria:**
+- State locale count != launch artifact locale-line count → **red DRIFT**.
+- Launch artifact lists < 4 locales (under bootcamp Tier-1 floor) → see
+  Phase 2.D.3; here we cross-check **the count matches state**.
+- Dashboard locale count != state locale count (when dashboard snapshot
+  exists) → **yellow DRIFT** (pending submit, or operator added locales
+  in the dashboard UI not reflected in state).
+- Dashboard has more locales than state (operator added in CWS UI without
+  updating artifacts) → **red DRIFT** (artifacts are now stale; future
+  challenges miss real locale issues).
+
+**Remediation:** `/cws-resync` reconciles all three. If operator added in
+dashboard, resync pulls them into state and the launch artifact.
+
+**Severity:** HARD fail on state ↔ launch artifact mismatch; WEAK PASS
+surface on dashboard pending-submit lag.
+
+## 2.5.5 — Moderation status drift (state ↔ latest dashboard fetch)
+
+`state.json.extension.moderation_status` (one of `draft`, `pending`,
+`in_review`, `published`, `rejected`, `taken_down`) must match the latest
+dashboard fetch. A common bug: state says `in_review` because the operator
+submitted; dashboard says `rejected` because moderation came back negative
+3 days ago.
+
+**Detection:**
+
+```bash
+_SM=$(/usr/bin/python3 -c "import json; d=json.load(open('./.cws/state.json')); print(d.get('extension',{}).get('moderation_status','unknown'))" 2>/dev/null)
+_DM=$(/usr/bin/python3 -c "import json,os; p='./.cws/dashboard-snapshot.json'; print(json.load(open(p)).get('moderation_status','unknown')) if os.path.exists(p) else print('NO_SNAPSHOT')" 2>/dev/null)
+_DA=$(/usr/bin/python3 -c "import json,os,time; p='./.cws/dashboard-snapshot.json'; print(int((time.time() - os.path.getmtime(p))/3600)) if os.path.exists(p) else print(-1)" 2>/dev/null)
+echo "STATE_MOD: $_SM"
+echo "DASH_MOD: $_DM"
+echo "DASH_AGE_HOURS: $_DA"
+```
+
+**Fail criteria:**
+- `_SM` != `_DM` (when `_DM != NO_SNAPSHOT`) → **red DRIFT**. Dashboard
+  is truth; state is wrong.
+- `_DM == NO_SNAPSHOT` AND `_SM` claims `in_review` or `published` →
+  **red DRIFT** (state claims a status that has no dashboard evidence;
+  pull a fresh snapshot).
+- `_DA > 72` (dashboard snapshot is >3 days stale) AND `_SM` is `in_review`
+  → **yellow DRIFT** (re-fetch; moderation usually returns in 24–72h).
+- `_DM == rejected` AND `_SM != rejected` → **red DRIFT** (operator
+  doesn't know the submit was rejected; every downstream skill is operating
+  on a false premise).
+
+**Remediation:** Re-fetch dashboard via the studio fetcher (or manual
+inspection of the CWS dev dashboard), then `/cws-resync` to update state.
+
+**Severity:** HARD fail on any state ↔ dashboard mismatch; WEAK PASS
+surface on stale snapshot.
+
+## 2.5.6 — Monetization drift (state ↔ paywall live URL)
+
+`state.json.monetization.enabled` must match the actual paywall behavior on
+the live extension. A common bug: state says `enabled: false` because the
+operator deferred monetize, but a misconfigured Paywall remote-config
+flipped it on for some geo.
+
+**Detection:**
+
+```bash
+_ME=$(/usr/bin/python3 -c "import json; d=json.load(open('./.cws/state.json')); print(d.get('monetization',{}).get('enabled',False))" 2>/dev/null)
+_PU=$(/usr/bin/python3 -c "import json; d=json.load(open('./.cws/state.json')); print(d.get('monetization',{}).get('paywall_url',''))" 2>/dev/null)
+echo "STATE_MONETIZE: $_ME"
+echo "PAYWALL_URL: $_PU"
+if [ -n "$_PU" ] && [ "$_PU" != "None" ]; then
+  _LIVE=$(curl -sf -o /dev/null -w "%{http_code}" "$_PU" 2>/dev/null)
+  echo "PAYWALL_HTTP: $_LIVE"
+  _BODY=$(curl -sf "$_PU" 2>/dev/null | head -c 4000)
+  if echo "$_BODY" | grep -q -i -E 'subscribe|upgrade|trial|price|\$[0-9]'; then
+    echo "PAYWALL_ACTIVE_SIGNAL: yes"
+  else
+    echo "PAYWALL_ACTIVE_SIGNAL: no"
+  fi
+fi
+```
+
+**Fail criteria:**
+- `_ME == False` AND `PAYWALL_ACTIVE_SIGNAL == yes` → **red DRIFT**
+  (paywall is live but state says it isn't; every cohort calculation is
+  wrong).
+- `_ME == True` AND `PAYWALL_ACTIVE_SIGNAL == no` → **red DRIFT** (state
+  says monetized but the live paywall isn't showing — broken integration,
+  every dashboard MRR projection is fantasy).
+- `_PU` empty AND `_ME == True` → **red DRIFT** (monetize claimed without
+  a paywall URL recorded).
+- `_LIVE != 200` → **red DRIFT** (paywall URL broken; users hitting the
+  gate see an error page).
+
+**Remediation:** `/cws-resync` after operator confirms the *actual*
+monetize state (which they verify by visiting the live paywall through the
+extension). If the paywall is broken, route to `/cws-monetize` to fix the
+integration before re-challenging.
+
+**Severity:** HARD fail on any state ↔ live mismatch.
+
+## 2.5.7 — Recent-learnings drift (learnings filtered to challenged stage)
+
+The `learnings.jsonl` file accumulates lessons across runs. Learnings logged
+in the **last 7 days** that match the currently-challenged stage are special:
+they reflect very recent failure modes that the per-stage checklist may not
+yet have absorbed.
+
+**Detection:**
+
+```bash
+_LF="$CWS_PROJECT_DIR/learnings.jsonl"
+if [ -f "$_LF" ]; then
+  _RECENT=$(/usr/bin/python3 -c "
+import json, datetime, sys
+cutoff = (datetime.datetime.utcnow() - datetime.timedelta(days=7)).isoformat()
+hits = []
+with open('$_LF') as f:
+    for line in f:
+        try:
+            e = json.loads(line)
+            if e.get('stage') == '$_STAGE' and e.get('ts','') > cutoff:
+                hits.append(e)
+        except: pass
+for h in hits[:5]:
+    print(f\"- {h.get('ts','')[:10]} :: {h.get('lesson','')[:120]}\")
+print(f'TOTAL_RECENT: {len(hits)}')
+" 2>/dev/null)
+  echo "$_RECENT"
+fi
+```
+
+**Fail criteria:**
+- ≥ 3 recent learnings match the challenged stage → **yellow DRIFT** (the
+  per-stage checklist is missing emerging patterns; surface as caveats
+  even if the rest of the challenge passes).
+- ≥ 1 recent learning explicitly matches a finding the current checklist
+  marked as PASS (e.g. "Turgenev pass last week then rejected anyway") →
+  **red DRIFT** (the checklist gave a false negative; demote that PASS to
+  WEAK PASS).
+- 0 recent learnings → pass (no surprises in the lookback window).
+
+**Remediation:** Each recent learning becomes an explicit caveat in the
+challenge log's `## Drift findings` section. No code change; the operator
+reads them as part of the verdict synthesis. If a learning suggests a new
+check is missing from the per-stage checklist, route to `/cws-learn` to
+formalize.
+
+**Severity:** WEAK PASS surface (yellow) for ≥3 matches; HARD fail (red)
+only when a recent learning directly contradicts a current PASS.
+
+## 2.5.8 — Drift findings synthesis
+
+After running 2.5.1–2.5.7, compile a single `## Drift findings` block:
+
+```
+DRIFT_RED:    <count>
+DRIFT_YELLOW: <count>
+DRIFT_INFO:   <count>
+```
+
+These counts merge into the Phase 3 verdict computation (drift reds count as
+reds; drift yellows count as yellows). A clean per-stage checklist with 2
+drift reds = FAIL.
+
+---
+
 # Phase 3 — synthesize the verdict
 
-Walk the findings from Phase 2. Each finding has a severity. The verdict
-is computed mechanically:
+Walk the findings from Phase 2 **and Phase 2.5 drift checks**. Each finding
+has a severity. Drift findings count exactly as their in-stage equivalents
+(a drift red == an in-stage red for verdict purposes). The verdict is
+computed mechanically:
 
-- **PASS**: 0 red findings, ≤ 3 yellow.
-- **WEAK PASS**: 0 red findings, 4–8 yellow.
-- **FAIL**: ≥ 1 red finding, OR > 8 yellow.
+- **PASS**: 0 red findings (in-stage OR drift), ≤ 3 yellow combined.
+- **WEAK PASS**: 0 red findings, 4–8 yellow combined.
+- **FAIL**: ≥ 1 red finding (in-stage OR drift), OR > 8 yellow combined.
+
+Drift findings dominate when present: a clean per-stage checklist with even
+one red drift finding fails the verdict. The reason is asymmetric blast
+radius — a drift bug invalidates downstream skill assumptions, so failing
+fast is cheaper than letting it propagate.
 
 ## 3.1 If WEAK PASS — surface caveats
 
@@ -1151,11 +1480,14 @@ challenger_session: $_SESSION_ID
 red_count: <N>
 yellow_count: <N>
 info_count: <N>
+drift_red_count: <N>
+drift_yellow_count: <N>
 ---
 
 ## Verdict
 
-<one paragraph — the headline finding, why it dominates>
+<one paragraph — the headline finding, why it dominates. If a drift finding
+dominates, lead with it — drift bugs invalidate downstream assumptions.>
 
 ## Findings
 
@@ -1174,6 +1506,29 @@ info_count: <N>
 ### Info
 
 1. **<title>** — <one-line note>
+
+## Drift findings (Phase 2.5)
+
+Cross-stage drift surfaced during the challenge. Each entry names the check
+(2.5.1–2.5.7), the severity, the artifacts/surfaces compared, and the
+remediation (usually `/cws-resync`).
+
+### Drift Red
+
+1. **<check name, e.g. "2.5.3 Permission drift">** — <description>
+   - Compared: <state vs manifest vs dashboard>
+   - Mismatch: <specific values>
+   - Remediation: `/cws-resync` (or specific re-fetch / re-build action)
+
+### Drift Yellow
+
+1. **<check name>** — <description>
+   - Compared: <...>
+   - Remediation: <...>
+
+### Drift Info
+
+1. **<check name>** — <one-line note>
 
 ## Re-verify checklist
 
@@ -1286,7 +1641,7 @@ The routing is **verdict-conditional**. Pick exactly one based on Phase 3.
 
 ## On PASS
 
-The natural successor stage skill, per `shared/skill-routing.md`:
+The natural successor stage skill, per `../../shared/skill-routing.md`:
 
 | Challenged stage | Next |
 |---|---|

@@ -146,6 +146,58 @@ Inject into existing tabs on `runtime.onInstalled` (query open `http(s)` tabs an
 Combines types — e.g. Extract Text from Image (popup + site injection), Math AI
 (popup + site injection), ChatGPT PDF (popup + opens a site).
 
+### Side panel (Chrome 114+)
+
+> Source: **not in bootcamp transcripts** — the bootcamp predates the
+> Chrome 114 Side Panel API (released May 2023, after Module II was
+> recorded). The six-type table above is the canonical bootcamp list. This
+> section is added so a future builder recognizes the form factor when it
+> shows up in competitor extensions on the head keyword.
+
+Side panel is a seventh form factor: a persistent vertical panel docked to
+the right of Chrome's content area. Unlike a popup, it stays open while
+the user navigates tabs and resizes the page — good fit for AI chat,
+notetaking, reading-companion, and translator extensions where the user
+wants the panel visible alongside the page.
+
+Minimal manifest:
+```json
+{
+  "manifest_version": 3,
+  "name": "Example side panel extension",
+  "version": "1.0",
+  "side_panel": { "default_path": "sidepanel.html" },
+  "permissions": ["sidePanel"],
+  "action": { "default_title": "Open side panel" },
+  "background": { "service_worker": "background.js" }
+}
+```
+
+Opening the panel on icon click (the standard pattern):
+```js
+// background.js
+chrome.sidePanel
+  .setPanelBehavior({ openPanelOnActionClick: true })
+  .catch(console.error);
+```
+
+**Match form factor only if competitor extensions on the head keyword are
+using it.** The bootcamp's core rule (match the SERP, copy the dominant
+pattern) still applies. If the top 3–5 results for your head keyword are
+popups, ship a popup — the side-panel pattern is newer and less common in
+SERPs as of this writing. If they are side panels (common for AI chat
+and writing-assistant niches), ship a side panel.
+
+Notes a future operator should verify first-hand (not in transcripts):
+- Moderation behavior for side-panel-only extensions (analogue to the
+  "site-wrapper needs an extra widget" rule) is not documented in the
+  bootcamp.
+- Whether `sidePanel` permission triggers the same review scrutiny as
+  `<all_urls>` host permissions is not documented in the bootcamp.
+- Library/script bundling rules likely follow the local-page-in-tab
+  pattern (everything local, no remote scripts), but the bootcamp does
+  not confirm this for `sidepanel.html`.
+
 ## Prototype spec (TЗ) before development
 
 Write a short text spec — how you'll build the product, step by step (e.g. "1.

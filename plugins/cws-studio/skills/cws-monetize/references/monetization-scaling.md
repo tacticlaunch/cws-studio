@@ -248,6 +248,291 @@ repo for bootcamp participants (request access from curators).
   showed a 7-year gap between first lucky hit and second working launch,
   then 4 more years to systematic repeatability.
 
+### Paywall conversion bands by tier (gap backfill from bootcamp Lesson 243)
+
+The bootcamp does not publish a clean conversion-band table. The figure that
+*is* cited explicitly: **"normal conversion in a project is 1%"** (Lesson 243,
+line 846 of the wrap-up call: *"нормальная конверсия в проекте 1%"*). Around
+that baseline, the studio gates decision-making on **300–500 unique paywall
+viewers per variant** before drawing any conclusion (line 843).
+
+Build conversion bands from the studio's geo + experiment guidance — bands are
+**operator-defined targets** seeded from the 1% norm, NOT verified per-band
+numbers from the transcripts. Treat as TODO unless confirmed inside the
+operator's own paywall analytics.
+
+| Tier band                 | Geo                                        | Expected paywall→paid conversion | Notes |
+|---------------------------|--------------------------------------------|----------------------------------|-------|
+| **High**                  | US, UK, CA, AU, CH, DE, FR, NL, SE, NO     | 1.5–3% (target band)             | Tier-1 paying audience; full pricing applies. |
+| **Medium**                | Rest of EN-EU (ES, IT, PT, IE, BE, AT, FI) | 0.8–1.5%                         | Lower price elasticity; localize currency. |
+| **Medium-low**            | Eastern EU + LATAM Tier-2                  | 0.3–0.8%                         | Use Big-Mac-index discounting. |
+| **Low / behavioral-only** | SEA, AF, RU/CIS, IN                        | <0.3% (often ~0%)                | **Do NOT paywall.** Keep free to preserve engagement signal (Lesson 243, lines 834–836). |
+
+**Decision rule (from Lesson 243, lines 834–836):** *"На старте не стоит на
+всех раскатывать поевол. Раскатайте только на тех, кто будет платить на TR1.
+Набирайте поведенческий фактор, продолжайте набирать даже во время монетизации
+через TR2 и TR3."* — At launch, only enable the paywall for Tier-1; keep
+Tier-2/3 free so they continue generating behavioral-factor (ranking) signal.
+
+The 1% baseline is mean across products; the studio explicitly warns
+(Lesson 243, line 847): products with ~1000 users earning $1000/mo are not
+unusual — *do not extrapolate from your small sample*. Below **300 unique
+paywall viewers per variant**, treat band figures as noise.
+
+**Operator action stub:**
+```
+After 300+ unique paywall viewers in a single band:
+  observed_cvr = paid / paywall_views
+  if observed_cvr < (band_target_low / 2): reduce price OR change billing cycle
+  if observed_cvr > band_target_high: hold; check refund/dispute rate before raising price
+  if observed_cvr between band_target_low and band_target_high: continue, iterate trial design
+```
+
+TODO(operator): replace target bands with your own measured conversion after
+500 viewers per band — bootcamp does not publish per-band CVR; only the 1%
+overall baseline and the "Tier-1 first" rollout rule.
+
+### Card-first vs open-trial — mobile vs desktop split (gap backfill from Lesson 243)
+
+Transcript is **qualitative, not numeric** on this split. Key quotes:
+
+- Lesson 243, lines 826–829: *"Можно попросить данные карты, но не списывать
+  деньги, так называемая система, сначала карта, потом триал. Всех это,
+  конечно, бесит по-мобильному, но не везде опять… Это довольно конверсионная
+  механика, но не везде она работает."*
+- Reference text already at lines 49 and 138–139: *"card-first converts higher
+  but irritates on mobile; mixed on web."*
+
+No bootcamp lesson publishes %s. Operator-pattern target bands (seed values,
+NOT bootcamp-verified):
+
+| Surface              | Card-first paywall CVR target | Open-trial paywall CVR target | Notes |
+|----------------------|-------------------------------|-------------------------------|-------|
+| Desktop (web)        | 1.5–3%                        | 0.8–1.8%                      | Card-first dominates on desktop where typing card data is low-friction. |
+| Mobile (web)         | 0.3–0.8%                      | 0.8–1.6%                      | **Open trial usually wins on mobile.** Mobile keyboards + 7-day surprise charge → high refund/dispute risk. |
+| Cross-device average | ~1% (matches baseline)        | ~1% (matches baseline)        | The 1% baseline absorbs the mix. |
+
+**Decision rule (operator pattern):**
+```
+If extension is desktop-dominant (>70% sessions desktop): default to card-first-then-trial
+If extension is mobile-significant (>30% sessions mobile): default to open-trial
+  → if you must run card-first on mobile: shorten trial to 3 days, send T-1d "trial ends tomorrow" email
+Always: monitor dispute rate per surface separately (see refund/chargeback section)
+```
+
+TODO(operator): the mobile/desktop split is qualitative in Lesson 243; backfill
+with measured per-surface paywall_views/paid_conversions/disputes after first
+1000 viewers per surface. The bootcamp's only firm number is the **1% overall
+baseline** at 300–500 viewers per variant.
+
+### Grandfathering policy (gap backfill from Lesson 243)
+
+The bootcamp does NOT specify a grandfathering rule for pre-monetization
+installs. The closest implicit guidance from Lesson 243:
+
+- **Maximum host permissions must be justified *before* monetization rollout
+  (Lesson 247 + Lesson 243 line ~1068)** — adding both stresses at once
+  doubles user loss. This means: at monetization rollout time, you already
+  have a stable install base that pre-dates the paywall.
+- **Tier-2/3 stays free permanently as a behavioral-factor pool** (line 834).
+  This is *de facto* permanent grandfathering by geo — Tier-2/3 users never
+  see the paywall and keep generating engagement signal.
+- **The paywall is attached on the frontend without re-moderation** (lines
+  756–757). Existing users never see a "you must now pay" install dialog —
+  they only encounter the paywall when they hit a gated action.
+
+**Recommended grandfathering policy (operator pattern; bootcamp-aligned but
+NOT explicitly transcribed):**
+
+| Cohort                                       | Treatment                              | Rationale (Lesson 243 alignment) |
+|----------------------------------------------|----------------------------------------|----------------------------------|
+| Pre-paywall installs in Tier-1 geo           | **Free for 14 days** post-paywall enable, then standard paywall on next gated action | Soft landing; prevents uninstall spike. Lesson 243 line 1014 warns against "annoying users" with sudden monetization. |
+| Pre-paywall installs in Tier-2/3 geo         | **Free forever** (no paywall ever)     | Tier-2/3 = behavioral-factor pool by policy (lines 834–836). |
+| Post-paywall installs in Tier-1              | Paywall on standard cadence (1st gated action) | Default state. |
+| Post-paywall installs in Tier-2/3            | No paywall                             | Same as pre-paywall Tier-2/3. |
+| Users who already paid (any geo)             | **Locked price** for life of subscription unless they cancel | Standard SaaS practice; the bootcamp's "не бесить" principle (line 1014). |
+| Cancelled-then-returned users                | Current price applies (no grandfather) | Operator default; not in transcripts. |
+
+**Operator action stub:**
+```js
+// In service worker or paywall config
+const PAYWALL_ENABLE_DATE = Date.parse("2026-MM-DDTHH:mm:ssZ");
+chrome.runtime.onInstalled.addListener(({ reason }) => {
+  if (reason === "install") {
+    chrome.storage.local.set({ install_ts: Date.now() });
+  }
+});
+
+// At paywall check:
+chrome.storage.local.get(["install_ts"], ({ install_ts }) => {
+  const isPreMonetize = install_ts && install_ts < PAYWALL_ENABLE_DATE;
+  const userGeo = await getGeo(); // via IP lookup
+  const isTier1 = TIER_1_ALLOWLIST.includes(userGeo);
+
+  if (!isTier1) return showFree();                           // tier-2/3 permanent free
+  if (isPreMonetize && (Date.now() - PAYWALL_ENABLE_DATE) < 14*864e5)
+    return showFree();                                       // 14-day soft landing
+  return showPaywall();
+});
+```
+
+TODO(operator): the bootcamp does not transcribe an explicit grandfathering
+rule. The "Tier-2/3 free forever" rule IS bootcamp-explicit (Lesson 243). The
+"14-day soft landing for pre-paywall Tier-1" is **operator-recommended only**
+— validate against your own uninstall-rate delta in the 14 days post-rollout
+before committing.
+
+### Refund / chargeback / dispute benchmarks (gap backfill from Lesson 243)
+
+The bootcamp publishes ONE hard threshold:
+
+- **Dispute rate must stay under ~1%** (Lesson 243, lines 905–906): *"в этом
+  с этапе у вас диспутов сильно больше, чем 1%, то что допустимы по внутренним
+  непубликуемым вот этим вот, ну таким, как бы, мануалом экварингов. Блокировка
+  очень вероятна."* — Disputes above ~1% (the unpublished acquirer threshold)
+  make a Stripe/Paddle ban highly likely, and bans propagate at three levels:
+  product, company, founder.
+
+The "~25% surprise-charge refund spike on impulse tools at 7-day trial"
+operator-flagged in the rewrite is **NOT in Lesson 243.** It is plausibly
+sourced from a different lesson or operator memory; treat as operator
+heuristic. Bootcamp gives only:
+
+- **Card-first-then-trial = "irritates on mobile"** (line 827) — refund risk
+  implied, not quantified.
+- **Disputes are existential** — a single dispute spike from a new product on
+  a fresh acquirer cabinet can wipe the entire cabinet (lines 901–907).
+
+**Operator-pattern dispute/refund benchmarks (NOT bootcamp-verified):**
+
+| Tier band            | Refund-rate target | Dispute-rate target | Action threshold |
+|----------------------|--------------------|---------------------|------------------|
+| High (Tier-1 core)   | <3% of paid        | <0.5% of paid       | Investigate at 5% refund / 0.7% dispute |
+| Medium (EN-EU rest)  | <5% of paid        | <0.7% of paid       | Investigate at 8% refund / 0.9% dispute |
+| Medium-low           | <8% of paid        | <0.9% of paid       | Investigate at 12% / >1% disable card-first |
+| Impulse-tool surface (any tier) | <15% of paid (rewrite cites ~25% spike on 7-day surprise charge) | <1% always | If refund spike >20% within 30d of trial change → **revert immediately** (acquirer block precedes the next month) |
+
+**Decision rule (Lesson 243 line 905):**
+```
+if dispute_rate_30d > 1.0%:           # acquirer-published red line
+    halt paywall changes
+    audit last 30d of paid users for shared refund reason
+    revert most recent paywall change
+    if dispute_rate still > 1%: pause monetization for the cabinet entirely
+```
+
+**Surprise-charge mitigation (operator pattern):**
+- Send T-1d trial-ending email/notification (not just T-0 charge)
+- Show in-extension banner on day 6 of 7-day trial: "Your trial ends tomorrow"
+- Make cancellation 1-click inside the extension (no dark-pattern flow)
+- The bootcamp does NOT prescribe these; they are standard SaaS best-practice
+  to keep dispute rate <1%.
+
+TODO(operator): the per-tier refund/dispute bands above are operator seed
+values, NOT bootcamp-published. The ONE bootcamp-verified threshold is
+**dispute_rate < 1%** (acquirer ban risk above this). The "~25% impulse-tool
+refund spike on 7-day trials" needs source confirmation (likely a separate
+lesson or community note, not Lesson 243).
+
+### ExtNet — pricing and terms verification (gap backfill from Lesson 243)
+
+Status: **partially verified.** Lesson 243 lines 1007–1018:
+
+- ExtNet (the bootcamp transcribes it as **"ExtEts"** at line 1010, ambiguous
+  Russian spelling — same product) is **studio-owned cross-extension traffic
+  resale**, routing users from high-user/low-revenue extensions to
+  high-revenue extensions inside the studio network.
+- *"У нас есть своя написанная система, называется ExtEts, из-за того, что в
+  Викле Active Users мы эту трафику друг другу можем переливать, уже тоже
+  проводим эксперименты, они довольно многообещающие."* (Lesson 243, lines
+  1010–1011)
+- *"ExtEts будет тоже полностью в вашем распоряжении. Вот, прямо сейчас мы
+  уже его внедряем в кучу продуктов."* (line 1018)
+
+**What Lesson 243 verifies:**
+- ExtNet is a studio service, opt-in for bootcamp builders.
+- It runs on Weekly Active User volume — high-WAU/low-revenue extensions
+  donate traffic to high-revenue extensions; revenue is split.
+- Rollout was "currently being deployed to many products" as of the final
+  call (late 2024).
+
+**What Lesson 243 does NOT verify:**
+- **The "8% fee" cited in SKILL.md is the Paywall fee, NOT ExtNet's.** Lesson
+  243 line 953: *"Мы берём сейчас 8 процентов, раньше было 10, сейчас
+  продолжаемо снижать 8 процентов, значит, от вот этого оборота. Чисто как
+  комиссия Paywallа."* — The 8% is explicitly labelled "чисто как комиссия
+  Paywallа" (purely Paywall commission), not ExtNet.
+- ExtNet's revenue split %, minimum WAU to participate, payout cadence,
+  and exclusion rules are **NOT in Lesson 243.**
+
+**TODO(operator): The "8% ExtNet fee" in SKILL.md is incorrect attribution.**
+Fix one of two ways:
+1. Update SKILL.md to clarify: *"Paywall takes 8% of revenue; ExtNet terms
+   are negotiated separately with the studio — not published in bootcamp."*
+2. Email curators for current ExtNet terms (rev-share %, min WAU, payout).
+
+Until clarified, do NOT promise "8% ExtNet" to operators — only "8% Paywall."
+
+### Tier-1 allowlist enumeration (gap backfill from Modules IV + V)
+
+The bootcamp Tier-1 set IS explicitly enumerated, in Lesson 182
+(html-extracts, Module IV — *"Зачем запускать платную рекламу"*):
+
+> *"Как мы помним, нашими целевыми пользователями являются люди из TIER1
+> countries (США, Канада, ЕС и т.д.) - именно они делают внутренние покупки
+> с адекватной конверсией."* (Lesson 182, line 6)
+
+Translated: **"Our target users are people from TIER1 countries (USA, Canada,
+EU, etc.) — they are the ones who make in-app purchases at an adequate
+conversion rate."**
+
+The "и т.д." (etc.) is intentional — Lesson 182 does NOT close the set. UK
+and AU are inferred from standard CWS practice but are NOT explicitly
+enumerated in Module IV. Lesson 243 corroborates US/Canada/EU spend behavior
+throughout (lines 332–333, 689–693, 745–747) without enumerating the full
+set.
+
+**Effective bootcamp Tier-1 allowlist (Lesson 182 explicit + studio operator
+practice):**
+
+```
+EXPLICIT in Lesson 182:
+  US, CA, all EU member states
+
+OPERATOR-STANDARD (used by studio but not in Lesson 182's enumeration):
+  UK, AU, NZ, CH, NO, IS  (English-speaking + non-EU European wealthy)
+
+CURRENT SKILL.md WORDING ("US/UK/CA/AU + EN-EU"):
+  Aligns with operator-standard; UK + AU are inferred from "etc." not explicit.
+```
+
+**Recommended canonical list for paywall geo-filter:**
+
+```js
+const TIER_1_PAYWALL_ALLOWLIST = [
+  // Lesson 182 explicit:
+  "US", "CA",
+  // EU member states (Lesson 182 "ЕС" = EU bloc):
+  "AT","BE","BG","HR","CY","CZ","DK","EE","FI","FR","DE","GR","HU","IE",
+  "IT","LV","LT","LU","MT","NL","PL","PT","RO","SK","SI","ES","SE",
+  // Studio operator-standard additions (NOT in Lesson 182):
+  "GB","AU","NZ","CH","NO","IS"
+];
+```
+
+**Decision rule:**
+- Default paywall geo-filter = above list.
+- If the studio Paywall has its own published Tier-1 set, **use the Paywall's
+  set as source of truth, not this list** (the Paywall is the bootcamp's
+  reference implementation per Lesson 243 lines 660–662).
+- Never paywall outside this set without first measuring per-country
+  conversion (Lesson 243 line 837 mentions custom geo targeting is available).
+
+TODO(operator): confirm UK + AU explicitly with curators. Lesson 182 only
+enumerates "США, Канада, ЕС и т.д." — UK/AU are operator inference. If a
+later bootcamp lesson enumerates the full set, replace the operator-standard
+section above with the verified list.
+
 ### Analytics gotchas (used to time monetization decisions)
 
 - **Chrome dashboard Installs/Users graphs always read 0 on the latest date**

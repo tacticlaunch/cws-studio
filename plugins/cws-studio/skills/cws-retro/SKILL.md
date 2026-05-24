@@ -45,7 +45,7 @@ points at whichever skill ought to act on what it found.
 ## Preamble (run first)
 
 ```bash
-PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/plugins/cache/cws-studio/cws-studio/2.0.0}"
+PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/plugins/cache/cws-studio/cws-studio/2.1.0}"
 BIN="$PLUGIN_ROOT/bin"
 eval "$("$BIN/cws-slug" 2>/dev/null)"
 _BRANCH=$(git branch --show-current 2>/dev/null || echo "no-git")
@@ -107,14 +107,14 @@ CWS yet), stop. See the "When NOT to use" section. There's no data to retro.
 
 ## Shared canon
 
-- **AskUserQuestion format** — see `shared/askuserquestion-format.md`. Every
+- **AskUserQuestion format** — see `../../shared/askuserquestion-format.md`. Every
   decision is a `D<N>` brief (ELI10 · Stakes · Recommendation · Completeness
   · Pros/cons · Net). D-numbering starts at D1 per invocation.
-- **Voice** — see `shared/voice.md`. Operator-to-operator. No banners. No
+- **Voice** — see `../../shared/voice.md`. Operator-to-operator. No banners. No
   file-creation dumps. Lead with the point. Concrete numbers always.
-- **Skill routing footer** — see `shared/skill-routing.md`. End with exactly
+- **Skill routing footer** — see `../../shared/skill-routing.md`. End with exactly
   one `Next: /cws-<skill>` recommendation. Never a menu.
-- **Preamble** — see `shared/preamble.md`. The block above is the canonical
+- **Preamble** — see `../../shared/preamble.md`. The block above is the canonical
   per-skill instance.
 
 ---
@@ -989,7 +989,7 @@ list for audit.
 
 ## Skill Routing Footer
 
-End with exactly one `Next: /cws-<skill>` per `shared/skill-routing.md`.
+End with exactly one `Next: /cws-<skill>` per `../../shared/skill-routing.md`.
 
 **If `regression_flags` is non-empty:**
 

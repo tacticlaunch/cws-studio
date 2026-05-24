@@ -43,12 +43,12 @@ the point.
 
 ## Preamble (run first)
 
-Run the standard preamble (see `shared/preamble.md`). It loads `$SLUG`,
+Run the standard preamble (see `../../shared/preamble.md`). It loads `$SLUG`,
 `$_BRANCH`, prior learnings, and `./.cws/state.json`. Skip the rest of this
 skill if the preamble exits — the preamble is the gate.
 
 ```bash
-PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/plugins/cache/cws-studio/cws-studio/2.0.0}"
+PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/plugins/cache/cws-studio/cws-studio/2.1.0}"
 BIN="$PLUGIN_ROOT/bin"
 eval "$("$BIN/cws-slug" 2>/dev/null)"
 _BRANCH=$(git branch --show-current 2>/dev/null || echo "no-git")
@@ -92,21 +92,21 @@ After running, branch off the echoed values:
 
 ## AskUserQuestion Format
 
-See `shared/askuserquestion-format.md`. Every interactive decision goes
+See `../../shared/askuserquestion-format.md`. Every interactive decision goes
 through `AskUserQuestion` as a `D<N>` decision brief (ELI10 · Stakes ·
 Recommendation · Completeness · Pros/cons · Net). D-numbering starts at D1
 per invocation.
 
 ## Voice
 
-See `shared/voice.md`. Operator voice. No banners. No file-creation dumps.
+See `../../shared/voice.md`. Operator voice. No banners. No file-creation dumps.
 Concrete numbers, names, paths. Lead with the point. Lessons in the journal
 inherit this voice — one line, hard fact, evidence anchored.
 
 ## Skill Routing Footer
 
 End every invocation with a single `Next: /cws-<skill>` line per
-`shared/skill-routing.md`. Default behavior: route back to whatever
+`../../shared/skill-routing.md`. Default behavior: route back to whatever
 `CURRENT_STAGE` was active when cws-learn ran (the user was mid-stage when
 they recorded the lesson and almost always wants to return there).
 

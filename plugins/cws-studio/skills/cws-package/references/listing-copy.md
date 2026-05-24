@@ -325,3 +325,253 @@ manually. If name words aren't on top, redistribute their occurrences in the tex
   only the full description gives misleading proportions.
 - (Already covered: purple = red; ignore academic nausea / linkbuilding;
   Turgenev swallows service-marked words like `temp`, `youtube`, `html`.)
+
+
+## Backfilled sections (transcript-grounded)
+
+The sections below were added to close methodology gaps. Each cites the
+bootcamp source so a future reader can verify. Where the bootcamp does not
+cover a topic, the section is marked `TODO — not in transcripts`.
+
+### Worked name-occurrence audit table — Temp Phone Number
+
+> Source: Module II lesson 056 (`Примеры хороших описаний`) — full text of the
+> approved description. Counts done by hand against the published text.
+
+The name `Temp Phone Number` is a 3-word name. The most important standalone
+word for Google is `phone` (the head noun); `number` is a close second; `temp`
+is the qualifier. Below is where the **exact phrase `temp phone number`** (or
+its 2-word substring `phone number`) appears, mapped to block.
+
+| Block | Exact `temp phone number` | `phone number` (2-word) | `temp` standalone | `phone` standalone |
+|---|---|---|---|---|
+| Name | 1 | (overlaps) | (overlaps) | (overlaps) |
+| Short description | 1 | (overlaps) | (overlaps) | (overlaps) |
+| Paragraph 1 (header `🛡️ Temp phone number…`) | 2 | (overlaps) | (overlaps) | (overlaps) |
+| Paragraph 1 body | 0 | 1 (`disposable phone numbers`) | 0 | 1 (`personal contacts… phone`) |
+| Section 2 `🌟 Instant privacy with disposable numbers` (3 bullets) | 0 | 1 (`disposable phone numbers`) | 0 | 0 |
+| Section 3 `📲 Instant connect` | 0 | 0 | 0 | 0 |
+| Section 4 `🌐 Unlimited global reach` (3 bullets) | 0 | 0 | 0 | 2 (`country-specific phones`, `phone options`) |
+| Section 5 `💎 Innovative & user-centric design` | 0 | 0 | 0 | 1 (`disposable phones provider`) |
+| Section 6 `🔒 Robust security protocols` | 0 | 0 | 0 | 0 |
+| Section 7 `🔄 Dynamic allocation` | 0 | 1 (`Phone numbers are refreshed`) | 0 | 1 (`most reliable phones`) |
+| Section 8 `📈 Analytics and insights` | 0 | 0 | 0 | 0 |
+| Section 9 `📑 Transparent usage policies` | 0 | 0 | 0 | 0 |
+| Section 10 `🌍 Cultural and linguistic support` | 0 | 0 | 0 | 0 |
+| Section 11 `🔝 Enhanced user experience` | 0 | 0 | 0 | 0 |
+| Section 12 `👥 Growth through community` | 0 | 0 | 0 | 0 |
+| Section 13 `🚀 Exclusive perks` | 0 | 1 (`free second phone numbers`) | 0 | 0 |
+| Closing line | 0 | 0 | 0 | 0 |
+| FAQ Q1 `How does the app protect…` | 0 | 0 | 0 | 0 |
+| FAQ A1 | 0 | 0 | 0 | 0 |
+| FAQ Q2 `Can I use multiple numbers…` | 0 | 0 | 0 | 0 |
+| FAQ Q3 `What benefits do additional phone contacts offer?` | 0 | 0 | 0 | 1 (`primary contact phone`) |
+| FAQ A3 | 0 | 0 | 0 | 0 |
+| FAQ Q4 `Is this service really free?` | 0 | 0 | 0 | 0 |
+| FAQ Q5 `How long can I use a temporary phone?` | 0 | 0 | 0 | 1 (`temporary phone`) |
+| FAQ Q6 `Can I select a contact…` | 0 | 0 | 0 | 0 |
+| FAQ Q7 `Are messages private and secure?` | 0 | 0 | 0 | 0 |
+| **Totals** | **4** exact | **+4** as `phone number` | **0** standalone (`temp` is in the brand only) | **+7** standalone `phone` |
+
+Read it this way: the **exact 3-word name** lands 4 times (name, short, two in
+paragraph 1 header + lead). The **head 2-word substring `phone number`** picks
+up 4 more, giving an exact + substring total of **8** — exactly at the floor
+of the 8–10 rule when counted as the customer would search. The standalone
+word `phone` adds 7 more in tail phrases (`country-specific phones`, `most
+reliable phones`, `temporary phone`) — these reinforce the head noun without
+re-triggering Turgenev overspam on the full phrase.
+
+Notes:
+
+- The qualifier `temp` is silently treated as a service word by Turgenev
+  (Module II lesson 060 confirms `temp` gets swallowed). Hand-count it.
+- The FAQ block is very light on the exact name — only one occurrence
+  (`temporary phone` in Q5, and `primary contact phone` in Q3 which is not
+  the keyword). The FAQ pulls its weight via the **synonym belt**
+  (`temporary`, `contacts`, `phones`) rather than the head keyword.
+- Paragraph 1 is where the name keyword density is concentrated (2 exact +
+  surrounding `disposable phone numbers`) — this matches the Module II
+  lesson 057 + lesson 079 rule that the visible-above-fold text gets higher
+  SEO weight.
+
+### Turgenev "Words tab" service-word list
+
+> Source: Module II lesson 060 (`Проверяем наполненность текста ключом из
+> названия`) + video 092 (`Нюанс 7 поднимаем концентрацию слов из названия в
+> Тургеневе`) + video 103 (`Нюанс 18 особенности цветовой разметки`).
+
+Turgenev's Words tab marks some tokens grey ("service words") and excludes
+them from the top-frequency view. The bootcamp never publishes a master
+list — it explicitly says Turgenev is unpredictable and you must
+**hand-check** every name token. Confirmed examples from the transcripts:
+
+| Token | Behavior | Source |
+|---|---|---|
+| `temp` | Swallowed (not shown at all in Words tab) | Lesson 060 |
+| `youtube` | Marked grey (counted as service word) | Lesson 060 |
+| `html` | Marked grey (counted as service word) | Video 092 |
+
+Standard English stop-words (`a`, `the`, `of`, `to`, `for`, `with`, `and`,
+`or`, `in`, `on`, `at`) are also greyed out — this is normal stop-word
+filtering and not the problem the bootcamp flags. The problem is when a
+**content-bearing** name token (a brand fragment, a product noun, a
+technology acronym) gets dropped into the service-word bucket.
+
+> TODO — not in transcripts — the bootcamp gives only the three examples
+> above. A future operator should grow this table from first-hand Turgenev
+> runs (likely candidates: other short brand tokens, common file-format
+> tokens like `pdf`, `png`, `gif`, common platform tokens like `gmail`,
+> `chatgpt`).
+
+Procedure when a name token is greyed/swallowed: do **not** trust
+Turgenev's "name word is top" check for that token. Open the text view,
+manually count occurrences, and confirm the token's frequency is at the
+level you'd expect (i.e. it should still spike above prose-baseline once
+you count it yourself).
+
+### FAQ block keyword density
+
+> Source: lessons 055, 056, 057 (`Создаем полное описание`, `Примеры
+> хороших описаний`, `Проверяем тексты на спам`). The bootcamp does **not**
+> give an FAQ-specific keyword-density rule.
+
+What the transcripts do say:
+
+- FAQs are explicitly listed as one of the allowed structural list types
+  (lesson 055 — `вопрос-ответ` in the checklist).
+- The general per-paragraph density rule (max 3 keys per paragraph in
+  first two paragraphs, max 2 per paragraph thereafter — lesson 057 +
+  video 103) applies to **every** paragraph including FAQ Q and FAQ A
+  paragraphs.
+- The FAQ block sits **below** the CWS "Read more" fold (video 079 confirms
+  the fold sits after the first paragraph or two), so it falls under the
+  stricter ≤1–2 same-key-per-chunk rule for below-fold text (lesson 057).
+
+The Temp Phone Number example above is the empirical answer: across 7 FAQ
+Q+A pairs (~14 paragraphs), the exact name keyword `temp phone number`
+appears 0 times; the head 2-word `phone number` appears 0 times; the
+standalone `phone` appears 2 times. **FAQ blocks deliberately under-use
+the head keyword** and lean on the synonym belt (`disposable`,
+`temporary`, `contact`, `verification`) instead. This keeps below-fold
+density low while still feeding question-tail keywords.
+
+Operational sub-rule:
+- FAQ Q: ≤1 occurrence of the head keyword per question, and only in
+  ~30% of the questions. Most questions should ask about
+  *adjacent* concepts (privacy, install, supported platforms,
+  troubleshooting) so the question text itself reads naturally.
+- FAQ A: ≤1 occurrence of the head keyword per answer, same ~30%
+  coverage. Use synonyms / tail variants in the rest.
+
+### CWS "above-the-fold" boundary — character count
+
+> TODO — not pinned in transcripts — the bootcamp tells you the fold exists
+> (lesson 057 + video 079: "часть текста она видна сразу, часть текста под
+> спойлером") and that above-fold text carries more SEO weight, but it
+> never publishes the exact character count at which CWS truncates the
+> short-description card. The bootcamp shows screenshots of the fold
+> position rather than naming a count.
+
+What is true per transcripts:
+- The fold is in the **full description** body on the CWS detail page —
+  video 079 says "до спойлера он виден" and treats it as a visual cutoff,
+  not a fixed char count.
+- Behavior above fold: max 3 same-key occurrences per chunk (lesson 057).
+- Behavior below fold: max 1–2 same-key occurrences per chunk
+  (lesson 057).
+- The first 1–2 paragraphs should carry the highest keyword density and a
+  structural element (list) above the fold (video 079).
+
+The figure `~600 chars` that appears elsewhere in this skill is not
+confirmed by the bootcamp. A future operator should measure on a live
+CWS listing (open three live products at standard zoom, count the chars
+to the "Read more" link) and replace the figure here. Until then, use
+**"first 1–2 paragraphs"** as the operating heuristic rather than a char
+count.
+
+### Morphologically varied third occurrence — qualitative only
+
+> Source: video 079 (`Разборы ошибок ЧАСТЬ 1`) — the only mention of
+> cognate forms in moderation.
+
+The transcript text:
+
+> вопрос читается ли при модерации однокоренные слова за одно и то же
+> пример юрейл шортоннер гугл основное писание юрейл шортоннер гугл это
+> допускается да если мы берем прокатка описание вот если мы видим речь
+> прокатка описание то формы мы считаем
+
+Translation: "Question: does moderation read cognates as the same word?
+Example: `URL Shortener Google` in main description — `URL Shortener
+Google` — this is allowed, yes; if we look at the short description,
+when we see speech in short description we count forms…"
+
+The bootcamp confirms cognates are **allowed** and treated as the same
+word for moderation, but **never quantifies** them. The "~2.5× weighting"
+heuristic that appears in the case-study insights above is a
+post-bootcamp folk rule, not from the transcripts.
+
+**Downgrade the rule** to: a morphologically varied third occurrence
+(`Summarize / Summarizer / Summarized`) reads as cleaner human prose and
+softens Turgenev's repeat scoring vs three identical hits. Do not treat
+it as ~2.5× math — that number is not in the bootcamp.
+
+### Translation count-preservation across locales
+
+> Source: Module III lesson 124 (`Создаем автоматический перевод`),
+> lesson 125 (`Переводим название, краткое и полное описание в
+> Localizer`), lesson 127 (`Переводим название и описание расширения на
+> важные языки вручную`), and video 166 (`Нюанс 16 обрезка кратких
+> описаний при автопереводе`).
+
+What happens to keyword counts during Localizer auto-translation:
+
+1. **Full description** auto-translation via Localizer runs through
+   ChatGPT (or DeepL/Google for languages where OpenAI has problems —
+   Localizer flags those with 🚨). The transcripts do **not** quantify
+   keyword-count preservation. They do say (lesson 124): "перевод на
+   другие языки позволит увеличить шансы продвижения в выдаче Google в
+   несколько раз" — the goal is reach, not count parity.
+
+2. **Short description (132 char limit)** is the documented failure point.
+   Video 166 confirms: ChatGPT-5 is poor at honoring the 132-char limit
+   during translation. Two failure modes:
+   - Prompted with the limit → translation comes back **too short**,
+     dropping keywords.
+   - Prompted without the limit → translation comes back **over 132
+     chars**, getting truncated on upload (final keywords cut off).
+
+   The bootcamp's explicit policy:
+   > "по другим языкам гораздо меньше конкуренция, чем английском" —
+   > non-English competition is much lower, so even truncated short
+   > descriptions still beat skipping translation entirely.
+
+3. **Name** auto-translation is the same risk on a 75-char field. The
+   bootcamp recommends (lesson 127) **hand-translating** names + short
+   descriptions for the high-value languages:
+   - **Wealthy-country list (latinise-friendly)**: DE, FR, ES, IT, NL,
+     SV, DA, NO, FI — translate name + short description manually.
+   - **Large-audience list**: AR, ID, RU, PT, JA, FIL, VI, TR, TH, KO —
+     at minimum manually translate the **top 3** (AR, ID, RU).
+
+   For these languages, manually verify the keyword count formula
+   survives (3× main word in short, 8–10× name in full).
+
+4. **Full description in other languages** can stay auto-translated. The
+   transcript explicitly says (lesson 127): "над названием
+   заморачиваемся, над кратким описанием – поменьше, а полное описание
+   просим перевести через ChatGPT c английского" — fuss over the name,
+   fuss less over short, just ask ChatGPT to translate full from English.
+
+Operating rule:
+
+| Field | EN keyword count target | Auto-translate? | Re-verify count? |
+|---|---|---|---|
+| `name` | 1× (the keyword) | No — handcraft per language for top markets | Yes |
+| `description` (short, 132) | 3× main + 2× supporting | Auto, accept truncation OR handcraft for top markets | Handcraft path: yes; auto: skip — competition is lower |
+| Full description | 8–10× name + ~30 total keys | Auto via Localizer | Skip per-language — bootcamp does not require it |
+
+> TODO — not in transcripts — no per-language Turgenev re-check is
+> documented. A future operator may want to run Turgenev (or a local
+> equivalent) on the top 3 non-English locales for the head keyword to
+> confirm no overspam was introduced by translation.

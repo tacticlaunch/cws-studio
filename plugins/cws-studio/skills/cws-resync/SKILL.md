@@ -49,12 +49,12 @@ responsible for its own re-run — cws-resync only orchestrates the cascade.
 
 ## Preamble (run first)
 
-Run the standard preamble (see `shared/preamble.md`). It loads `$SLUG`,
+Run the standard preamble (see `../../shared/preamble.md`). It loads `$SLUG`,
 `$_BRANCH`, prior learnings, and `./.cws/state.json`. Skip the rest of this
 skill if the preamble exits — the preamble is the gate.
 
 ```bash
-PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/plugins/cache/cws-studio/cws-studio/2.0.0}"
+PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/plugins/cache/cws-studio/cws-studio/2.1.0}"
 BIN="$PLUGIN_ROOT/bin"
 eval "$("$BIN/cws-slug" 2>/dev/null)"
 _BRANCH=$(git branch --show-current 2>/dev/null || echo "no-git")
@@ -100,14 +100,14 @@ After running, branch off the echoed values:
 
 ## AskUserQuestion Format
 
-See `shared/askuserquestion-format.md`. Every interactive decision goes
+See `../../shared/askuserquestion-format.md`. Every interactive decision goes
 through `AskUserQuestion` as a `D<N>` decision brief (ELI10 · Stakes ·
 Recommendation · Completeness · Pros/cons · Net). D-numbering starts at D1
 per invocation.
 
 ## Voice
 
-See `shared/voice.md`. Operator voice. No banners. No file-creation dumps.
+See `../../shared/voice.md`. Operator voice. No banners. No file-creation dumps.
 Concrete numbers, names, paths. Lead with the point. Every propagation
 implication is named with the artifact path and the concrete consequence
 ("re-consent dialog — 30-60% retention drop").
@@ -115,7 +115,7 @@ implication is named with the artifact path and the concrete consequence
 ## Skill Routing Footer
 
 End every invocation with a single `Next: /cws-<skill>` line per
-`shared/skill-routing.md`. The next skill is the FIRST skill in the
+`../../shared/skill-routing.md`. The next skill is the FIRST skill in the
 computed route plan.
 
 ---
@@ -521,7 +521,7 @@ run the cascade.
 
 ## Phase 5 — Route to the first downstream skill
 
-The skill routing footer (see `shared/skill-routing.md`) gets the first
+The skill routing footer (see `../../shared/skill-routing.md`) gets the first
 skill in the confirmed plan. Each downstream skill detects
 `status: superseded` on its artifact and:
 

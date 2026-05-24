@@ -82,6 +82,21 @@ drops. Fix it with a **Welcome Page** that opens right after install and explain
 where to find the extension and how to use it. Bonus: it's the perfect place for
 install-counting analytics (it opens exactly once per install).
 
+> **Conversion targets (source: Module III group call #3, lesson 115).** The
+> activation conversion (Welcome-Page → first product open / pin) progresses
+> as you iterate:
+>   - **No Welcome Page:** 10–15% — most installs never activate, behavioral
+>     factors collapse.
+>   - **First Welcome Page (V1):** 20–25% — the bump from the initial build.
+>   - **Mature Welcome Page (current good):** 60–70% — what a well-tuned page
+>     reaches after screenshot framing, arrow placement, and puzzle-icon
+>     matching are dialed in.
+>
+> The 60% ceiling and the 20–25% early-version range are documented in detail
+> in the "Welcome Page — additions" and "Analytics setup at launch —
+> additions" sections below. Treat 60% as the target you iterate toward, not
+> the number you ship at V1.
+
 Build it on Tilda or any host (GitHub Pages, Vercel). Good examples on own
 hosting: study-timer.com/welcome, mp4-to-mp3.pro/welcome, heic-to-jpg.pro/welcome.
 On Tilda: extract-text-from-image.tilda.ws, aipromptgenerator.tilda.ws,
@@ -175,6 +190,24 @@ Adblocker`). For short/full descriptions in a national language, prompt ChatGPT
 in that language using the name + 2 keywords; translate the full description from
 your English one.
 
+**The 10× rule for picking the name keyword per locale.** (Source: Module III
+group call #3, lesson 115 — "Локализация" / manual translations.) For each
+non-English locale, compare the local-language head-keyword volume against
+the English head-keyword volume *in that country's Semrush*:
+- **English ≥ 10× local** → use the **English** name in the local locale
+  (English dominates the search; the local translation has no traffic).
+- **Local ≥ 10× English** → use the **local** name (the national-language
+  spelling dominates — common in Cyrillic / Chinese / Arabic markets).
+- **Anything in between** (less than 10× either way) → **combine both** with
+  `−` or `|` (e.g. `Bloqueador de anuncios − Free Adblocker`). Allowed on
+  non-English locales because the lower competition tolerates two keywords
+  in one name without spam penalty.
+
+The same rule applies when comparing KD zones: a name keyword that moves
+from KD red in English to KD orange or green in the local language clears
+the "worth localizing" bar even if volume is lower. One KD-zone improvement
+≈ the 10× volume threshold for practical purposes.
+
 Transliteration nuance:
 - **Don't literal-translate a "universal" English name** (`ai chat gpt`). Think
   how real people *search* in that language. In Russian, `ÑÐ°Ñ Ð³Ð¿Ñ` (transliter-
@@ -219,6 +252,122 @@ Transliteration nuance:
    `_locales` folders except `en` first (save them) — otherwise CWS fills empty
    descriptions for every language and heavily pessimizes ranking.
 6. **2FA** — Google may require it before upload (Stage 0).
+
+## Pre-submit mechanical checklist
+
+(Source: composite of Module III lessons 130 "Проверяем продукт перед
+публикацией в CWS", 131 "Проходим антивирусную проверку", 132 "Подключаем
+двухфакторную аутентификацию", 133–135 "Начинаем загружать… / Заполняем
+карточку…".)
+
+This is the source-of-truth checklist for the cws-launch SKILL.md Phase 8.2
+gate. SKILL.md points at this section — keep it complete and concrete. Tick
+every box before clicking **Submit for review**.
+
+**Build & archive**
+- [ ] `manifest.json` lists ONLY the permissions the code actually uses.
+      "Just-in-case" permissions guarantee rejection.
+- [ ] `manifest.json` includes `"default_locale": "en"`.
+- [ ] `manifest.json` `name` and `description` reference `__MSG_appName__`
+      and `__MSG_shortDesc__` (so locale overrides take effect).
+- [ ] `_locales/en/messages.json` has every interface string filled (other
+      locales fall back to `en`).
+- [ ] Service-worker `chrome.runtime.onInstalled.addListener` opens the
+      Welcome Page on `INSTALL`.
+- [ ] Extension archive (.zip) contains no `.DS_Store`, no `node_modules`,
+      no source maps, no `.env`, no test fixtures.
+- [ ] Archive uploaded to virustotal.com — zero detections. If any
+      detection appears (even one false-positive), investigate the trigger,
+      rework, rebuild, re-check.
+
+**Welcome Page (host)**
+- [ ] Welcome Page published at its public URL.
+- [ ] URL hard-coded in the service worker matches the published URL
+      (no `localhost`, no staging).
+- [ ] If on a custom domain: SSL active, www↔non-www and http↔https
+      redirects configured, all pages re-published after the redirect
+      change.
+- [ ] Analytics script (Yandex Metrica + Webvisor for site-wrapped builds,
+      or Amplitude/GA4 measurement-protocol events for popup/local-page
+      builds) installed on the Welcome Page.
+
+**Store-card assets**
+- [ ] `16x16.png`, `48x48.png`, `64x64.png`, `96x96.png`, `128x128.png`
+      icons exist; the 128 slot is a 96×96 image with transparent margin.
+- [ ] Small banner 440×280 PNG ≤ 800 KB exists, contrasting background,
+      thematic icon, short caption.
+- [ ] Large banner 1280×800 PNG ≤ 800 KB exists, no video/GIF, no
+      multi-color clashing gradient, single key on banner #1.
+- [ ] Optional additional screenshots are static images, not GIFs.
+
+**Translations**
+- [ ] `_locales/` folder populated by Localizer for all selected languages,
+      OR pared down to `_locales/en/` only (if you are knowingly publishing
+      English-only — remove all other folders first, otherwise CWS fills
+      every locale with blank descriptions and pessimizes ranking).
+- [ ] Manual name + short description completed for the rich Latin-script
+      locales (DE, FR, ES, IT, NL, SV, DA, NO, FI) AND at least the first
+      3 large-speaker-base non-Latin locales (AR, ID, RU).
+- [ ] 10× rule applied per locale for the name keyword (see Translations
+      section above).
+- [ ] Russian name + short description done manually even though Russia
+      doesn't pay — Russian traffic triggers Tier-1 testing.
+- [ ] No two locales are identical (e.g. Russian copy in the Ukrainian
+      slot pessimizes both).
+- [ ] No English duplicates (one `en` locale only — never `en_US` +
+      `en_GB` + `en_AU`).
+
+**Anti-spam pre-check**
+- [ ] Texts run through the Stage-2 spam check: no `Convert PDF Converter`
+      adjacent-near-duplicates; same root word separated by ≥5 words in
+      the long description; singular/plural and `.` vs no-`.` variants
+      covered.
+- [ ] Differs from the closest competitor: different icon, new banners,
+      different name/short/full description.
+- [ ] Name-similarity rule respected: identical name OR 1–2 letter / word-
+      order delta is allowed **only if** the competitor is NOT optimized
+      (lacks 30+ locales AND lacks 3,000+ char description).
+
+**Account & infrastructure**
+- [ ] Google account interface language set to **English (United States)**
+      (Personal info → Language).
+- [ ] 2FA enabled on the developer Google account (Google may require it
+      mid-upload otherwise).
+- [ ] $5 developer registration fee paid on this account.
+- [ ] Antidetect browser profile + dedicated long-term proxy already
+      warmed up for this account (per the cws-launch account-setup gate).
+
+**Listing card fields (Save Draft before submitting)**
+- [ ] Name, short description, full description pasted per locale (the
+      `cws-locale-uploader.js` script handles the full-description loop;
+      verify each language loaded after refresh).
+- [ ] Graphics uploaded (icon, small banner, large banner, optional
+      screenshots).
+- [ ] **Privacy** tab: Single Purpose set (one short sentence).
+- [ ] **Privacy** tab: "No, I am not using remote code" selected.
+- [ ] Every permission has a specific, multi-word justification
+      (`storage — to persist user-selected language and theme preferences
+      across sessions`, not `storage — to store data`).
+- [ ] Data-collection section: only what you actually collect is marked
+      (nothing ticked if you collect nothing).
+- [ ] All 3 confirmation boxes ticked.
+- [ ] Privacy Policy URL pasted (the studio template with `[COMPANY NAME]`
+      = your extension's English name, `[EMAIL ADDRESS]` and `[DATE]`
+      replaced; published as a public link).
+
+**Extension ID wiring (done at draft-upload time, before submit)**
+- [ ] Extension ID grabbed from the dashboard top-left right after the
+      first draft upload.
+- [ ] ID wired into the review-widget HTML (CWS reviews URL).
+- [ ] ID wired into the Welcome Page CTA (if it deep-links to the listing).
+- [ ] Draft re-uploaded with the ID-bearing assets.
+- [ ] Do **not** "submit early just to get the ID" and leave the listing
+      approved-but-unpublished — plausibly CWS indexes a poor version.
+      Upload as draft only; submit for review only when the full package
+      is ready.
+
+When every box ticks, **Save Draft** one more time, refresh, eyeball every
+locale loaded, then submit for moderation.
 
 ## Uploading to CWS
 

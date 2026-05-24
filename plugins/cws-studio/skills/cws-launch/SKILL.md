@@ -64,13 +64,13 @@ Tier-3 geos.
 
 ## Preamble (run first)
 
-Run the standard preamble (see `shared/preamble.md`). It loads `$SLUG`,
+Run the standard preamble (see `../../shared/preamble.md`). It loads `$SLUG`,
 branch, prior learnings (filtered by this stage), and `./.cws/state.json`.
 Skip the rest of this skill if the preamble exits — the preamble is the
 gate.
 
 ```bash
-PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/plugins/cache/cws-studio/cws-studio/2.0.0}"
+PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/plugins/cache/cws-studio/cws-studio/2.1.0}"
 BIN="$PLUGIN_ROOT/bin"
 eval "$("$BIN/cws-slug" 2>/dev/null)"
 _BRANCH=$(git branch --show-current 2>/dev/null || echo "no-git")
@@ -104,7 +104,7 @@ If `CWS_STATE: missing`, route to `cws-init` first — do not advance.
 
 ## AskUserQuestion Format
 
-See `shared/askuserquestion-format.md`. Every interactive decision goes
+See `../../shared/askuserquestion-format.md`. Every interactive decision goes
 through `AskUserQuestion` as a `D<N>` decision brief (ELI10 · Stakes ·
 Recommendation · Completeness · Pros/cons · Net). D-numbering starts at D1
 per invocation. Mechanical iron rules below are auto-decided silently and
@@ -112,14 +112,14 @@ per invocation. Mechanical iron rules below are auto-decided silently and
 
 ## Voice
 
-See `shared/voice.md`. Operator voice. No banners. No file-creation dumps.
+See `../../shared/voice.md`. Operator voice. No banners. No file-creation dumps.
 Concrete numbers, names, paths, pixel dimensions, character counts,
 permission strings, locale codes. Lead with the point.
 
 ## Skill Routing Footer
 
 End every invocation with a single `Next: /cws-<skill>` line per
-`shared/skill-routing.md`. Never a menu. The Stage 3 hard-routing target
+`../../shared/skill-routing.md`. Never a menu. The Stage 3 hard-routing target
 before submit is `/cws-careful`.
 
 ---
@@ -1154,7 +1154,7 @@ developer dashboard.
 ## 8.1 — cws-careful hard gate (M12)
 
 `cws-careful` is **non-optional** before submit. Per
-`shared/skill-routing.md`:
+`../../shared/skill-routing.md`:
 
 > Any irreversible step (submit, monetize on, host_permissions widen,
 > account delete) → `cws-careful` **before** the action. Hard gate.

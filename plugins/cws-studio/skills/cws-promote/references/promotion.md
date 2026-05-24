@@ -449,3 +449,350 @@ appeal steps exactly and don't over-appeal.
   manifest, before you have users to lose. On a 100-user product losing 30
   is nothing; on a 100k product losing 40k matters.
 
+## Seeding reviews when ProfitTask is broken — operator workflow
+
+(Source: Module IV review-walkthrough lesson 203 "Разборы ошибок — ЧАСТЬ 1"
+explicitly confirms ProfitTask "doesn't work, the site is up but people in
+Telegram complain it's broken." The lesson redirects everyone back to
+real-friend reviews for the first launch. Module IV lesson 202 "Добавляем
+первичные отзывы" is the canonical ProfitTask walkthrough — kept here as
+the on-disk reference even though the service is currently broken.)
+
+**Default path for V1 (what bootcamp actually recommends right now):**
+1. Recruit **4–5 real people** — relatives, friends, anyone willing to log
+   into their own Google account.
+2. Each leaves an English review on the CWS listing, **max 1–2 per day per
+   account, distributed across multiple calendar days**, from **different
+   physical devices**, **no VPN / no proxy / no antidetect**.
+3. Rewrite the review template every day so reviews don't look templated.
+4. The first reviewer can be you — but only one, only from your own real
+   account on your real device, and only the very first review.
+
+**ProfitTask (currently broken — keep as future-restore path):** see the
+existing "Reviews" section above for the full setup (~6₽ per task, 100₽
+top-up, manual screenshot verification, 1–2 reviews/day cap, rewrite
+template each day). When the service comes back online this is the
+"professional launchers, multi-product" workflow.
+
+### kwork.ru workflow — alternative seeding channel
+
+> **TODO — not covered in bootcamp transcripts; pattern from operator
+> practice. The bootcamp explicitly lists ProfitTask as the only
+> paid-seeding tool, and currently broken. The kwork.ru pattern below is
+> documented from external operator playbooks for parity, not from the
+> source transcripts.**
+
+The pattern, when used externally:
+1. **Task wording.** Post a "Микрозадание" / micro-task: "Open the
+   shortened link, sign into your own Google account, leave 5 stars and a
+   short organic review on a Chrome extension." Provide the shortened
+   `cutt.ly` link plus a 1-sentence review-seed the executor should
+   rephrase in their own words.
+2. **Price band.** ~6₽ per completed review on the Russian platforms
+   (mirrors the ProfitTask price band documented in lesson 202). On
+   kwork.ru proper, tasks typically start at 500₽ for a small batch
+   (5–10 reviews) — significantly more expensive per review than
+   ProfitTask, which is why bootcamp doesn't recommend it as the default.
+3. **Distribution via Telegram (when on-platform tools fail).** Post the
+   task spec + shortened link into Russian-language micro-task Telegram
+   channels (look for `@microtask`-style groups). Cap incoming reviews at
+   1–2/day via manual approval to avoid the rate-spike that triggers CWS
+   bot-review detection.
+4. **Verification.** Same as ProfitTask — request a screenshot of the
+   posted review, manually approve, top up the task for only 1–2 more
+   completions at a time.
+5. **Same hard rules apply:** no VPN, no proxy, different devices, English
+   reviews only, rewrite template daily.
+
+Because kwork is not validated in the bootcamp transcripts, treat it as a
+fallback when ProfitTask is down and your friend network is exhausted.
+The default for V1 stays: **4–5 real-friend reviews**.
+
+## install_id propagation pattern
+
+> **TODO — not covered in bootcamp transcripts. The bootcamp recommends
+> Amplitude (and falls back to Mixpanel) for popup/local-page extensions
+> via the Measurement Protocol pattern (lessons 177 "Нюанс 27" and 221
+> "Нюанс 11"), but never documents a specific user-id generation scheme.
+> The pattern below is the working operator pattern — use it to tie
+> Welcome Page first-visits to downstream in-extension Amplitude events
+> without auth.**
+
+The problem the pattern solves: the Welcome Page opens once per install
+(perfect install-counter), but the events fired *inside* the extension
+(activation, paid action, retention return) come from a different origin
+and have no shared cookie or session. Without a stable user-id, Amplitude
+sees the Welcome Page visit and the in-extension events as two unrelated
+users — the funnel splits in half.
+
+The fix: generate a UUID on first Welcome Page load, persist it in
+`localStorage` on the Welcome Page **and** mirror it into
+`chrome.storage.sync` from the extension, then pass it as the user-id on
+every analytics call from both sides.
+
+**Welcome Page side** (the page opened by `chrome.tabs.create` in the
+service-worker `onInstalled` handler):
+
+```javascript
+// Welcome Page — runs once on first install (page opens once per install)
+let installId = localStorage.getItem('cws_install_id');
+if (!installId) {
+  installId = crypto.randomUUID();
+  localStorage.setItem('cws_install_id', installId);
+}
+
+// Pass installId as user_id to every analytics call from the Welcome Page
+amplitude.setUserId(installId);
+amplitude.track('welcome_page_view', {
+  install_id: installId,
+  // utm_* params from the install referrer if available
+});
+```
+
+**Extension side** (popup / sidepanel / content script):
+
+```javascript
+// On first activation, read the installId out of the Welcome Page's
+// localStorage via a content script injected onto the Welcome Page URL,
+// then persist it in chrome.storage.sync for cross-device continuity.
+async function getOrCreateInstallId() {
+  const stored = await chrome.storage.sync.get('cws_install_id');
+  if (stored.cws_install_id) return stored.cws_install_id;
+
+  // Fall back: mint a fresh UUID inside the extension if the Welcome
+  // Page handoff failed (rare, but happens when users clear site data
+  // between install and first activation).
+  const fresh = crypto.randomUUID();
+  await chrome.storage.sync.set({ cws_install_id: fresh });
+  return fresh;
+}
+
+// Pass it as user_id on every Amplitude / GA4 event from the extension
+const installId = await getOrCreateInstallId();
+amplitude.setUserId(installId);
+amplitude.track('feature_used', { install_id: installId });
+```
+
+**Why `chrome.storage.sync` not `chrome.storage.local`:** sync survives
+profile resets and follows the user across Chrome installs on other
+devices — the retention story stays intact even when the user reinstalls.
+The behavioral-factor case for `sync` over `local` is already documented
+in the cws-launch assets-and-publish.md "Behavioral factors — additions"
+section.
+
+**Why mint client-side, not server-side:** no auth at launch (per the
+"60–80% activation drop" rule from lesson 170 "Нюанс 20"). A
+client-generated UUID gives you a stable user-id without a sign-in flow.
+
+## 1000-install milestone benchmarks
+
+> **TODO — not covered in bootcamp transcripts at the per-milestone level.
+> Module IV bootcamp finishes around the 100–300 install range (the cap
+> set by the $30–150 paid-promo budget). Module V "Финальный созвон"
+> (lesson 243) and the Module IV group call (lesson 181) reference
+> products with thousands of users in passing but do not enumerate
+> healthy benchmarks at 1000 installs specifically. The numbers below are
+> the working operator pattern, calibrated to the bootcamp's stated
+> overall conversion bands.**
+
+By the time an extension crosses **1000 cumulative installs**, the
+behavioral factors that determined whether organic SEO would kick in
+have already played out — at this point you're reading the trend, not
+the launch. Healthy benchmarks at this stage:
+
+| Metric | Healthy band at 1000 installs | Source |
+|---|---|---|
+| **Weekly retained users** (from CWS dashboard `Users` graph) | ≥ 60% of installs from the same 28-day window (so ≥ 600 if the 1000 came in over the last month) | Inverse of the "normal uninstall rate 15–30%" band from the existing "Conversion diagnostics" section above; bootcamp does not state the retained-user benchmark directly |
+| **Organic share of new installs** | ≥ 50% (paid spend is capped at $30–150 → ~100–300 paid, so anything past install ~300 is organic by definition) | Derived from bootcamp's $300 paid-spend ceiling rule |
+| **Review count target** | 5–10 organic reviews + your initial 4–5 seeded = 10–15 total at 1000 installs | Pattern from the "review widget converts ~1–2% of users to actual reviewers" insight in the existing "Reviews — additions" section |
+| **Average rating** | ≥ 4.5★ (review widget filters 1–3★ to your Google Form, so public CWS reviews skew 4–5★ by design) | Mechanical consequence of the review widget — see the existing "Reviews" section |
+| **CWS listing-page conversion** (`install / first_visit`) | Stable 15–30% organic, 10–20% from ads — should not be degrading | Existing "Analyzing installs" section |
+| **Listing-page weekly user count growth** | Week-over-week growth ≥ 10% | Bootcamp's "10–20 organic installs/day after 2 months is a good result" baseline |
+
+**What 1000 installs unlocks:**
+- **Monetization is now safe to add** for products with running costs —
+  enough volume that the paying tail can cover infra (recall: bootcamp
+  states ~60% of paying purchases come from US across all bootcamp
+  products — lesson 181). At sub-1000 the paying tail is too sparse to
+  read signal.
+- **Add the flaticon attribution** to the listing (required by flaticon
+  TOS — the existing "Icons — additions" section says to skip it at 0
+  users and add it after ~1000).
+- **Switch from monitoring-by-install to monitoring-by-retention** — the
+  CWS `Users` graph (weekly users) becomes the primary metric instead of
+  the install counter.
+
+**What 1000 installs does NOT unlock:**
+- Real conclusions about the product. Per Module V lesson 243, the
+  bootcamp position is: ~2 months for "does it work", ~6 months for "is
+  it growing", ~1 year for finals. 1000 installs hit before any of those
+  windows for healthy launches.
+- A second product launch from the same operator account on the same day
+  — see the "Second-platform unlock criteria" section below for the
+  unlock gate.
+
+## Second-platform unlock criteria
+
+> **TODO — not covered in bootcamp transcripts as an explicit gate.
+> Module IV bootcamp lesson 182 "Зачем запускать платную рекламу"
+> recommends testing 2 ad platforms but does not formalize a CPI-stability
+> trigger for "platform 2 is safe to add." The criteria below are the
+> working operator pattern, calibrated to the bootcamp's stated 100–300
+> install paid-spend window.**
+
+**Default position from bootcamp:** run at least 1 ad platform, ideally
+test 2 in parallel from day 1 if budget allows (Yandex + Google, or FB +
+Google depending on geo / RU-BY status). The "test 2 platforms" stance is
+explicit in lesson 183.
+
+**Operator gate for adding a second platform *sequentially* (when budget
+or account-warming forced a single-platform start):**
+
+A second ad platform is safe to add when the first platform has cleared:
+- **≥ 100 installs** attributed to the first platform.
+- **CPI variance < 30% over a 7-day window** (compute as
+  `(max_daily_CPI − min_daily_CPI) / mean_daily_CPI` over the last 7
+  days of spend). If CPI is still bouncing 2–3× day to day, the first
+  platform's targeting / bid / keyword setup is not stable yet — adding
+  a second platform now just splits attention across two unstable
+  campaigns.
+- **GA listing-page conversion ≥ 10%** *after* the Facebook-bot filter
+  (see "Conversion diagnostics" above) — confirms ads are reaching real
+  users, not just bots. If conversion is sub-10% on filtered traffic,
+  the listing itself needs work before more ad channels stack on.
+- **No moderation issues open** on the first platform (no pending Free
+  Desktop Software appeal, no rejected ads, no payment-method block).
+  Adding a second platform while the first is in a rejection queue
+  hides which platform is responsible when something breaks.
+
+When all four clear, the second platform's purpose is to **diversify
+attribution risk** (one platform banning the ad account doesn't kill the
+launch) and **expand reachable audience** (Google's cheap-Asia/Africa
+inventory vs Yandex's pure CIS inventory, etc.) — not to scale spend.
+Keep the total $30–150 budget intact; split it across both platforms
+rather than doubling it.
+
+**What disqualifies a second-platform launch:**
+- The first platform is mid-ban or mid-appeal.
+- You haven't yet built the basic creative + keyword list (the
+  "warm the ad account before launch" workflow assumes you already have
+  text + graphics, just pointed at a competitor URL for warm-up).
+- You're at <100 installs total — you don't know yet whether the listing
+  itself converts; adding a second platform won't fix a listing problem.
+
+## Negative-keyword starter lists per donor category
+
+> **TODO — partial coverage in bootcamp transcripts. Module IV lesson
+> 235 "Быстрый чекап 3 Оптимизация рекламы" covers the *principle* of
+> negative-keywording (only negate keywords that have ≥100–200
+> impressions AND are clearly off-topic AND are burning meaningful
+> budget — don't waste time negating long-tail noise). The bootcamp
+> does NOT publish per-category starter lists. The lists below are the
+> working operator pattern — paste them into Google Ads / Yandex Direct
+> as a starting negative list, then prune based on impression data per
+> your actual product.**
+
+The point of seeding negative keywords *before* the campaign runs is to
+prevent Google Ads' default broad-match from burning the first day's
+budget on competitor brand searches that will never convert. Once
+impressions start flowing (and you can see what's actually wasting your
+spend), use lesson 235's rule: negate only what has ≥100–200 impressions
+and is clearly off-topic.
+
+### Adblockers / privacy / tracker blockers
+
+Most ad-tech and privacy-tool brand terms — users searching these are
+loyal to those brands, not shopping. Common negatives:
+```
+adblock plus, adblock pro, ublock origin, ublock, ghostery, privacy badger,
+adguard, brave browser, duckduckgo, pi-hole, pihole, adaway, blokada,
+disconnect, malwarebytes, kaspersky, bitdefender, norton, mcafee, eset,
+1blocker, wipr, adblocker for safari, opera adblock
+```
+
+### PDF tools / converters
+
+PDF-reader brands and the "Adobe" ecosystem dominate searches that look
+adjacent but don't convert. Common negatives:
+```
+adobe acrobat, adobe reader, foxit, foxit reader, sumatra, sumatra pdf,
+nitro pdf, nitro reader, smallpdf, ilovepdf, pdf24, sejda, soda pdf,
+pdf-xchange, pdfsam, pdfescape, evince, okular, preview pdf,
+microsoft edge pdf, google drive pdf, pdf to word free, online pdf editor
+```
+
+### Screenshot tools / screen recorders
+
+Screen-recorder brand searches eat screenshot-tool budgets. Common
+negatives:
+```
+loom, screencast-o-matic, snagit, camtasia, obs, obs studio, bandicam,
+fraps, screenflow, quicktime, zoom recording, teams recording, gif
+recorder, screencastify, vimeo record, awesome screenshot, lightshot,
+greenshot, sharex, picpick, gyazo, monosnap, droplr, cleanshot,
+nimbus screenshot, fireshot, full page screen capture
+```
+
+### AI assistants / LLM chat extensions
+
+Major LLM brands; users searching these usually want the canonical
+product, not a wrapper. Common negatives:
+```
+chatgpt, chat gpt, gpt-4, gpt-5, openai, claude, anthropic, gemini,
+google bard, bard, copilot, github copilot, microsoft copilot, perplexity,
+poe, character.ai, character ai, midjourney, dall-e, stable diffusion,
+llama, mistral, you.com, phind, cursor, codeium, tabnine, jasper,
+copy.ai, writesonic, notion ai, grammarly, quillbot
+```
+
+### Translation / language tools
+
+Translator brand searches. Common negatives:
+```
+google translate, deepl, deepl translator, microsoft translator,
+bing translate, yandex translate, papago, reverso, linguee, wordreference,
+duolingo, busuu, babbel, rosetta stone, memrise, lingoda, italki, preply,
+itranslate, translate.com, smartcat
+```
+
+### Video / YouTube tools
+
+YouTube-adjacent searches and major video platforms. Common negatives:
+```
+youtube premium, youtube music, youtube vanced, vanced, newpipe,
+piped, invidious, freetube, kodi, jellyfin, plex, vlc, mpv, twitch,
+tiktok, instagram reels, snapchat, netflix, hulu, disney plus, hbo max,
+amazon prime video, peacock, vimeo, dailymotion, rumble, odysee
+```
+
+### Email / productivity (Gmail, Outlook, Slack helpers)
+
+Major email/productivity platforms. Common negatives:
+```
+gmail app, outlook app, yahoo mail, proton mail, protonmail, thunderbird,
+mailbird, spark mail, superhuman, hey email, fastmail, zoho mail,
+microsoft teams, slack, discord, zoom, google meet, webex, skype, telegram,
+whatsapp, signal, viber, wechat, line
+```
+
+### Universal negatives (apply to every campaign regardless of category)
+
+```
+free download, crack, cracked, torrent, pirated, illegal, hack, hacked,
+mod apk, modded, alternative to, vs, review, reviews, comparison, best
+free, top 10, list of, what is, how to use, tutorial, course, jobs,
+salary, career, internship, training, certification, login, sign in,
+sign up, password reset, deleted account, cancel subscription, refund,
+unsubscribe
+```
+
+**How to apply:**
+1. Paste the category list + universal negatives into your Google Ads
+   campaign as **Negative Keywords → Campaign-level → Phrase match**.
+2. After 3 days of impressions, pull the search-terms report and add any
+   query with ≥100 impressions, ≥0.5% CTR, and clearly off-topic to the
+   negative list (lesson 235's rule).
+3. Do **not** add long-tail negatives proactively — per lesson 235, this
+   is a time sink with sub-1000₽ savings. Only negate what's actively
+   burning meaningful budget.
+

@@ -57,7 +57,7 @@ is populated.
 ## Preamble (run first)
 
 ```bash
-PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/plugins/cache/cws-studio/cws-studio/2.0.0}"
+PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/plugins/cache/cws-studio/cws-studio/2.1.0}"
 BIN="$PLUGIN_ROOT/bin"
 eval "$("$BIN/cws-slug" 2>/dev/null)"
 _BRANCH=$(git branch --show-current 2>/dev/null || echo "no-git")
@@ -125,7 +125,7 @@ Branch off the echoed values:
 
 ## AskUserQuestion format
 
-See `shared/askuserquestion-format.md`. Every interactive decision in this
+See `../../shared/askuserquestion-format.md`. Every interactive decision in this
 skill is a `D<N>` brief: header, ELI10, stakes-if-wrong line, recommendation
 with reason, completeness scores (or kind-note), pros/cons with at least 2 ✅
 and 1 ❌ per option (each ≥40 chars), net synthesis. D-numbering starts at D1
@@ -133,13 +133,13 @@ per invocation.
 
 ## Voice
 
-See `shared/voice.md`. Operator-to-operator. No banners. No "I'll now write
+See `../../shared/voice.md`. Operator-to-operator. No banners. No "I'll now write
 the…" preambles. Concrete numbers: chars, keyword counts, Turgenev scores,
 percentages. Lead with the verdict; the reasoning follows.
 
 ## Skill routing footer
 
-See `shared/skill-routing.md`. End with a single `Next: /cws-<skill>` line +
+See `../../shared/skill-routing.md`. End with a single `Next: /cws-<skill>` line +
 one-line `Why:`. Never a menu.
 
 ---
@@ -1083,6 +1083,6 @@ locale translation pass, and the CWS moderation submit.
 
 If the user originally invoked this skill via `/cws-autoplan` and the run
 was a Taste-buffered approval cycle, route per the autoplan transition
-table (`shared/skill-routing.md`) instead.
+table (`../../shared/skill-routing.md`) instead.
 
 Never list more than one Next: line.

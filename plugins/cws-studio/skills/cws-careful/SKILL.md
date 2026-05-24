@@ -55,12 +55,12 @@ action only after a PROCEED confirmation is logged.
 
 ## Preamble (run first)
 
-Run the standard preamble per `shared/preamble.md`. It loads `$SLUG`, branch,
+Run the standard preamble per `../../shared/preamble.md`. It loads `$SLUG`, branch,
 prior learnings filtered for safety/regression entries, and reads
 `./.cws/state.json`. Skip the rest of this skill if the preamble exits.
 
 ```bash
-PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/plugins/cache/cws-studio/cws-studio/2.0.0}"
+PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/plugins/cache/cws-studio/cws-studio/2.1.0}"
 BIN="$PLUGIN_ROOT/bin"
 eval "$("$BIN/cws-slug" 2>/dev/null)"
 _BRANCH=$(git branch --show-current 2>/dev/null || echo "no-git")
@@ -105,14 +105,14 @@ submitting to moderation or enabling monetization anyway.
 After the preamble, read these four shared docs into context if you have not
 already this session:
 
-- `shared/preamble.md` — what the echoed values mean and how to route.
-- `shared/askuserquestion-format.md` — every D-brief must conform. ELI10 +
+- `../../shared/preamble.md` — what the echoed values mean and how to route.
+- `../../shared/askuserquestion-format.md` — every D-brief must conform. ELI10 +
   Stakes + Recommendation + Completeness + Pros/cons + Net. `(recommended)`
   on ABORT whenever any check failed.
-- `shared/voice.md` — operator voice. Concrete numbers. No "potentially",
+- `../../shared/voice.md` — operator voice. Concrete numbers. No "potentially",
   no "robust", no "comprehensive". Lead with the point: this is the safety
   call, here is what's missing, here is what breaks.
-- `shared/skill-routing.md` — one Next-line, never a menu. On PROCEED route
+- `../../shared/skill-routing.md` — one Next-line, never a menu. On PROCEED route
   back to the caller; on ABORT route to the remediation skill named in the
   per-action section.
 
@@ -770,7 +770,7 @@ export-cookies command) or `cws-learn` (to record the near-miss).
 
 ## D-brief numbering across the run
 
-Per `shared/askuserquestion-format.md`, D-numbering increments per
+Per `../../shared/askuserquestion-format.md`, D-numbering increments per
 invocation. For careful, the typical sequence is:
 
 - **D1** — action picker, only if the caller did not name an action.

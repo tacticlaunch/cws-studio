@@ -54,7 +54,7 @@ with `gates_passed += ["promote"]`.
 ## Preamble (run first)
 
 ```bash
-PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/plugins/cache/cws-studio/cws-studio/2.0.0}"
+PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/plugins/cache/cws-studio/cws-studio/2.1.0}"
 BIN="$PLUGIN_ROOT/bin"
 eval "$("$BIN/cws-slug" 2>/dev/null)"
 _BRANCH=$(git branch --show-current 2>/dev/null || echo "no-git")
@@ -105,7 +105,7 @@ clicks at a listing that doesn't exist yet).
 
 ## AskUserQuestion Format
 
-See `shared/askuserquestion-format.md`. Every interactive decision goes
+See `../../shared/askuserquestion-format.md`. Every interactive decision goes
 through `AskUserQuestion` as a `D<N>` decision brief (ELI10 · Stakes ·
 Recommendation · Completeness · Pros/cons · Net). D-numbering starts at D1
 per invocation. Decisions in this skill: **D1** ad platform pick, **D2** ad-
@@ -115,7 +115,7 @@ and source.
 
 ## Voice
 
-See `shared/voice.md`. Operator voice. No banners. Concrete numbers,
+See `../../shared/voice.md`. Operator voice. No banners. Concrete numbers,
 platforms, bid amounts, file paths, store URLs. Lead with the launch
 outcome — what conversion you gain, what trust-budget you protect, what
 ban risk you avoid.
@@ -123,7 +123,7 @@ ban risk you avoid.
 ## Skill Routing Footer
 
 End every invocation with a single `Next: /cws-<skill>` line per
-`shared/skill-routing.md`. Never a menu.
+`../../shared/skill-routing.md`. Never a menu.
 
 ---
 

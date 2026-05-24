@@ -55,7 +55,7 @@ weekly_users_at_enable}`.
 ## Preamble (run first)
 
 ```bash
-PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/plugins/cache/cws-studio/cws-studio/2.0.0}"
+PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/plugins/cache/cws-studio/cws-studio/2.1.0}"
 BIN="$PLUGIN_ROOT/bin"
 eval "$("$BIN/cws-slug" 2>/dev/null)"
 _BRANCH=$(git branch --show-current 2>/dev/null || echo "no-git")
@@ -115,14 +115,14 @@ After the preamble, the calling skill reads the echoed values. Branching rules:
 
 ## AskUserQuestion Format
 
-See `shared/askuserquestion-format.md`. Every interactive decision goes through
+See `../../shared/askuserquestion-format.md`. Every interactive decision goes through
 `AskUserQuestion` as a `D<N>` decision brief (ELI10 · Stakes · Recommendation ·
 Completeness · Pros/cons · Net). D-numbering starts at D1 per invocation, model-
 level.
 
 ## Voice
 
-See `shared/voice.md`. Operator voice. No banners. Concrete numbers from
+See `../../shared/voice.md`. Operator voice. No banners. Concrete numbers from
 `references/monetization-scaling.md`. Lead with the launch impact on every
 decision — what conversion you gain, what behavioral-factor signal you risk,
 what review-dialog retention you lose.
@@ -130,7 +130,7 @@ what review-dialog retention you lose.
 ## Skill Routing Footer
 
 End every invocation with a single `Next: /cws-<skill>` line per
-`shared/skill-routing.md`. Never a menu.
+`../../shared/skill-routing.md`. Never a menu.
 
 ---
 
@@ -237,7 +237,7 @@ PY
 If the script exits non-zero, print the failures and stop. Route the user to
 whichever skill fixes the highest-priority gap (priority order: state.json →
 promote → search consolidation → careful). Single `Next:` line per
-`shared/skill-routing.md`.
+`../../shared/skill-routing.md`.
 
 If green, log the entry to monetize:
 

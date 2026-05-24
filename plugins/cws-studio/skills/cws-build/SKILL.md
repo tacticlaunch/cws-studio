@@ -46,7 +46,7 @@ On exit, `gates_passed` includes `"build"`.
 ## Preamble (run first)
 
 ```bash
-PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/plugins/cache/cws-studio/cws-studio/2.0.0}"
+PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/plugins/cache/cws-studio/cws-studio/2.1.0}"
 BIN="$PLUGIN_ROOT/bin"
 eval "$("$BIN/cws-slug" 2>/dev/null)"
 _BRANCH=$(git branch --show-current 2>/dev/null || echo "no-git")
@@ -83,14 +83,14 @@ no keyword, no SERP to match, no donor search query that means anything.
 
 ## Shared references
 
-- `shared/preamble.md` — preamble pattern echoed above, including state
+- `../../shared/preamble.md` — preamble pattern echoed above, including state
   read and learnings filter.
-- `shared/askuserquestion-format.md` — D-brief format. Every interactive
+- `../../shared/askuserquestion-format.md` — D-brief format. Every interactive
   decision in this skill (D1 form factor, D2 donor, D3 type, D4 minify
   settings) follows it exactly.
-- `shared/voice.md` — operator voice. Concrete file paths, real permission
+- `../../shared/voice.md` — operator voice. Concrete file paths, real permission
   strings, no AI vocabulary, no em dashes.
-- `shared/skill-routing.md` — single-next footer at end of invocation.
+- `../../shared/skill-routing.md` — single-next footer at end of invocation.
 
 ## Background reference
 
