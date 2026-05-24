@@ -1,6 +1,6 @@
 # CWS Studio
 
-[![version](https://img.shields.io/badge/version-2.1.0-blue.svg)](./CHANGELOG.md)
+[![version](https://img.shields.io/badge/version-2.2.0-blue.svg)](./CHANGELOG.md)
 [![license](https://img.shields.io/badge/license-MIT-green.svg)](./plugins/cws-studio/.claude-plugin/plugin.json)
 [![repo](https://img.shields.io/badge/repo-tacticlaunch%2Fcws--studio-black.svg)](https://github.com/tacticlaunch/cws-studio)
 
@@ -52,11 +52,11 @@ LOC + D-brief counts are read straight from each `SKILL.md`. "D-briefs" =
 
 | Skill | Stage | Purpose | LOC | D-briefs |
 |---|---|---|---:|---:|
-| [`cws-init`](./plugins/cws-studio/skills/cws-init/SKILL.md) | 0 | Scaffold `./.cws/` (state + per-stage artifact stubs) on a fresh project. | 808 | 6 |
-| [`cws-idea`](./plugins/cws-studio/skills/cws-idea/SKILL.md) | 0–1 | CWS account setup + idea validation (10-step scoring workflow). | 276 | 0 |
-| [`cws-package`](./plugins/cws-studio/skills/cws-package/SKILL.md) | 2a | Listing copy — name, short/full description, SEO, spam check. | 1088 | 14 |
-| [`cws-build`](./plugins/cws-studio/skills/cws-build/SKILL.md) | 2b | Build the minimal Manifest V3 extension; types; donor cloning. | 941 | 8 |
-| [`cws-launch`](./plugins/cws-studio/skills/cws-launch/SKILL.md) | 3 | Banners, icons, Welcome Page, 50+ translations, publishing & moderation. | 1669 | 7 |
+| [`cws-init`](./plugins/cws-studio/skills/cws-init/SKILL.md) | 0 | Scaffold `./.cws/` (state + per-stage artifact stubs) on a fresh project. | 809 | 3 |
+| [`cws-idea`](./plugins/cws-studio/skills/cws-idea/SKILL.md) | 0–1 | CWS account setup + idea validation (10-step scoring workflow). | 1453 | 7 |
+| [`cws-package`](./plugins/cws-studio/skills/cws-package/SKILL.md) | 2a | Listing copy — name, short/full description, SEO, spam check. | 1088 | 7 |
+| [`cws-build`](./plugins/cws-studio/skills/cws-build/SKILL.md) | 2b | Build the minimal Manifest V3 extension; types; donor cloning. | 941 | 4 |
+| [`cws-launch`](./plugins/cws-studio/skills/cws-launch/SKILL.md) | 3 | Banners, icons, Welcome Page, 50+ translations, publishing & moderation. | 1669 | 6 |
 | [`cws-promote`](./plugins/cws-studio/skills/cws-promote/SKILL.md) | 4 | Paid install campaigns (FB / Google / Yandex), UTM, analytics, reviews. | 1266 | 5 |
 | [`cws-monetize`](./plugins/cws-studio/skills/cws-monetize/SKILL.md) | 5 | Uninstall Page, monetization models, host permissions, selling the asset. | 1041 | 7 |
 
@@ -64,14 +64,14 @@ LOC + D-brief counts are read straight from each `SKILL.md`. "D-briefs" =
 
 | Skill | Role | Purpose | LOC | D-briefs |
 |---|---|---|---:|---:|
-| [`cws-sprint`](./plugins/cws-studio/skills/cws-sprint/SKILL.md) | Router | Conducts a full launch end-to-end; locates you in the pipeline and hands off to the right stage skill. | 221 | 0 |
-| [`cws-autoplan`](./plugins/cws-studio/skills/cws-autoplan/SKILL.md) | Autopilot | Runs the sprint as autonomously as possible — only taste decisions surface. | 345 | 0 |
-| [`cws-help`](./plugins/cws-studio/skills/cws-help/SKILL.md) | Catalog | Prints the plugin's skill catalog + pipeline order; routes first-time users to the right entry skill. | 169 | 0 |
-| [`cws-challenge`](./plugins/cws-studio/skills/cws-challenge/SKILL.md) | Adversarial | Per-stage adversarial second-opinion. Run before every irreversible commitment. | 1343 | 2 |
-| [`cws-careful`](./plugins/cws-studio/skills/cws-careful/SKILL.md) | Guardrail | Pre-flight gate on irreversible actions (moderation submit, paywall enable, host permissions widen). | 1131 | 4 |
-| [`cws-resync`](./plugins/cws-studio/skills/cws-resync/SKILL.md) | Recovery | Propagates a mid-launch change downstream; marks affected artifacts `superseded`, routes the re-do. | 989 | 0 |
+| [`cws-sprint`](./plugins/cws-studio/skills/cws-sprint/SKILL.md) | Router | Conducts a full launch end-to-end; locates you in the pipeline and hands off to the right stage skill. | 650 | 3 |
+| [`cws-autoplan`](./plugins/cws-studio/skills/cws-autoplan/SKILL.md) | Autopilot | Runs the sprint as autonomously as possible — only taste decisions surface. | 1443 | 7 |
+| [`cws-help`](./plugins/cws-studio/skills/cws-help/SKILL.md) | Catalog | Prints the plugin's skill catalog + pipeline order; routes first-time users to the right entry skill. | 724 | 3 |
+| [`cws-challenge`](./plugins/cws-studio/skills/cws-challenge/SKILL.md) | Adversarial | Per-stage adversarial second-opinion. Run before every irreversible commitment. | 1698 | 1 |
+| [`cws-careful`](./plugins/cws-studio/skills/cws-careful/SKILL.md) | Guardrail | Pre-flight gate on irreversible actions (moderation submit, paywall enable, host permissions widen). | 1131 | 3 |
+| [`cws-resync`](./plugins/cws-studio/skills/cws-resync/SKILL.md) | Recovery | Propagates a mid-launch change downstream; marks affected artifacts `superseded`, routes the re-do. | 989 | 3 |
 | [`cws-retro`](./plugins/cws-studio/skills/cws-retro/SKILL.md) | Snapshot | Post-launch metrics retrospective; regression detection vs benchmark norms; dated artifacts under `.cws/retro/`. | 1054 | 6 |
-| [`cws-learn`](./plugins/cws-studio/skills/cws-learn/SKILL.md) | Memory | Append-only learnings journal at `.cws/learnings.{md,jsonl}`; surfaces prior taste decisions on re-entry. | 1008 | 0 |
+| [`cws-learn`](./plugins/cws-studio/skills/cws-learn/SKILL.md) | Memory | Append-only learnings journal at `.cws/learnings.{md,jsonl}`; surfaces prior taste decisions on re-entry. | 1008 | 4 |
 
 ### Ops
 
@@ -127,6 +127,7 @@ They are auto-on-PATH while the plugin is loaded.
 | [`cws-config`](./plugins/cws-studio/bin/cws-config) | Minimal JSON config store at `$CWS_HOME/config.json` (get / set / list). |
 | [`cws-learnings-search`](./plugins/cws-studio/bin/cws-learnings-search) | Search per-project `learnings.jsonl`; `--stage`, `--grep`, `--limit`. |
 | [`cws-timeline-log`](./plugins/cws-studio/bin/cws-timeline-log) | Append one JSON event line to per-project `timeline.jsonl` (injects `ts`). |
+| [`cws-timeline-tail`](./plugins/cws-studio/bin/cws-timeline-tail) | Tail per-project `timeline.jsonl`; `--skill`, `--event`, `--since`, `--limit`. |
 
 Smoke suite for all of the above + `dolphin-cli`:
 [`plugins/cws-studio/tests/smoke.sh`](./plugins/cws-studio/tests/smoke.sh).

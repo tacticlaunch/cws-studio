@@ -55,7 +55,7 @@ weekly_users_at_enable}`.
 ## Preamble (run first)
 
 ```bash
-PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/plugins/cache/cws-studio/cws-studio/2.1.0}"
+PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/plugins/cache/cws-studio/cws-studio/2.2.0}"
 BIN="$PLUGIN_ROOT/bin"
 eval "$("$BIN/cws-slug" 2>/dev/null)"
 _BRANCH=$(git branch --show-current 2>/dev/null || echo "no-git")
@@ -760,7 +760,7 @@ post-monetize stable". Don't surface the D brief.
 ### What portfolio scaling actually is
 
 Spawning a **second** extension on the same operator (proxy + Dolphin profile +
-Google account isolation per `references/account-setup.md` rules). NOT
+Google account isolation per `../cws-idea/references/account-setup.md` rules). NOT
 re-skinning the first extension on a new account — Chrome detects code-reuse
 signals at distance and bans the whole network.
 

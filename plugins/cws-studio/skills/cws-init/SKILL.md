@@ -46,7 +46,7 @@ yours. Yours is: lay down the directory, write the JSON, leave.
 ## Preamble (run first)
 
 ```bash
-PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/plugins/cache/cws-studio/cws-studio/2.1.0}"
+PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/plugins/cache/cws-studio/cws-studio/2.2.0}"
 BIN="$PLUGIN_ROOT/bin"
 eval "$("$BIN/cws-slug" 2>/dev/null)"
 _BRANCH=$(git branch --show-current 2>/dev/null || echo "no-git")
@@ -595,8 +595,9 @@ Next: stop — fix the directory issue, then re-run /cws-init.
   `/cws-resync`, not cws-init — cws-init refuses to overwrite a
   current-schema state and would not help anyway.
 - **CI/CD agent setup.** This skill is interactive. If you need a
-  scaffolding step in a CI job, call `bin/cws-init --noninteractive` (out
-  of scope for this skill doc; tooling lives in `bin/`).
+  non-interactive scaffolding step in a CI job, write the same files
+  directly from a small shell or Python wrapper — there is no
+  `bin/cws-init` helper today (the skill itself is the canonical path).
 
 ---
 

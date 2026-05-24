@@ -300,6 +300,42 @@ EOF
   assert_contains "socks5 type honored" "\"type\": \"socks5\"" "$out" || return 1
 }
 
+test_cws_timeline_tail() {
+  local fakehome="$WORK/cws_home"
+  local proj_slug="smoke-tail"
+  local proj="$fakehome/projects/$proj_slug"
+  mkdir -p "$proj"
+  # seed two events
+  CWS_HOME="$fakehome" /usr/bin/python3 -c "
+import json, datetime, pathlib
+p = pathlib.Path('$proj/timeline.jsonl')
+for i, (skill, event) in enumerate([('cws-init','started'),('cws-init','scaffolded'),('cws-idea','started')]):
+    p.write_text(p.read_text() if p.exists() else '')
+    with open(p, 'a') as f:
+        f.write(json.dumps({'skill':skill,'event':event,'ts':f'2026-05-24T10:0{i}:00Z'})+'\n')
+"
+  # tail must read from proj based on cws-slug — point CWS_HOME, but cws-slug uses git toplevel for slug.
+  # easier: directly call cws-timeline-tail with CWS_HOME and inside a directory whose basename matches proj_slug.
+  local work_proj="$WORK/$proj_slug"
+  mkdir -p "$work_proj"; (cd "$work_proj" && git init -q)
+  local out
+  out=$(cd "$work_proj" && CWS_HOME="$fakehome" "$BIN/cws-timeline-tail" --limit 10 2>&1)
+  assert_contains "tail returns all 3 events" "cws-idea" "$out" || return 1
+  out=$(cd "$work_proj" && CWS_HOME="$fakehome" "$BIN/cws-timeline-tail" --skill cws-init 2>&1)
+  assert_contains "skill filter cws-init" "scaffolded" "$out" || return 1
+  if echo "$out" | /usr/bin/grep -q '"skill": "cws-idea"'; then
+    printf "  FAIL skill filter leaked cws-idea\n"; return 1
+  fi
+  printf "  ok   skill filter excludes cws-idea\n"
+  out=$(cd "$work_proj" && CWS_HOME="$fakehome" "$BIN/cws-timeline-tail" --event started 2>&1)
+  if echo "$out" | /usr/bin/grep -q '"event": "scaffolded"'; then
+    printf "  FAIL event filter leaked scaffolded\n"; return 1
+  fi
+  printf "  ok   event filter strict\n"
+  out=$(cd "$work_proj" && CWS_HOME="$fakehome" "$BIN/cws-timeline-tail" --since 2027-01-01 2>&1)
+  assert_eq "future --since returns empty" "" "$out" || return 1
+}
+
 test_skill_frontmatter() {
   # Every SKILL.md must:
   #  - have valid YAML frontmatter
@@ -384,6 +420,7 @@ run_test test_dolphin_cli_proxy6_buy_no_key
 run_test test_dolphin_cli_delete_force_delete
 run_test test_dolphin_cli_create_minimal_payload
 run_test test_dolphin_cli_bulk_parser_formats
+run_test test_cws_timeline_tail
 run_test test_skill_frontmatter
 run_test test_marketplace_json
 

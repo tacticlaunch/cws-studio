@@ -26,7 +26,15 @@ OUT="$F"
 TMP=""
 if [ -n "$STAGE" ]; then
   TMP=$(mktemp)
-  /usr/bin/grep "\"stage\":\"$STAGE\"" "$F" > "$TMP" 2>/dev/null || true
+  /usr/bin/python3 -c "
+import json, sys
+stage = sys.argv[1]
+for line in open(sys.argv[2]):
+    try:
+        d = json.loads(line)
+        if d.get('stage') == stage: print(line, end='')
+    except Exception: pass
+" "$STAGE" "$F" > "$TMP" 2>/dev/null || true
   OUT="$TMP"
 fi
 if [ -n "$GREP" ]; then
@@ -35,4 +43,6 @@ if [ -n "$GREP" ]; then
   OUT="$TMP2"
 fi
 tail -n "$LIMIT" "$OUT" 2>/dev/null
-[ -n "$TMP" ] && rm -f "$TMP"
+[ -n "$TMP" ] && rm -f "$TMP" || true
+[ -n "${TMP2:-}" ] && rm -f "$TMP2" || true
+exit 0
