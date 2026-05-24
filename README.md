@@ -1,6 +1,6 @@
 # CWS Studio
 
-[![version](https://img.shields.io/badge/version-2.2.1-blue.svg)](./CHANGELOG.md)
+[![version](https://img.shields.io/badge/version-2.3.0-blue.svg)](./CHANGELOG.md)
 [![license](https://img.shields.io/badge/license-MIT-green.svg)](./plugins/cws-studio/.claude-plugin/plugin.json)
 [![repo](https://img.shields.io/badge/repo-tacticlaunch%2Fcws--studio-black.svg)](https://github.com/tacticlaunch/cws-studio)
 

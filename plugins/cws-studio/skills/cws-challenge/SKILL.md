@@ -62,7 +62,7 @@ artifact to attack, and the preamble's `CURRENT_STAGE` + `GATES_PASSED`
 echoes drive that routing.
 
 ```bash
-PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/plugins/cache/cws-studio/cws-studio/2.2.1}"
+PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/plugins/cache/cws-studio/cws-studio/2.3.0}"
 BIN="$PLUGIN_ROOT/bin"
 eval "$("$BIN/cws-slug" 2>/dev/null)"
 _BRANCH=$(git branch --show-current 2>/dev/null || echo "no-git")
@@ -296,7 +296,7 @@ adversarial pass starts with these on the table, not blank.
 Every stage has a canonical rubric in `references/`. Load it before
 attacking:
 
-- `idea` → `references/scoring-rubric.md`, `references/idea-validation.md`
+- `idea` → `../../cws-idea/references/scoring-rubric.md`, `../../cws-idea/references/idea-validation.md`
 - `package` → `references/listing-rubric.md`, `references/turgenev.md`
 - `build` → `references/build-rubric.md`, `references/permissions.md`
 - `launch` → `references/launch-rubric.md`, `references/banner.md`
