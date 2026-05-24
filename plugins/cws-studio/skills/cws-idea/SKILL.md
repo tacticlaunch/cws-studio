@@ -50,7 +50,7 @@ gated in `state.json`.
 ## Preamble (run first)
 
 ```bash
-PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/plugins/cache/cws-studio/cws-studio/2.3.0}"
+PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/plugins/cache/cws-studio/cws-studio/2.4.0}"
 BIN="$PLUGIN_ROOT/bin"
 eval "$("$BIN/cws-slug" 2>/dev/null)"
 _BRANCH=$(git branch --show-current 2>/dev/null || echo "no-git")
@@ -148,7 +148,7 @@ the cost in one line, decline, and continue.
 | I7 | Occupation rule: a competitor extension is "well-optimized" only if name-overlap AND desc > 3K chars AND > 30 translations. Missing any one → still winnable. | The three-factor rule prevents false-positive drops on early-stage rivals. |
 | I8 | Never use `app-database.com` for competitor lookup. Login-walled, unreliable count. | Use chromewebstore directly + `phrase_organic` SERP cross-check. |
 | I9 | Never count on donations as monetization. | Donations earn 2–3 orders of magnitude less than IAP. Out of scope. |
-| I10 | Refuse the gold-standard saturated niches the playbook flagged dead: screenshot tools (~1,800 extensions), ad blockers (1,800+), VPN (270 named), generic AI summarizers. | Whole-vertical saturation; the *keyword* may look free but near-form rivals crowd installs. |
+| I10 | Saturation check (downstream filter, not an entry point): screenshot tools (~1,800 extensions), ad blockers (1,800+), VPN (270 named), generic AI summarizers, generic PDF tools. If a user-derived hypothesis lands inside one of these, surface the saturation count and require an explicit override before scoring. Do not propose hypotheses *from* this list. | Whole-vertical saturation; the *keyword* may look free but near-form rivals crowd installs. The list is a red flag at scoring time, not a brainstorming menu. |
 | I11 | Never put `Free` in the name keyword. | Moderation rejection risk; attracts non-paying audience; collapses BF on monetization. |
 | I12 | Never put `Google`, `Chrome`, `Extension`, or articles `the`/`a` in the name unless they appear in the keyword itself. | These words add nothing and dilute the keyword's SEO weight. |
 | I13 | Read the SERP form factor, not just whether it's "software." | `hashtag finder` SERP wants generators, not scrapers. Wrong form → BF tank. |
@@ -159,6 +159,8 @@ the cost in one line, decline, and continue.
 | I18 | KD reads only by zone (green/yellow/orange/red/scarlet) and only between same-word-count names. | KD on 1-word names ≫ KD on 2-word names; raw % comparison is meaningless across counts. |
 | I19 | RU/BY/CIS operators: antidetect + foreign proxy is mandatory. Not negotiable. | Sanctions over-restriction risk; ban-on-first-sign-in if violated. |
 | I20 | Stage 0 must gate before any Semrush MCP call from a sanctioned-region IP. | Semrush silently caps dataset on sanctioned IPs; data quality collapses without you noticing. |
+| I21 | Never propose a hypothesis the user did not derive from an observation or an explicit forcing-question loop. Hypotheses generated from "gold-standard niche" lists, vertical menus, or category enumerations are banned. | Derivative seeds produce derivative SERPs. The model's "useful" niche list anchors every later step on a saturated word-cluster — the candidates look diverse but cluster inside the same dead vertical. The user's own observation is the only seed that surfaces unsaturated demand. |
+| I22 | Anti-sycophancy. If the user's stated seed is weak — no observation, no status-quo, no specific user, "I just want to build something" — push back via the forcing-question loop. Do not score weak seeds. Refuse and request an observation first. Acceptable forms of observation: the user noticed themselves searching for X, a friend complained about Y, a SERP shows a clearly under-optimised top result. "I think it would be cool" is not an observation. | Without an observation, every keyword we score is a guess. Scoring guesses produces a clean-looking table that ranks vapor. The studio's only competitive edge is the operator's own friction — a category-level brainstorm throws that edge away. |
 
 If a rule conflicts with what the user said, state the rule and decline.
 Example:
@@ -679,215 +681,663 @@ If `01-idea.md` exists and has `status: complete`, ask via D-brief which case
 applies. Default: read-only display the existing table and exit. Don't
 silently overwrite a complete artifact.
 
-## 1.1 — Capture the seed (D3)
+## Phase 1 shape — adapted YC office-hours forcing loop
 
-If `.cws/01-idea.md` has a `## Seed` section from `cws-init`, use it.
-Otherwise emit D3.
+Phase 1 is a forcing-question pipeline, not a brainstorm-from-menu. The
+sequence: demand reality → status quo → desperate specificity → narrowest
+wedge → alternatives generation → premise challenge → scoring. The model's
+job is to push the user's observation into a shape sharp enough to score
+*once* — not to generate a vertical's worth of candidates and grade them.
 
-### Parsing rules for user phrasings
+Operating posture (carried from gstack office-hours and `../../shared/voice.md`):
 
-The user's seed phrasing tells you which option to default-recommend in D3:
+- **Specificity is the only currency.** Vague answers get pushed. "PDF
+  tools" is not a hypothesis. "I noticed myself searching `pdf split
+  pages` last Tuesday and the top extension hadn't been updated in 3
+  years" is a hypothesis.
+- **Interest is not demand.** "It would be cool" / "I think users would
+  like this" / "lots of people use Chrome" — none of these are demand.
+  Demand is: an actual Google query you typed where the result was bad,
+  an actual person who complained about a workflow, an actual SERP you
+  scanned with your eyes and saw a soft #1.
+- **The status quo is the real competitor.** Not the next extension —
+  the cobbled-together workaround (Chrome's built-in feature + a
+  bookmark + a copy-paste) the user lives with today.
+- **Narrow beats wide, early.** The smallest extension someone would
+  install this week is more valuable than a roadmap. One button, one
+  shortcut, one address-bar rewrite.
+- **Push once, then push again.** The first answer to a forcing question
+  is usually the polished founder-pitch. The real answer comes after
+  the second push.
+- **Anti-sycophancy.** Never "great idea" / "interesting direction" /
+  "that could work." Take a position. State what evidence would change
+  it. If the seed is weak, name the weakness and refuse to score.
 
-| User phrasing pattern | Default option | Why |
+The forcing-question loop (1.1 → 1.4) replaces the prior "capture seed
+then brainstorm 5–10 hypotheses in adjacent semantic space" workflow.
+That workflow was banned by I21 because adjacency to a derivative seed
+produces a derivative SERP cluster — the candidates look diverse and
+*aren't*. Forcing the user back to an observation is the only way to
+break out of the vertical-menu trap.
+
+## 1.1 — Demand reality (D3)
+
+The first forcing question. Adapted from gstack's Q1: "what evidence do
+you have that someone actually wants this?" In the CWS context the
+question is sharper because the launch's whole engine is **a Google
+query the model will rank for 6 months**. If nobody searches the query,
+or the query's intent is satisfied by an existing extension, ranking
+lands and produces zero installs.
+
+If `.cws/01-idea.md` has a `## Seed` section from `cws-init` AND that
+seed already contains an observation (a Google query the user typed, a
+named friend's complaint, a specific under-optimised SERP), use it and
+note "seed already contains an observation — skipping D3." Otherwise
+emit D3.
+
+### Parsing rules — does the user's framing carry an observation?
+
+Read the user's first message (or the `## Seed` from cws-init) against
+the table below. The job is to detect whether there's a real observation
+behind the seed, not to bucket the seed into a niche.
+
+| User phrasing pattern | Default D3 option | Why |
 |---|---|---|
-| "extension that does X" / "tool that X" | C (workflow) | User has a function in mind |
-| Pasted URL containing `chromewebstore.google.com` | A (specific donor) | User has a competitor in mind |
-| "I keep searching for X" / "I noticed lots of people search X" | B (query) | User has demand signal |
-| "what's a good extension to build" | D (brainstorm) | User has nothing |
-| "I want to learn extension dev" | refuse, route to `/office-hours` | Learning ≠ launching |
-| "I want to clone X but better" | A (donor) + I14 note | Optimization-second-mover risk |
-| Two or more unrelated ideas | refuse, ask user to pick one (I16) | One product per first sprint |
-| Trademark word (Spotify, Slack, Notion, etc.) as the head | parse, route to D3 with I12 note | Trademark conflict downstream |
+| "I keep searching for X and the top extension is bad / missing" | A (operator observation) | Self-derived demand |
+| "I noticed an extension on the CWS at position 1 that hasn't been updated since 2022" | C (SERP gap observation) | Operator-spotted supply gap |
+| "My friend / colleague / family member complained about Y workflow" | B (third-party complaint) | Externally-derived demand |
+| "I have an idea: an extension that does X" | D (no observation yet) | No demand evidence — push back |
+| "What's a good extension to build" | D (no observation yet) | No demand evidence — push back |
+| "I want to clone X but better" | D + I14 note | Optimization-second-mover risk; treat as no observation |
+| Pasted CWS URL only ("look at this extension") | ask one clarifying — "what made you look at this one?" | URL alone is not an observation |
+| "I want to build a PDF tool / screenshot tool / AI summariser" | D + I10 note + I21 note | Category-level — surface the saturation count and demand an observation |
+| Two or more unrelated seeds | refuse, ask user to pick one (I16) | One product per first sprint |
 
-```
-D3 — Capture the seed
-Project/branch/task: $SLUG, opening Phase 1.1 — what's the validation seed?
-ELI10: The seed is what we'll validate. It can be a competitor extension
-  you've seen, a Google query you noticed people typing, a job you'd want
-  automated, or nothing — in which case we brainstorm from gold-standard
-  niches. Validation is the same downstream either way.
-Stakes if we pick wrong: a vague seed makes Phase 1.2 generate vague
-  candidates. Garbage in, garbage table out.
-Recommendation: <varies — parse user's first message via the table above>
-Completeness: A=10/10, B=9/10, C=9/10, D=7/10
-Pros / cons:
-A) Specific competitor URL (chromewebstore link)
-  ✅ Donor is identified — easier simplicity score in Phase 1
-  ✅ Lets us compute the user-count revenue heuristic immediately
-  ❌ Risks copying the rival's red flags (same name keyword, same form factor)
-B) A Google search query you noticed had real demand
-  ✅ Demand signal is grounded in your observation
-  ✅ SERP fetch immediately tells us softness and occupation
-  ❌ No donor yet — we have to search GitHub in Phase 1.2
-C) A workflow / job you want automated
-  ✅ User pain is the strongest signal of all
-  ✅ Lets us pick the keyword and donor that best serve the workflow
-  ❌ "Job" can be too abstract — multiple keywords may serve it
-D) I have nothing — brainstorm 10 candidates from gold-standard niches
-  ✅ Surfaces options you wouldn't have thought of
-  ✅ Playbook-vetted starting set (PDF, screenshot/recording, social-page utils, AI assistants on common pages)
-  ❌ Generic; not tied to your interest — risk of low motivation to ship
-Net: A or B give the cleanest path; D is fine but expect lower commitment.
-```
+Refusal cases (do NOT advance, even if the user has technically named a
+niche):
 
-Refusal cases (do NOT advance even with a parsed seed):
-
-- Seed is "I want to clone Grammarly / Notion / Loom" → I10 (saturated
-  niche). Decline and ask for a sibling niche.
-- Seed is "I want a piracy tool" (downloader for Netflix, Spotify, etc.)
-  → CWS moderation will reject. Decline and explain.
+- Seed names a saturated vertical from I10 (screenshot, ad-block, VPN,
+  generic AI summariser, generic PDF) → surface the saturation count
+  ("~1,800 screenshot extensions live on CWS today, the keyword cluster
+  is fully occupied") and demand an observation that distinguishes the
+  user's wedge. Don't decline outright — the user may have a real wedge
+  inside a saturated vertical — but require it to be named.
+- Seed is "I want to clone Grammarly / Notion / Loom / Honey" → I10 +
+  I14. Decline and ask for a sibling niche with a stated observation.
+- Seed is a piracy tool (Netflix/Spotify downloader, etc.) → CWS
+  moderation will reject. Decline and explain.
 - Seed has `Free` in the proposed name → I11. Decline and ask for a
   rename.
-- Seed is more than one product → I16. Pick one.
+- Two unrelated seeds → I16. Pick one.
+- Seed is "I want to learn extension dev" → not a launch; route to
+  `/office-hours` (gstack) for an exploration session, not validation.
 
-## 1.2 — Generate 5–10 hypotheses
-
-The 10-step procedure from `references/idea-validation.md` runs here. For
-each hypothesis, compute: name keyword candidate, what the extension would
-do (one function), likely donor (open-source repo URL or `none`).
-
-### Generation method
-
-Run these Semrush MCP calls in sequence, expecting CSV output (semicolon-
-delimited, header row). See `references/semrush-playbook.md`.
-
-**Step A — Head volume + KD for the seed keyword:**
+### D3 emit
 
 ```
-execute_report(report="phrase_this",
-  params={"phrase": "<seed>", "database": "us",
-          "export_columns": ["Ph","Nq","Cp","Co","Nr","Kd","Td"]})
+D3 — What's the evidence someone wants this?
+Project/branch/task: $SLUG @ $_BRANCH, opening Phase 1.1 — demand reality
+ELI10: We're about to pick a keyword the model will spend 6 months
+  ranking for. If nobody actually searches the keyword, ranking lands
+  and produces zero installs. If they do search it but the existing
+  extensions already satisfy the intent, ranking lands and the install
+  CTR collapses. So before we score, we need an observation — not "I
+  thought it would be cool," but "I noticed myself searching for X and
+  the top extension was useless" or "my friend complained about Y
+  workflow and there's no good extension for it." A category-level
+  answer ("productivity tools," "PDF tools," "AI assistants") is a
+  filter, not an observation.
+Stakes if we pick wrong: scoring a guess produces a clean-looking table
+  that ranks vapor. 6 months of indexing work, zero installs.
+Recommendation: <varies — parse user's first message via the table above>
+  because operator-derived demand is the studio's only real edge.
+Completeness: A=10/10, B=8/10, C=9/10, D=3/10
+Pros / cons:
+A) I noticed myself searching for something and the result was bad or missing (operator observation)
+  ✅ Self-derived demand is the strongest possible signal — you ARE the user
+  ✅ The query is already typed in Google; we don't have to invent it
+  ❌ Sample size of one — risk the friction is unique to your workflow
+B) Someone I know complained about a workflow that a Chrome extension could fix (third-party complaint)
+  ✅ Externally-derived demand — at least one human outside your head wants this
+  ✅ The complainer is a known phone-call away for follow-up validation
+  ❌ Second-hand observation — easy to mis-hear the actual job-to-be-done
+C) I saw a SERP where the top extension is clearly under-optimised — there's room to outrank it (operator-spotted supply gap)
+  ✅ Validates BOTH demand (people search the query) AND opportunity (top result is beatable)
+  ✅ Donor research is easier when the rival's weakness is the entry point
+  ❌ Survivor bias — under-optimised top result might mean the query is dying
+D) I have a hypothesis but no observation — push me to find one first
+  ✅ Honest answer — better than fabricating an observation
+  ✅ The forcing prompts will surface a real observation in 5-15 minutes
+  ❌ Adds a round of conversation before we can score anything
+Net: A or C give the cleanest path; B works with a known third-party; D
+  is honest but means we don't score yet — we push for an observation
+  first.
 ```
 
-Expected shape:
+### If D3 == D — forcing prompts
+
+Do NOT proceed to brainstorm-from-niches. That is banned by I21. Instead
+push back via three forcing prompts (adapted from gstack's Q1 push):
+
+1. **What query did you Google in the last 30 days where the top extension result was useless or missing?**
+   This is the highest-signal version of the question — the user has a
+   browser-history breadcrumb to anchor on. If the user can't name one,
+   that itself is evidence — they don't have demand-side observation.
+
+2. **What manual workflow do you (or a friend) do weekly that a 200-line extension could automate?**
+   The "weekly" cadence rules out one-off jobs that don't justify an
+   install. The "200-line" budget rules out platform fantasies.
+
+3. **What Chrome built-in feature do you wish behaved differently?**
+   Address bar, right-click menu, new-tab page, side panel, downloads
+   panel. Chrome's primitives are the most under-served surface area on
+   CWS — the SERP for "address bar X" / "new tab Y" / "right click Z"
+   keywords is usually softer than mid-vertical product keywords.
+
+Present these as three prose questions, not as a D-brief — they are
+generative prompts, not a multiple-choice decision. After the user
+answers one of them, re-emit D3 and route A/B/C.
+
+If the user pushes back ("just brainstorm from niches, don't make me
+think"), apply I22:
+
+> I22: that's exactly the path that produces derivative candidates. The
+> category-level brainstorm has been banned in this skill — it anchors
+> every later step on a vertical that's already crowded. I'll surface
+> three forcing prompts; pick the one that's easiest to answer from
+> your last 30 days of Chrome use. If none of them land, we exit Phase
+> 1 and you come back when you have an observation.
+
+If the user pushes back a second time, exit cws-idea and route to
+`/office-hours` (gstack) with a one-liner — they're in pure exploration
+mode, not validation.
+
+### D3 output
+
+Write the chosen observation into `./.cws/01-idea.md` under `## Demand
+reality` (verbatim from the user, do not paraphrase — the user's words
+beat the model's pitch). If the seed already had this, just note
+"seed-supplied, see `## Seed`." Save the path the user took (A/B/C) as
+metadata for later retro.
+
+## 1.2 — Status quo (D4)
+
+Second forcing question, adapted from gstack's Q2: "what are people
+doing right now to solve this problem — even badly?"
+
+This is the question that separates real friction from imagined
+friction. If the user has been living with a workaround for >6 months
+without screaming about it, the pain is mild and the install incentive
+is weak. If the user has hired someone, paid for software, or
+duct-taped three tools together — the pain is real.
+
+In the CWS context, "status quo" is one of:
+
+- A different Chrome extension that almost-but-not-quite does the job
+- A web app or SaaS that does the job but requires a tab switch
+- A manual workflow (copy → switch tab → paste → format → switch back)
+- A keyboard shortcut + bookmark combo that approximates the function
+- Nothing — the user just lives with the friction
+
 ```
-Ph;Nq;Cp;Co;Nr;Kd;Td
-<seed>;<volume>;<cpc>;<comp>;<results>;<kd>;<trend>
+D4 — What's the status quo for this problem?
+Project/branch/task: $SLUG @ $_BRANCH, status-quo check on the observation
+ELI10: We have your observation. Now: what are people (you, your
+  friend, the SERP visitors) actually doing today to solve this? If the
+  answer is a five-tab copy-paste dance that takes 20 minutes, that's a
+  real install-driver. If the answer is "nothing — that's why this is
+  an opportunity," that usually means the pain isn't acute enough to
+  motivate an install.
+Stakes if we pick wrong: misreading status quo → misreading install
+  motivation. A keyword with real volume but mild pain produces high
+  bounce + low retention; behavioral factors collapse and ranking
+  decays even after launch.
+Recommendation: A or B (concrete workaround exists) — because a real
+  workaround is install-driver evidence.
+Completeness: A=9/10, B=9/10, C=8/10, D=4/10
+Pros / cons:
+A) A different Chrome extension exists but is broken / stale / paywalled / over-featured
+  ✅ Direct competitor — softness and occupation scores will read clean
+  ✅ Donor template likely available on GitHub (steal pattern, not code)
+  ✅ Install path is a one-click swap from the existing tool
+  ❌ Risk of optimization-second-mover trap (I14) if the rival is even halfway optimised
+B) A web app / SaaS does it but requires a tab switch
+  ✅ The SaaS proves demand and pricing — your CWS-native version is the wedge
+  ✅ Tab-switch friction is a real install-driver — extensions win on context locality
+  ❌ The SaaS might launch their own CWS extension as soon as they notice the gap
+C) A manual workflow / shortcut combo
+  ✅ Pain is real and ongoing — the operator pays the cost weekly
+  ✅ No competitor to displace; first-mover advantage on the keyword
+  ❌ Manual workflows are sticky; users may not bother installing even a free fix
+D) Nothing — there's no current solution
+  ❌ If truly no one is doing anything, the problem isn't painful enough
+  ❌ Forces re-running 1.1 — we need a real status quo or the demand is hypothetical
+  ✅ One acceptable edge case: the workflow is so new (a 2025 Chrome feature) that nothing exists yet — but name it
+Net: A/B/C are all install-driver evidence; D forces a return to 1.1
+  unless the user names a fresh-Chrome-feature edge case.
 ```
 
-If `Nq` is below the floor (I5 — 2,000 broad / 500 narrow), the seed itself
-fails. Still useful as a starting point; mark it DROP and use it only as
-an anchor for related-keyword discovery.
+### Refusal: D answered
 
-**Step B — Related / adjacent candidates:**
+If the user picks D and can't name a fresh-Chrome-feature edge case,
+loop back to 1.1. Cite gstack's rule: "if truly nothing exists and no
+one is doing anything, the problem probably isn't painful enough." Do
+not score.
 
-```
-execute_report(report="phrase_related",
-  params={"phrase": "<seed>", "database": "us",
-          "export_columns": ["Ph","Nq","Kd"]})
-```
+### D4 output
 
-Sort by `Nq` descending. Take the top 15 results that fit the same
-form-factor as the seed. Discard anything whose meaning has shifted
-(e.g. seed `screenshot extension`, related row `screenshot iphone` —
-discard, different product).
+Write a 2-3 sentence status-quo summary into `./.cws/01-idea.md` as
+`## Status quo`. Cite the specific workaround. Cite the cost (time per
+week, dollars per month, tabs open). Do not editorialise — the user's
+words beat the founder's pitch.
 
-**Step C — Long-tail / variation discovery:**
+## 1.3 — Desperate specificity (D5)
 
-```
-execute_report(report="phrase_fullsearch",
-  params={"phrase": "<seed>", "database": "us",
-          "export_columns": ["Ph","Nq","Kd"]})
-```
+Third forcing question, adapted from gstack's Q3: "name the actual
+person who'd install this."
 
-Reorderings, spellings, suffixes (`-er`, `-tool`). Tail traffic candidates.
-Useful to detect that the seed's tail is fat and worth chasing as a name.
+The CWS adaptation: every install starts with one human typing the
+keyword into Google or the CWS search bar. The model needs to know
+*which human* so the listing copy in `cws-package` and the ads in
+`cws-promote` can be written for one head — not for a category.
 
-**Step D — Synonym brainstorm (no API call; LLM):**
-
-Generate 8–12 synonyms for the seed using domain reasoning. Pair them with
-adjacent modifiers — niche tool (`for gmail`, `for sheets`, `for figma`),
-form-factor modifier (`tool`, `manager`, `tracker`, `helper`). This is
-how `bing chatgpt` was found by pairing `chatgpt` with `bing` even though
-neither was the obvious seed.
-
-**Step E — Batch-score the finalists:**
-
-After A–D, you have ~20 candidates. Cut to 5–10 finalists by removing:
-
-- Duplicates (different surface forms of same keyword)
-- Trademark conflicts (I12)
-- Saturated niches (I10)
-- Manifest-V2-only donors (I15)
-
-Then batch-score with one Semrush call:
+Category-level answers are refused. "Developers" is a filter, not a
+user. "Marketing teams" is a filter. "Students" is a filter. The
+correct answer names: a job/role, a specific moment in the day, and the
+trigger that makes them install (not the trigger that makes them search
+— the trigger that makes them click Install after they see the listing).
 
 ```
-execute_report(report="phrase_these",
-  params={"phrase": "<kw1>;<kw2>;<kw3>;<kw4>;<kw5>", "database": "us",
-          "export_columns": ["Ph","Nq","Kd"]})
+D5 — Name the actual person who'd install this
+Project/branch/task: $SLUG @ $_BRANCH, naming the target user
+ELI10: Every install starts with one human seeing your listing and
+  clicking Install. The listing copy and the screenshots get written
+  for ONE head, not a category. So we need: their job, the moment in
+  their day when they'd type the search, and what about the listing
+  would convince them to install vs. bouncing back to the SERP.
+Stakes if we pick wrong: listing copy written for "marketing teams" is
+  copy nobody reads. Behavioral factors collapse on install CTR.
+Recommendation: A (you are the user — operator-as-user is the strongest
+  validation any studio gets).
+Completeness: A=10/10, B=8/10, C=7/10
+Pros / cons:
+A) I'm the user — describe my own role + the install moment
+  ✅ Highest-fidelity description — you've felt the friction yourself
+  ✅ Listing copy can be written from your own words in 1.1 / 1.2 verbatim
+  ❌ Risk that your specific workflow doesn't generalise — but the SERP volume tells us if it does
+B) A specific named human in my life — friend / colleague / family
+  ✅ Externally-derived; not a hypothetical persona
+  ✅ Phone-call away for listing-copy validation
+  ❌ Second-hand description — easy to mis-state the install trigger
+C) A specific named role at a specific named company — "<title> at <company>"
+  ✅ Named role + named company is concrete enough to write copy for
+  ❌ Riskiest of the three — you're describing without observation
+  ❌ Often a fabricated persona dressed up as a real one — push hard
+Net: A is strongest, B is acceptable, C is borderline — refuse if the
+  named role/company isn't backed by an actual conversation.
 ```
 
-This is one API call instead of 5–10 separate `phrase_this` calls. Use it.
+### Forcing rule on D5
 
-**Step F — SERP fetch for each finalist (softness + occupation):**
+Push the user past category-level. If they say "developers" → "which
+developer, doing what?" If they say "marketing teams" → "name the role.
+Coordinator? Manager? Owner of what KPI?" If they say "students" →
+"which level, doing which subject, on what device?"
 
-```
-execute_report(report="phrase_organic",
-  params={"phrase": "<kw>", "database": "us",
-          "export_columns": ["Dn","Ur","Po"]})
-```
+Don't accept "users" as an answer. Ever.
 
-For each finalist, you need the top 10 SERP positions to score softness
-and occupation. Run this in parallel for all finalists if the MCP
-supports concurrent calls; otherwise sequential.
+### D5 output
 
-### Forcing rule
+Write into `./.cws/01-idea.md` as `## Target user (one human)`:
 
-**Never score only the user's first guess.** Generate at least 4 alternatives
-in adjacent semantic space. Most user-suggested seeds are occupied or
-red-zone; alternatives surface the better play. If the user pushes back
-("I want to score *only* my seed"), explain I1 and decline.
+- Role / job
+- Specific moment in the day when they'd type the search
+- Listing-copy hook — the one phrase that would make them install
+- (optional) Named human if B/C
+
+## 1.4 — Narrowest wedge (D6)
+
+Fourth forcing question, adapted from gstack's Q4: "what's the smallest
+extension that delivers value?"
+
+In CWS terms: the MVP must do ONE thing visible in ≤3 seconds of first
+install. One button click. One keyboard shortcut. One address-bar
+rewrite. One context-menu item. One side-panel widget. No login wall.
+No onboarding wizard. No "settings page" required to get the first
+value.
+
+The wedge sub-phase ALSO covers donor selection. Forking an existing
+open-source extension that does ONE related thing well — re-skinning
+the listing copy to match the new keyword — is the fastest path from
+wedge to shipped MVP. The narrowest wedge usually IS the donor's
+existing one-function: pick the donor, the wedge picks itself.
 
 ### Donor discovery
 
-For each surviving candidate, find an open-source donor on GitHub:
+For the chosen wedge, search GitHub for 2-3 candidate donors:
 
 ```
-WebSearch: "<function> chrome extension github"
+WebSearch: "<one-function> chrome extension github topic:chrome-extension"
+WebSearch: "<one-function> manifest_version 3 github"
 ```
 
 Filter results by:
 
-- Repo has a working extension link in README or releases
-- Last commit < 12 months old (stale repos are a red flag)
-- Has a `manifest.json` showing `manifest_version: 3`
-- Has a permissive license (MIT, Apache, BSD — not GPL unless user is fine)
-- No login form / no backend (front-end-only extensions are easiest)
+- Repo has a working extension link (Chrome Web Store URL or a release
+  with a `.crx` or `.zip` artifact)
+- Last commit < 12 months old (stale donors are a red flag — Chrome's
+  Manifest V3 has shifted enough that a 2-year-stale donor often
+  doesn't build)
+- `manifest.json` has `"manifest_version": 3` (I15 — V2 is delisting)
+- Permissive license (MIT, Apache, BSD; GPL only if user is fine with
+  open-source obligations on their fork)
+- Front-end-only (no backend, no auth, no login form — anything that
+  requires a server widens the MVP to a Stage 5 monetize problem)
 
-If no donor found for a candidate, mark `donor: none` and downgrade the
-simplicity score. A donor-less candidate is still valid if the function
-is genuinely trivial (color picker, hex converter) — but downgrade the
-simplicity score to ≤ 4/10.
+```
+D6 — Pick the narrowest wedge + donor
+Project/branch/task: $SLUG @ $_BRANCH, picking the wedge + donor
+ELI10: We have your observation, status quo, and target user. Now: the
+  smallest possible extension that delivers the value on first install.
+  One click, one shortcut, one context-menu item. The wedge IS the
+  MVP — anything bigger gets cut to Stage 2b later. The donor is the
+  open-source repo we'll fork (or steal patterns from). Picking a clean
+  donor saves 2-5 days in cws-build.
+Stakes if we pick wrong: a wide wedge → MVP slips by weeks; a stale
+  donor → 2-5 days rewriting Manifest V3 incompatibilities; a paywalled
+  donor → license dispute mid-build.
+Recommendation: A (named donor, MIT/Apache, <12mo commit, V3) — because
+  donor freshness is the single largest variable in build time.
+Completeness: A=9/10, B=8/10, C=7/10
+Pros / cons:
+A) <donor-1 URL> — <license>, last commit <date>, V3
+  ✅ <commit recency, license clean, working extension link in README>
+  ✅ <front-end-only, no backend, no login wall>
+  ❌ <one honest weakness — maybe a missing feature or a forked-from-V2 file>
+B) <donor-2 URL> — <license>, last commit <date>, V3
+  ✅ <its strength>
+  ❌ <its weakness — usually stale or license mismatch>
+C) <donor-3 URL> — <license>, last commit <date>
+  ✅ <its strength>
+  ❌ <its weakness>
+Net: A is the cleanest fork; B and C are fallbacks if A's license or
+  fingerprint breaks during cws-build.
+```
 
-## 1.3 — Score each hypothesis
+### Refusal cases
+
+- Wedge is "we'll ship the platform first, then narrow later" → I3 +
+  Q4 push. Refuse. The wedge IS the MVP.
+- Donor is Manifest V2-only AND user is non-dev → I15. Refuse this
+  donor; loop back to find a V3 candidate.
+- Donor has a GPL license AND user plans closed-source paid tier →
+  surface the license conflict, ask if user wants to swap donors or
+  accept the GPL obligation.
+- No donor exists AND the function is non-trivial (>500 LOC) → flag
+  in confidence flags, downgrade simplicity score later, but proceed
+  if the user is a dev.
+
+### D6 output
+
+Write into `./.cws/01-idea.md` as `## Narrowest wedge` (the one-function
+description) and `## Donor` (the chosen repo URL + license + last
+commit date).
+
+## 1.5 — Alternatives generation (D7, MANDATORY)
+
+Adapted from gstack's Phase 4. **Not optional.** Even when the user's
+observation feels obvious, generating three distinct hypotheses for the
+same demand surfaces the framing that ranks best — which is usually not
+the first framing the user proposed.
+
+Three hypotheses. All three describe the SAME demand the user observed
+in 1.1, but each frames it differently:
+
+- **Hypothesis A — "obvious" framing.** The literal version of the
+  user's observation. If the user said "I keep searching for `pdf
+  split pages`," A's name keyword is `pdf split pages` (or its
+  closest US-exact variant from Semrush).
+- **Hypothesis B — different word-form / semantic angle on the same
+  demand.** Rewording, related query, adjacent verb. The same install
+  intent, a different SERP. If A is `pdf split pages`, B might be
+  `split pdf` (verb-first), `pdf splitter` (noun), or `extract pdf
+  pages` (different verb). Same job, different keyword cluster.
+- **Hypothesis C — creative / lateral framing of the underlying job.**
+  Different framing of the SAME problem. Three shapes that usually
+  work:
+  - **Invert the workflow direction.** X-to-Y → Y-to-X. (Hex
+    color picker → hex code lookup; PDF-to-image → image-to-PDF.)
+  - **Reduce friction on the platform's own primitive.** Chrome's
+    address bar, right-click menu, new-tab page, side panel,
+    downloads panel. If the user's observation is a "tool" problem,
+    can a Chrome primitive rewrite be the same fix?
+  - **Solve with a different Chrome surface.** Popup vs context
+    menu vs side panel vs new tab. The donor changes; the install
+    intent doesn't.
+
+### Generation procedure
+
+For each hypothesis, the model produces:
+
+- Name keyword candidate (one-liner)
+- One-function summary (≤2 sentences, what the extension *does*)
+- Donor candidate (GitHub URL, license, last commit)
+- Rough US-exact volume estimate (one Semrush `phrase_this` per
+  candidate, three calls total)
+- Why this might win (one sentence)
+- Why this might lose (one sentence)
+
+Semrush calls in parallel where the MCP supports it; sequential
+otherwise:
+
+```
+execute_report(report="phrase_this",
+  params={"phrase": "<kw-A>", "database": "us",
+          "export_columns": ["Ph","Nq","Cp","Co","Nr","Kd","Td"]})
+execute_report(report="phrase_this",
+  params={"phrase": "<kw-B>", "database": "us",
+          "export_columns": ["Ph","Nq","Cp","Co","Nr","Kd","Td"]})
+execute_report(report="phrase_this",
+  params={"phrase": "<kw-C>", "database": "us",
+          "export_columns": ["Ph","Nq","Cp","Co","Nr","Kd","Td"]})
+```
+
+If any keyword returns Nq < 200, mark it "below-floor-pre-scoring" but
+DO NOT drop it from D7 yet — the user might pick it for a different
+reason (donor availability, narrower competition). The floor check
+happens in 1.7 scoring.
+
+### D7 emit
+
+```
+D7 — Pick a hypothesis to take into scoring
+Project/branch/task: $SLUG @ $_BRANCH, three hypotheses on the same demand
+ELI10: Same demand you observed in 1.1, three different framings. A is
+  the obvious one (what you literally said). B is a different
+  word-form for the same install intent (rewording the search). C is a
+  lateral angle — different surface, different verb, sometimes
+  different Chrome primitive entirely. Same job in all three. We pick
+  one, score it, and only that one goes to Stage 2.
+Stakes if we pick wrong: scoring the wrong framing → red-zone KD or
+  occupied head on a keyword that has a softer sibling we ignored.
+Recommendation: <pick by volume × softness × occupation × build
+  complexity heuristic — usually A unless A is occupied>.
+Completeness: A=9/10, B=9/10, C=8/10
+Pros / cons:
+A) <kw-A> — <one-function summary>, donor: <url>
+  ✅ Closest to your observed query — install intent is highest-confidence
+  ✅ US-exact volume <Nq-A> / Semrush KD <Kd-A>%
+  ❌ <one honest ❌ — usually "the obvious framing is also the most-occupied">
+B) <kw-B> — <different word-form>, donor: <url>
+  ✅ Different word-form on the same install intent — sibling SERP
+  ✅ US-exact volume <Nq-B> / Semrush KD <Kd-B>%
+  ❌ <one honest ❌ — usually word-form ambiguity or volume drop>
+C) <kw-C> — <lateral framing>, donor: <url>
+  ✅ Lateral angle — different SERP, different competitor pool, often softer
+  ✅ <a creative reason — Chrome primitive, inverted workflow, different surface>
+  ❌ Most speculative of the three — install intent is one step removed
+Net: A wins on intent fidelity; B is the safe sibling; C is the
+  long-shot that sometimes scores best.
+```
+
+The user picks A/B/C. The model's recommendation is informed by the
+scoring heuristic but the USER picks the final hypothesis. If the user
+has no preference, follow the recommendation.
+
+### D7 output
+
+Write the chosen hypothesis into `./.cws/01-idea.md` under `## Chosen
+hypothesis` (placeholder; final scoring will fill the table in 1.7).
+Record the two un-chosen hypotheses under `## Alternatives considered`
+with their one-function summaries and donor URLs — they're sibling
+candidates for the next sprint if this one's scoring kills.
+
+## 1.6 — Premise challenge (D8)
+
+Adapted from gstack's Phase 3. Three premise checks before scoring.
+The job is to catch the framing failures that scoring won't catch — a
+keyword can score 36/50 and still be wrong-product-shape.
+
+The three checks:
+
+1. **Is "Chrome extension" the right format?** Could a Google Workspace
+   add-on, a stand-alone web app, a desktop tool, or a mobile app serve
+   this demand better? Sometimes the answer is yes — and the right
+   move is to log the trade-off and proceed with the CWS launch anyway
+   (CWS is what this skill ships). But the trade-off must be named, not
+   suppressed.
+
+2. **What happens if we do nothing?** Pull the status-quo answer from
+   1.2. Has the user lived with this workaround for >6 months without
+   screaming? If yes, the pain is mild and BF (behavioral factors) will
+   suffer post-launch. This isn't a hard refuse — but it's a
+   confidence-flag.
+
+3. **Cross-model second opinion (optional).** If `codex` is on the
+   user's PATH, offer it. Cross-model is optional; if the user
+   declines, mark "skipped" in the artifact. If codex runs, surface its
+   read of the premise verbatim. See `/codex` skill from gstack for
+   wiring; cws-idea does not invoke codex inline (out of scope here).
+
+```
+D8 — Premise check on the chosen hypothesis
+Project/branch/task: $SLUG @ $_BRANCH, premise-checking <chosen-hypothesis>
+ELI10: Before we sink scoring effort into one hypothesis, three sanity
+  checks. Format: is "Chrome extension" really the right shape for
+  this demand, or would a Workspace add-on / web app / mobile app
+  serve it better? Pain: has the user lived with the status quo for
+  too long for the install motivation to be real? Second opinion: want
+  an independent AI to read the brief and challenge us?
+Stakes if we pick wrong: skipping the premise check costs 6 months
+  ranking work on a keyword whose user installs the wrong product.
+Recommendation: A (run all three premise checks, proceed if all pass)
+  because pre-scoring premise filtering catches the framing failures
+  scoring can't.
+Completeness: A=10/10, B=7/10, C=3/10
+Pros / cons:
+A) Run all three premise checks, proceed if all pass (recommended)
+  ✅ Catches "wrong-product-shape" failures that scoring misses
+  ✅ Cheap — 60 seconds of model reasoning + 2-5 min for optional codex
+  ❌ Adds friction; user has to engage with three checks they may find obvious
+B) Run checks 1 + 2, skip cross-model second opinion
+  ✅ Saves 2-5 min if codex isn't available or you don't trust it
+  ✅ The two structural checks (format + pain duration) are the high-leverage ones
+  ❌ Skips the only sanity check that can catch a blindspot in YOUR reasoning
+C) Skip all premise checks — go straight to scoring
+  ❌ This is exactly the failure mode the premise gate exists to prevent
+  ❌ If the format is wrong, scoring will still produce a clean table — and the launch will fail
+  ✅ Saves 5 minutes — acceptable only if user has already shipped 3+ CWS extensions
+Net: A unless user is shipping their 4th-plus extension and has earned
+  the right to skip premise checks.
+```
+
+### Premise check outputs
+
+Write into `./.cws/01-idea.md` as `## Premise check`:
+
+- **Format alternatives considered:** <Workspace add-on / web app /
+  desktop / mobile — and why CWS still wins, or doesn't>
+- **Pain duration:** <how long the user has lived with the status quo;
+  if >6 months, flag>
+- **Cross-model second opinion:** <verbatim codex output, or "skipped">
+
+If any check fails hard (format is obviously wrong, pain is obviously
+mild), loop back to 1.5 and pick a different hypothesis (B or C from
+D7). Cap the loop at 2 cycles — after the second, surface as confusion
+protocol D-brief and route to user for a call.
+
+## 1.7 — Scoring + winner
+
+Only the hypothesis chosen in D7 (and survived 1.6) gets scored. One
+scoring pass — not five, not ten. If the score kills, loop back to 1.5
+and pick the next candidate (B or C); the unused hypotheses from D7
+become the sibling pool for that loop.
+
+### Scoring procedure
+
+The chosen hypothesis already has a name-keyword candidate from 1.5 and
+a `phrase_this` row from D7's bulk generation. Now run the SERP fetch
+and the related-tail check to fill in softness + occupation + adjacent
+volume:
+
+**Step A — SERP top-10 fetch (softness + occupation):**
+
+```
+execute_report(report="phrase_organic",
+  params={"phrase": "<chosen-kw>", "database": "us",
+          "export_columns": ["Dn","Ur","Po"]})
+```
+
+For each of the top 10 SERP results:
+- **Software?** Domain is `chromewebstore.google.com`, `addons.mozilla.org`,
+  a known SaaS, or a product page on a software-vendor domain.
+- **Occupied?** If a CWS rival appears in top 3 AND the rival passes the
+  three-factor optimization rule (name overlap on the head + description
+  > 3K chars + > 30 translations — see I7), the keyword is occupied.
+
+Softness = software count / 10. Soft if > 50%. Occupied if any top-3
+CWS rival passes the three-factor rule.
+
+**Step B — Tail variant check (only if Step A's softness is borderline 45-55%):**
+
+```
+execute_report(report="phrase_fullsearch",
+  params={"phrase": "<chosen-kw>", "database": "us",
+          "export_columns": ["Ph","Nq","Kd"]})
+```
+
+Look for `-er` / `-tool` suffix variants whose SERP is harder-software.
+If a variant exists with same intent and softer SERP, surface it as a
+late D-brief — the user may want to swap to the variant.
+
+### Scoring rubric
 
 See `references/scoring-rubric.md`. Columns:
 
 | Column | Source | Range |
 |---|---|---|
-| **Hypothesis (seed)** | the donor or workflow string | text |
-| **Name keyword** | the head keyword from 1.2 | text |
+| **Hypothesis (label)** | A / B / C from D7 | text |
+| **Name keyword** | the chosen head | text |
 | **Users** | donor user count (0–10 relative, exclude brand-giants) | 0–10 |
 | **Revenue** | `users/10` (one-time) + `(users/100)*$3` (IAP) heuristic; boost if paid sub | 0–10 |
-| **Simplicity** | implementation simplicity vs other candidates; boost if open-source prior art | 0–10 |
-| **Volume** | US-exact `Nq` from `phrase_this`; relative across candidates | 0–10 |
+| **Simplicity** | implementation simplicity vs likely alternates; boost if open-source prior art clean | 0–10 |
+| **Volume** | US-exact `Nq` from `phrase_this`; relative to D7 sibling row | 0–10 |
 | **KD (zone)** | fixed-tier from KD %: 0–49→10, 50–69→7, 70–84→6, 85–100→5 | 5/6/7/10 |
 | **Soft?** | YES/NO gate from `phrase_organic` SERP top-10 software count | YES/NO |
 | **Keyword free?** | YES/NO gate from `phrase_organic` SERP scan for optimized CWS rivals | YES/NO |
 | **Total** | sum of 5 numeric columns (Users + Revenue + Simplicity + Volume + KD) | 0–50 |
-| **Verdict** | `#1` / `#2` / `DROP — <reason>` | label |
+| **Verdict** | `PASS` / `DROP — <reason>` | label |
 
 ### Hard thresholds (from the rubric, inlined for reference)
 
 - **One-function gate (I3):** idea must collapse to one feature. Multi-
-  feature → DROP before scoring.
+  feature → DROP and re-emit D6 (re-narrow the wedge).
 - **Volume gate (I5):** US-exact ≥ 2,000 broad / ≥ 500 narrow. Below →
-  DROP.
+  DROP and loop to 1.5 (pick sibling from D7).
 - **Softness gate (I6):** > 50% software in SERP top-10. Below → DROP
-  keyword (try sibling).
-- **Occupation gate (I7):** no well-optimized rival on the head. If yes
-  → DROP keyword (try sibling).
+  keyword and loop to 1.5.
+- **Occupation gate (I7):** no well-optimized rival on the head per
+  three-factor rule. If owned → DROP keyword and loop to 1.5.
 
 ### KD zone reference
 
@@ -898,158 +1348,76 @@ See `references/scoring-rubric.md`. Columns:
 | 70–84 | red | 6 |
 | 85–100 | scarlet (very hard) | 5 |
 
-Read I18: KD comparison only between names of equal word count. Note word
-count in the row if it varies.
+Read I18: KD comparison only between names of equal word count. Note
+word count in the row if it varies.
 
 ### Confidence flags
 
-For any row, note a confidence flag if:
+For the scored row, note a confidence flag if:
 
-- Semrush returned no data on the head keyword (rare; treat as unknown)
-- SERP had ambiguous software/non-software split (e.g. 45%-55%)
+- Semrush returned no data on the head keyword
+- SERP had ambiguous software/non-software split (e.g. 45–55%)
 - Donor monetization couldn't be verified (no public pricing page)
-- Tier-1 traffic share unverified (worldwide-only volume)
+- Tier-1 traffic share unverified (worldwide-only volume returned)
+- Premise check (1.6) flagged format alternatives as a real consideration
+- D7 alternatives B and C were not Semrush-checked (rare; only if MCP
+  failed mid-pipeline)
 
-Flag readers: cws-challenge picks up these in its stress-test. Don't ignore.
+Flag readers: cws-challenge picks up these in its stress-test.
 
-## 1.4 — Pick the winner (D4)
+### D9 — Confirm the winner (only if a hard refuse fires)
+
+If scoring PASSES all four hard gates, write the artifact silently and
+route to cws-challenge. No D-brief required — the user already picked
+the hypothesis in D7 and confirmed in D8; re-asking is friction.
+
+If scoring fails ONE hard gate AND a sibling from D7 is plausible, emit
+D9:
 
 ```
-D4 — Which hypothesis to take forward?
-Project/branch/task: $SLUG, ranking <N> validated hypotheses
-ELI10: We scored <N> hypotheses. Pick which one to take into Stage 2
-  (listing copy + build). The one we pick is the one we spend 1-3 weeks
-  building and 6 months ranking. Wrong pick = 6 months of work on a doomed
-  keyword.
-Stakes if we pick wrong: 6 months of ranking work on a keyword that
-  either won't get installs (low volume) or won't rank (occupied / noisy
-  SERP).
-Recommendation: <top-scoring row> because <one-line reason citing the
-  decisive criterion — usually softness + occupation passed + Volume green>
-Completeness: <top-1>=N/10, <top-2>=N/10, <top-3>=N/10
+D9 — Chosen hypothesis failed scoring — pick a sibling or restart
+Project/branch/task: $SLUG @ $_BRANCH, scoring failure on <chosen-kw>
+ELI10: Your D7 pick failed the <gate name> gate. The hypothesis can't
+  ship on that keyword. We have two un-scored siblings from D7 (B and
+  C), or we can loop back to 1.1 and observe again.
+Stakes if we pick wrong: shipping on a failed-gate keyword burns 6
+  months of ranking work. Looping to 1.1 costs ~10 min if the first
+  observation was thin.
+Recommendation: <A or B per the heuristic — pick the sibling that's
+  furthest from the failed gate>.
+Completeness: A=9/10, B=9/10, C=6/10
 Pros / cons:
-A) <top-1 keyword> — Total <score> (recommended)
-  ✅ <decisive ✅ — name the criterion and the number>
-  ✅ <secondary ✅ — donor URL / volume / KD zone>
-  ❌ <honest ❌ — the one weakness, named — e.g. KD red zone>
-B) <top-2 keyword> — Total <score>
-  ✅ <its strength>
-  ❌ <why it's #2 — usually softness borderline or occupation edge>
-C) <top-3 keyword> — Total <score>
-  ✅ <its strength>
-  ❌ <why it's #3>
-Net: A wins by clearing more gates; B/C lose on <named gate>.
+A) Score sibling B from D7 — <kw-B>, <one-function summary>
+  ✅ Already screened — donor + volume already known from D7
+  ✅ Same observation; install intent identical
+  ❌ B was the "different word-form" — risk it's a near-duplicate SERP that fails the same gate
+B) Score sibling C from D7 — <kw-C>, <lateral framing>
+  ✅ Lateral angle — different SERP, often softer
+  ✅ Different donor; sometimes a cleaner build path
+  ❌ Install intent one step removed from the observation; harder copy
+C) Loop back to 1.1 and re-observe
+  ✅ Honest reset if the demand was thin in the first place
+  ❌ Most expensive option (~30-60 min)
+  ❌ Burns the work in 1.1-1.6 if the observation was actually fine
+Net: try the closer sibling (A) first; C is the fallback after both
+  siblings fail.
 ```
 
-### Hard refuse to advance if the recommended pick has
+After D9, score the chosen sibling using the same Step A–B procedure.
+Cap the sibling loop at 2 cycles (B then C). After both siblings fail,
+loop back to 1.1 — the demand was weaker than the user thought.
 
-- **Occupation: head keyword owned by an optimized extension** AND no
-  clearly better alternative keyword. Loop back to 1.2 and generate fresh
-  candidates from a different word-cluster.
-- **Softness < 50%:** SERP is mostly informational / commercial sites;
-  extensions won't rank. Try an `-er` suffix variant (per `idea-validation.md`)
-  before declaring dead.
-- **US-exact < 500 (broad) / < 200 (narrow):** not enough demand even
-  after Tier-1 multiplier. Try a `-fullsearch` variant to widen.
-- **Donor is Manifest V2-only** AND user is non-dev. I15 — refuse.
-- **Donor has a license incompatible with user's monetization plan**
-  (e.g. GPL + planned closed-source paid tier). Refuse, ask for license
-  swap or different donor.
+### Loop budget
 
-If every recommended pick fails one of these hard refuses, loop back to
-1.2 and generate fresh candidates. Cap at 2 generation loops — after the
-second, surface the failure as a D-brief (D5 — see below).
+- 1.5 → 1.6 → 1.7 → (fail) → 1.5: max 2 cycles per observation
+- 1.5 → 1.6 → 1.7 → (fail all 3 siblings) → 1.1: max 1 reset per session
 
-### D5 — Occupation tie-break (only if two finalists are similar)
+After the budget is exhausted, surface as confusion-protocol D-brief
+and exit Phase 1. The studio loses nothing by stopping — the
+observation will mature, the user will come back. The studio loses a
+lot by shipping a scored-but-doomed keyword.
 
-When the top 2 scores are within 3 points AND both pass all four gates,
-the recommendation is genuinely a taste call. Emit D5.
-
-```
-D5 — Tie-break between two finalists
-Project/branch/task: $SLUG, picking between <kw1> and <kw2> (Total <s1> vs <s2>)
-ELI10: Two keywords cleared the gates and scored within 3 points. The
-  pick is between <decisive trade-off — usually KD vs volume, or narrow
-  vs broad>. Both can rank; the trade-off is launch speed vs ceiling.
-Stakes if we pick wrong: not catastrophic — both can launch. But the
-  wrong pick gives up 30-50% of ranking ceiling or doubles the
-  time-to-rank.
-Recommendation: <pick by I18 + playbook rule "start narrow/low-KD if
-  torn"> because if low competition doesn't convert, high competition
-  won't either.
-Completeness: A=8/10, B=8/10
-Pros / cons:
-A) <narrow / low-KD keyword> (recommended)
-  ✅ Faster to rank — studio data: ~6 weeks vs ~16 weeks
-  ✅ Lower ad spend to seed BF in the warm-up phase
-  ❌ Lower ceiling — caps at ~3K weekly installs vs ~15K
-B) <broad / high-KD keyword>
-  ✅ Higher install ceiling if you rank
-  ✅ Captures tail traffic from variations
-  ❌ 2-4× longer time to rank; ad warm-up budget triples
-Net: start narrow, expand later — you can launch a second extension on
-  the broad keyword once the narrow one is profitable.
-```
-
-### D6 — Donor selection (only if multiple open-source candidates surface)
-
-When 1.2.donor-discovery surfaces 3+ valid donors for the chosen keyword,
-the donor pick is also a taste call. Emit D6.
-
-```
-D6 — Donor selection
-Project/branch/task: $SLUG, picking among <N> open-source donors for <keyword>
-ELI10: Multiple GitHub repos implement the chosen function. Pick the one
-  to fork (or copy patterns from). Trade-off is build speed vs feature
-  parity vs license compatibility.
-Stakes if we pick wrong: rebuild cost — wrong donor means 2-5 extra days
-  in Stage 2b (cws-build) rewriting parts that don't fit.
-Recommendation: A (newest commit + cleanest license + working extension link)
-Completeness: A=9/10, B=8/10, C=7/10
-Pros / cons:
-A) <repo-1 URL>
-  ✅ <commit recency, license, extension link verdict>
-  ✅ <Manifest V3, no backend, no login>
-  ❌ <one missing feature or one weak point>
-B) <repo-2 URL>
-  ✅ <its strength>
-  ❌ <its weakness — usually stale or license mismatch>
-C) <repo-3 URL>
-  ✅ <its strength>
-  ❌ <its weakness>
-Net: A is the safest fork; B and C are fallbacks if A's license breaks.
-```
-
-### D7 — Narrow vs broad (when SERP form factor is ambiguous)
-
-When the SERP for the chosen keyword shows two distinct form factors
-(e.g. half popup-style extensions, half site-wrapper SaaS), the
-implementation pick is a taste call. Emit D7.
-
-```
-D7 — Narrow vs broad form factor
-Project/branch/task: $SLUG, picking form factor for <keyword>
-ELI10: The SERP for this keyword is split — half the top results are
-  popup-style Chrome extensions, half are site-wrapper SaaS tools. We
-  can ship either. The pick determines what we build in Stage 2b.
-Stakes if we pick wrong: wrong form factor = behavioral factors collapse
-  even if you rank. Users bounce to the form they expected.
-Recommendation: A (popup) because the donor is a popup and CWS install
-  is the entry point — site-wrapper still needs a CWS extension anyway.
-Completeness: A=9/10, B=7/10
-Pros / cons:
-A) Popup-only Chrome extension (recommended)
-  ✅ Matches the donor; fastest build path
-  ✅ Single surface to optimize for BF; no auth wall on first install
-  ❌ Caps the feature ceiling — power users may want the SaaS
-B) Site-wrapper SaaS with companion CWS extension
-  ✅ Higher feature ceiling — pricing tiers, accounts, history
-  ❌ 5-10× build time; SaaS hosting cost; auth required = -60-80% activation
-Net: ship popup first; site-wrapper is a Stage 6 (post-monetize)
-  expansion path, not Stage 2.
-```
-
-## 1.5 — Write the artifact
+## 1.8 — Write the artifact
 
 `./.cws/01-idea.md`:
 
@@ -1061,41 +1429,91 @@ created: <iso8601>
 updated: <iso8601>
 ---
 
-## Seed
+## Demand reality
 
-<the user's original seed phrasing, verbatim>
+<the observation captured in 1.1, verbatim from the user — do not
+paraphrase. Include the path: A/B/C from D3.>
 
-## Scoring table
+## Status quo
 
-<the full Markdown table from 1.3 — every candidate, including DROPs>
+<2-3 sentences from 1.2 — the workaround, the cost, the cadence.>
 
-## Chosen hypothesis
+## Target user (one human)
+
+- **Role / job:** <one line>
+- **Install moment:** <when in the day they'd type the search>
+- **Listing hook:** <the one phrase that would make them install>
+- **Named human (if B/C from D5):** <name + relationship>
+
+## Narrowest wedge
+
+<one-function description from 1.4 — what the extension does in ≤3
+seconds of first install>
+
+## Donor
+
+- **URL:** <github URL>
+- **License:** <MIT / Apache / BSD / GPL — flag if GPL with closed-source plan>
+- **Last commit:** <ISO date>
+- **Manifest version:** 3
+
+## Alternatives considered (from D7)
+
+- **A — <kw-A>:** <one-function summary>, donor: <url>, volume: <Nq>
+- **B — <kw-B>:** <one-function summary>, donor: <url>, volume: <Nq>
+- **C — <kw-C>:** <one-function summary>, donor: <url>, volume: <Nq>
+
+(Chosen: <letter>)
+
+## Premise check
+
+- **Format alternatives considered:** <Workspace add-on / web app /
+  desktop / mobile — and why CWS still wins, or doesn't>
+- **Pain duration:** <how long the user has lived with the status quo>
+- **Cross-model second opinion:** <verbatim codex output, or "skipped">
+
+## Chosen hypothesis (scoring)
 
 - **Name keyword:** <chosen keyword>
 - **US-exact volume:** <Nq>
 - **KD:** <%> (<zone>)
 - **Softness verdict:** <YES — N/10 SERP results are software>
-- **Occupation verdict:** <YES — no optimized rival on head, or NO — one rival at position N>
-- **Donor URL:** <github URL or none>
+- **Occupation verdict:** <YES — no optimized rival on head, or NO —
+  one rival at position N>
+- **Donor URL:** <github URL>
 - **Build complexity:** <low | medium | high>
+
+## Scoring table
+
+| Column | Value |
+|---|---|
+| Users | <0–10> |
+| Revenue | <0–10> |
+| Simplicity | <0–10> |
+| Volume | <0–10> |
+| KD (zone) | <%> (<zone> → <pts>) |
+| Soft? | YES |
+| Keyword free? | YES |
+| **Total** | **<sum>/50** |
+| Verdict | PASS |
 
 ## Why this keyword
 
-<2-4 sentences. No hedging. Name the decisive criterion. Cite the volume,
-the softness count, the donor URL. Tie it to a launch outcome: "expected
-ranking position 3-5 within 6 weeks given KD zone yellow and donor
-working out of the box.">
+<2-4 sentences. No hedging. Name the decisive criterion. Cite the
+volume, the softness count, the donor URL. Tie it to a launch outcome:
+"expected ranking position 3-5 within 6 weeks given KD zone yellow and
+donor working out of the box.">
 
-## Rejected candidates
+## Rejected siblings (if D9 fired)
 
-- **<kw-1>:** DROP — <one-line reason: occupied / noisy / low volume / V2 donor>
-- **<kw-2>:** DROP — <reason>
-- ...
+- **<kw-X>:** DROP — <one-line reason: occupied / noisy / low volume /
+  V2 donor>
 
 ## Confidence flags
 
-- <any flag from 1.3 — e.g. "Semrush returned no data on long-tail tier",
-  "donor monetization unverified — no public pricing page">
+- <any flag from 1.7 — e.g. "Semrush returned no data on long-tail tier",
+  "donor monetization unverified — no public pricing page", "premise
+  check flagged Workspace add-on as a real alternative">
 ```
 
 ### state.json delta
@@ -1114,7 +1532,9 @@ d['idea'].update({
   'occupation': 'free',
   'donor_url': '<url or null>',
   'build_complexity': '<low|medium|high>',
-  'rejected_candidates': [<list of dropped keywords>]
+  'rejected_siblings': [<list of dropped sibling keywords>],
+  'observation_path': '<A|B|C from D3>',
+  'premise_check': {'format_ok': True, 'pain_duration_ok': True, 'codex_ran': <bool>}
 })
 gp=d.setdefault('gates_passed',[]);
 if 'idea' not in gp: gp.append('idea')
@@ -1130,21 +1550,23 @@ PY
 
 ### Record losing hypotheses in learnings.jsonl
 
-For every DROP in the scoring table, append a learning so the next sprint
-doesn't re-try it:
+For every DROP in the scoring loop (D7 siblings that failed in D9, or
+the original chosen hypothesis if a sibling won), append a learning so
+the next sprint doesn't re-try it:
 
 ```bash
 for kw in <list of rejected keywords>; do
-  reason=<reason from rejected_candidates>
+  reason=<reason from scoring failure>
   echo "{\"ts\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",\"stage\":\"idea\",\"event\":\"keyword_rejected\",\"keyword\":\"$kw\",\"reason\":\"$reason\",\"slug\":\"$SLUG\"}" \
     >> "$CWS_PROJECT_DIR/learnings.jsonl"
 done
 ```
 
 The preamble surfaces these on the next cws-idea invocation, preventing
-the same keyword from re-entering Phase 1.2's candidate set.
+the same keyword from re-entering D7's sibling pool.
 
 ---
+
 
 # Worked examples
 
@@ -1152,12 +1574,17 @@ Two end-to-end walkthroughs. These show how the phases compose in
 practice. Use them as a reference for what the artifact looks like when
 done well.
 
-## Example 1 — Fresh project, RU operator, screenshot extension seed
+## Example 1 — Fresh project, RU operator, generic seed from `cws-init`
+
+This example uses placeholder `<seed-keyword>` rather than a specific
+niche, to avoid anchoring readers on a vertical (per I21). The shape
+of the forcing-question loop is what matters; substitute the user's
+own observation when the skill runs.
 
 **Preamble echo:**
 
 ```
-SLUG: snap-shot-tools
+SLUG: <slug>
 BRANCH: master
 PROACTIVE: true
 EXPLAIN_LEVEL: default
@@ -1170,110 +1597,119 @@ DOLPHIN_PROFILE_ID: None
 GOOGLE_ACCOUNT: None
 ```
 
-**Phase 0:**
+**Phase 0** (compressed; see Phase 0 spec for the long form):
 
-D1 emitted. User answers A (RU/BY/CIS). Routes to mandatory antidetect.
-
-D2 emitted. User has `PROXY6_API_KEY` exported (mentioned in chat). Pick
-D (Proxy6) for autonomous buy.
-
-0.3 Flow A:
-
-```bash
-cws-dolphin proxy6-buy --country us --period 14 --count 1 --yes
-```
-
-Returns: `proxy_id_in_proxy6: 8847291, ip: 156.232.14.91, port: 7843,
-login: a8jx9, password: kqv2m3r, country: us, imported_to_dolphin: true,
-dolphin_proxy_id: 41`.
-
-0.4 reliability gate:
-
-```bash
-cws-dolphin check-proxy --id 41 --expect-country us
-```
-
-Returns: `ok: true, is_hosting: false, country: us, asn: AS22773 ASN-CXA-ALL-CCI-22773-RDC`.
-
-ASN passes (doesn't contain "HOSTING" or any deny-list keyword). User
-opens whoer.net in Dolphin profile, reports 85% green. Pixelscan says
-"consistent, US". Gate passes.
-
-0.5 Dolphin profile created. User signs into Google manually inside the
-profile, uses esimplus.me for phone verification (cost $8/mo). Account
-created: `snapshotools9421@gmail.com`.
-
-state.json updated. `00-account-setup.md` written. `gates_passed: ["account-setup"]`.
+D1 → A (RU/BY/CIS). D2 → D (Proxy6 + `PROXY6_API_KEY` exported).
+0.3 Flow A buys + imports a proxy. 0.4 gate passes (residential, ASN
+clean, whoer 85% green, pixelscan consistent). 0.5 Dolphin profile +
+Google account created via esimplus. `gates_passed += ["account-setup"]`.
 
 **Phase 1:**
 
-`01-idea.md` has `## Seed` from cws-init: "I want a screenshot extension."
+`01-idea.md` has `## Seed` from cws-init: "<one-line user note from
+init — may or may not contain an observation>". The model checks: does
+the seed already name a specific Google query, a specific friend's
+complaint, or a specific under-optimised SERP slot? If yes, skip D3.
+If no, emit D3.
 
-1.1 — Seed captured directly from artifact; D3 skipped.
+1.1 — D3 emitted. User answers D (no observation yet). Model does NOT
+fall through to a niche-brainstorm. Instead it surfaces the three
+forcing prompts:
 
-1.2 — Generate hypotheses. Semrush calls:
+1. "What query did you Google in the last 30 days where the top
+   extension result was useless?"
+2. "What manual workflow do you do weekly that a 200-line extension
+   could automate?"
+3. "What Chrome built-in feature do you wish behaved differently?"
 
-```
-phrase_this(phrase="screenshot extension", database="us") →
-  Nq: 4,400, Kd: 71 (red zone)
-phrase_related(phrase="screenshot extension", ...) →
-  top results: "full page screenshot" 9,900, "screenshot tool" 18,100,
-  "scrolling screenshot" 6,600, "chrome screenshot" 5,400, ...
-phrase_fullsearch(phrase="screenshot extension", ...) →
-  "screenshot extension chrome" 880, "best screenshot extension" 720, ...
-```
+User picks #1 and names a specific query they typed last Tuesday where
+the top result hadn't been updated in 3 years. Model re-emits D3 with
+A pre-recommended. User confirms A. Observation written to `## Demand
+reality`.
 
-Cut to finalists (excluding "screenshot tool" — too broad, I10 saturation):
+1.2 — D4 emitted. Status quo check. User describes their current
+workaround: a 4-tab copy-paste flow taking ~15 minutes, weekly. Pain is
+real. `## Status quo` written.
 
-| Hypothesis | Name keyword |
+1.3 — D5 emitted. Specificity check. User picks A (self-as-user) and
+describes the install moment: "after I close the third tab in the
+copy-paste flow, that's when I'd Google the keyword." `## Target user`
+written.
+
+1.4 — D6 emitted. Narrowest wedge: one button on the active tab that
+collapses the 4-tab flow to a single click. Donor discovery via
+WebSearch surfaces 2 candidates:
+
+- `github.com/<repo-1>` — MIT, V3, last commit 5 months ago
+- `github.com/<repo-2>` — Apache, V3, last commit 14 months ago (stale flag)
+
+User picks A (repo-1). `## Narrowest wedge` + `## Donor` written.
+
+1.5 — D7 emitted. Three hypotheses on the same demand:
+
+- **A — `<obvious-kw>`** (literal version of the user's query, Nq=4,400, KD=68)
+- **B — `<word-form-variant>`** (different word-form for same install intent, Nq=2,100, KD=42)
+- **C — `<lateral-angle>`** (Chrome-primitive rewrite of the same job, Nq=900, KD=15)
+
+Recommended: A (closest to observed query). User picks B instead — KD
+zone advantage outweighs volume in the user's read. Model accepts (the
+user picks the final hypothesis; the recommendation is a guide).
+`## Alternatives considered` written; chosen = B.
+
+1.6 — D8 emitted. Premise checks:
+
+- Format: CWS extension is the right shape (the friction is in the
+  browser, not in a desktop app).
+- Pain duration: user has lived with workaround for ~4 months — within
+  the 6-month threshold, pain is acute.
+- Cross-model: user declines codex second opinion. Logged as "skipped."
+
+1.7 — Scoring on B. SERP fetch via `phrase_organic`:
+
+- 7/10 top-10 results are software (CWS extensions or SaaS pages) →
+  soft, YES.
+- Top-3 CWS rival has 1.8K char description and 8 translations — fails
+  the three-factor optimization rule → keyword free, YES.
+
+Scoring table row:
+
+| Column | Value |
 |---|---|
-| GoFullPage clone | full page screenshot |
-| Awesome Screenshot clone | scrolling screenshot |
-| Lightshot port | chrome screenshot |
-| Nimbus clone | screenshot extension (seed) |
-| Bug-Magnet style | annotated screenshot |
+| Users | 6 |
+| Revenue | 5 |
+| Simplicity | 8 |
+| Volume | 6 |
+| KD | 42 (yellow → 10) |
+| Soft? | YES |
+| Keyword free? | YES |
+| **Total** | **35/50** |
+| Verdict | PASS |
 
-Donor discovery via WebSearch:
+All four hard gates clear. No D9 fired. Artifact written. state.json:
+`idea.name_keyword: "<word-form-variant>"`,
+`idea.us_volume_exact: 2100`, `idea.kd_zone: "yellow"`,
+`idea.donor_url: "https://github.com/<repo-1>"`.
+`gates_passed: ["account-setup", "idea"]`.
 
-- "full page screenshot chrome github" → `github.com/mrcoles/full-page-screen-capture-chrome-extension` (V3, MIT, stale 2y — flag)
-- "scrolling screenshot chrome github" → `github.com/m4ttsch/scroll-capture` (V3, MIT, last commit 4mo)
-- "chrome screenshot github" → no good match
-- "annotated screenshot chrome github" → `github.com/justinjmoses/annotate-screenshot` (V3, MIT, last commit 6mo)
+No DROPs in this run (D9 didn't fire). The two un-chosen D7 hypotheses
+(A and C) are NOT learnings — they're stored in `01-idea.md` under
+`## Alternatives considered` as sibling candidates for the next sprint
+(or for a cws-resync swap if B fails post-launch).
 
-1.3 — Score with `phrase_these`:
+Routing footer:
+`Next: /cws-challenge — stress-test <word-form-variant> for occupation
+edge cases (word-form variants, plural/singular, near-synonym crowding).`
 
-```
-phrase_these(phrase="full page screenshot;scrolling screenshot;chrome screenshot;screenshot extension;annotated screenshot",
-             database="us", export_columns=["Ph","Nq","Kd"])
-```
+## Example 2 — Re-entry, prior Stage 0, D9 sibling-pick fires
 
-SERP scans via `phrase_organic` for each:
-
-| Hypothesis (seed) | Name keyword | Users | Revenue | Simplicity | Volume | KD (zone) | Soft? | Free? | Total | Verdict |
-|---|---|---|---|---|---|---|---|---|---|---|
-| GoFullPage clone | full page screenshot | 9 | 8 | 7 | 8 | 71 (red→6) | YES | NO (GoFullPage optimized, #1) | – | DROP — occupation |
-| Awesome Screenshot clone | scrolling screenshot | 7 | 7 | 8 | 7 | 58 (orange→7) | YES | YES | 36 | #1 |
-| Lightshot port | chrome screenshot | 6 | 6 | 5 | 6 | 64 (orange→7) | YES | NO (Awesome Screenshot at #2) | – | DROP — occupation |
-| Nimbus clone | screenshot extension | 8 | 7 | 6 | 5 | 71 (red→6) | YES | NO (Nimbus at #1) | – | DROP — occupation |
-| Bug-Magnet style | annotated screenshot | 5 | 6 | 6 | 4 | 42 (green→10) | YES | YES | 31 | #2 |
-
-1.4 D4 emitted. Recommended: A (scrolling screenshot, total 36). User
-approves. No D5 needed (B at 31 — not within 3 points).
-
-1.5 artifact written. state.json: `idea.name_keyword: "scrolling screenshot"`,
-`idea.us_volume_exact: 6600`, `idea.kd_zone: "orange"`, `idea.donor_url:
-"https://github.com/m4ttsch/scroll-capture"`. `gates_passed: ["account-setup", "idea"]`.
-
-3 learnings written for the dropped keywords. Routing footer:
-`Next: /cws-challenge — stress-test scrolling screenshot for occupation
-edge cases.`
-
-## Example 2 — Re-entry, prior Stage 0, color picker seed
+This example demonstrates the failure path: D7 hypothesis fails
+scoring, D9 fires, sibling B is scored and wins. Uses generic
+`<observed-kw>` placeholders rather than a specific niche.
 
 **Preamble echo:**
 
 ```
-SLUG: color-pick-pro
+SLUG: <slug>
 BRANCH: master
 PROACTIVE: true
 EXPLAIN_LEVEL: default
@@ -1284,58 +1720,82 @@ GATES_PASSED: account-setup
 PROXY_VALIDATED: True
 PROXY_RESIDENTIAL: True
 DOLPHIN_PROFILE_ID: 38
-GOOGLE_ACCOUNT: colorpickpro2024@gmail.com
+GOOGLE_ACCOUNT: <slug>2024@gmail.com
 ```
 
-Preamble detects `account-setup` in `GATES_PASSED`. Phase 0 skipped
-entirely. Skill announces:
+Preamble detects `account-setup` in `GATES_PASSED`. Phase 0 skipped.
+Skill announces:
 
 > Stage 0 already gated. Re-using proxy/profile/account from
 > `./.cws/00-account-setup.md`. Advancing to Phase 1.
 
 **Phase 1:**
 
-`01-idea.md` does not exist. User's seed in chat: "color picker."
+`01-idea.md` does not exist. User's chat opener: "I keep searching for
+`<observed-kw>` and the top result is a 2022 extension that doesn't
+work on the new Chrome side panel."
 
-1.1 D3 emitted. User answers C (workflow — "I want to grab colors from
-any webpage").
+This is a real operator observation — query + SERP gap noted. D3
+defaults to C (SERP gap observation). User confirms C. `## Demand
+reality` written.
 
-1.2 — Generate hypotheses. Semrush calls as in Example 1 but for "color
-picker." Finalists:
+1.2 — D4. User's status quo: they've been opening the broken extension
+weekly, hitting the bug, then falling back to a 3-tab manual workflow
+for ~2 months. Pain real. `## Status quo` written.
 
-| Hypothesis | Name keyword |
+1.3 — D5. User picks A (self-as-user); names install moment + listing
+hook. `## Target user` written.
+
+1.4 — D6. Wedge: one side-panel widget that replaces the broken
+extension's broken feature. Donor: `github.com/<repo>` (V3, MIT, last
+commit 3 months). `## Narrowest wedge` + `## Donor` written.
+
+1.5 — D7. Three hypotheses:
+
+- **A — `<observed-kw>`** (literal observation, Nq=3,200, KD=72 red)
+- **B — `<word-form-variant>`** (verb-first reword, Nq=1,400, KD=38 green)
+- **C — `<lateral-angle>`** (side-panel framing of same job, Nq=600, KD=22 green)
+
+Recommended: A (highest volume + same install intent). User picks A.
+
+1.6 — D8. Premise checks pass. User accepts codex second opinion;
+codex flags that A's keyword may be in transition (the 2022-stale
+extension is the #1, but a new well-resourced rival appeared at #2 last
+month). Codex output written verbatim into `## Premise check`.
+
+1.7 — Scoring on A. SERP fetch: 8/10 software (soft, YES). But the new
+#2 rival has 4.2K char description + 41 translations + exact-keyword
+name → fails three-factor optimization rule → **keyword occupied, NO.**
+
+Hard refuse: occupation gate failed. D9 emitted.
+
+D9 recommends A (score sibling B from D7). User approves.
+
+Re-score on B: SERP fetch shows 7/10 software, no optimized rival in
+top 3 (the rivals that appeared on A are absent from B's SERP because
+the word-form is different). Scoring table for B:
+
+| Column | Value |
 |---|---|
-| ColorZilla clone | color picker |
-| Eye Dropper clone | eye dropper |
-| Hex from screen | hex color picker |
-| Page color grabber | color picker extension |
-| Sip-style | color code picker |
+| Users | 5 |
+| Revenue | 5 |
+| Simplicity | 8 |
+| Volume | 5 |
+| KD | 38 (green → 10) |
+| Soft? | YES |
+| Keyword free? | YES |
+| **Total** | **33/50** |
+| Verdict | PASS |
 
-1.3 — Scoring. `eye dropper` has ColorZilla at #1 of the SERP (optimized:
-name overlap on the function, 4K+ char description, 41 translations) →
-DROP. `color picker` itself has ColorZilla at #1 → DROP. `color picker
-extension` has ColorZilla at #1 again → DROP.
+Artifact written. state.json: `idea.name_keyword: "<word-form-variant>"`,
+`rejected_siblings: ["<observed-kw>"]`. One learning written for the
+dropped A keyword with reason "occupation — new rival at #2 with
+optimized listing." `gates_passed: ["account-setup", "idea"]`.
 
-Surviving: `hex color picker` (1,900 vol, KD 38 green, soft, free) and
-`color code picker` (1,000 vol, KD 35 green, soft, free).
-
-| Hypothesis | Name keyword | Users | Revenue | Simplicity | Volume | KD (zone) | Soft? | Free? | Total | Verdict |
-|---|---|---|---|---|---|---|---|---|---|---|
-| Sip-style | hex color picker | 6 | 6 | 9 | 7 | 38 (green→10) | YES | YES | 38 | #1 |
-| Page color grabber | color code picker | 5 | 5 | 9 | 6 | 35 (green→10) | YES | YES | 35 | #2 |
-
-Top-2 within 3 points → D5 tie-break emitted.
-
-D5 recommends A (hex color picker) because higher volume + same KD zone.
-User approves.
-
-1.5 artifact written. 3 learnings recorded for ColorZilla-occupied
-keywords (so next sprint doesn't waste a cycle re-testing `eye dropper`,
-`color picker`, `color picker extension`).
-
-`gates_passed: ["account-setup", "idea"]`. Routing footer:
-`Next: /cws-challenge — stress-test hex color picker for word-form
-variants and ColorZilla edge cases.`
+Routing footer:
+`Next: /cws-challenge — stress-test <word-form-variant> for
+near-synonym occupation (the rival on A's SERP may surface in B's
+sibling cluster).`
 
 ---
 
@@ -1352,7 +1812,7 @@ column is the canonical response.
 | Target country is OFAC-sanctioned (IR, KP, CU, SY) | Stage 0 still possible but legal risk falls on user; explicit one-line warning, route to user-challenge brief asking for confirmation before proceeding. |
 | User demands a niche the playbook explicitly flagged dead (I10) | Surface the playbook flag with the saturation count; recommend a sibling niche; if user insists, proceed but document the override in the artifact's confidence-flags section. |
 | Proxy validates green but Semrush returns "rate-limited" repeatedly | Likely a Semrush API quota issue, not a proxy issue. Pause, ask user to check their Semrush API plan, resume. |
-| Multiple finalists tie on every numeric column | Apply D5; if D5 also ties, fall to playbook tie-breaker: fewer near-form CWS rivals (count in chromewebstore search) wins. |
+| Two D7 hypotheses score within 3 points after Phase 1.7 | Apply playbook tie-breaker: fewer near-form CWS rivals (count via chromewebstore search) wins. If still tied, prefer the lower-KD candidate (narrow ranks faster). Do not emit a separate tie-break D-brief — the user already picked in D7. |
 | User wants to validate two ideas in parallel | I16 applies. Decline, ask which one to validate first. The second one can run after the first ships. |
 | User's seed keyword has zero US volume but normal volume in IN/PH | Per `idea-validation.md`: non-English-native query. Drop; can't rank Tier-1. Recommend pivoting to a Tier-1-native keyword. |
 | Donor's license is GPL and user plans closed-source paid tier | Surface as D-brief: license-compatible donor (MIT/Apache) vs port-from-scratch. Default: find a different donor. |

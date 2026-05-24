@@ -1,6 +1,6 @@
 # CWS Studio
 
-[![version](https://img.shields.io/badge/version-2.3.0-blue.svg)](./CHANGELOG.md)
+[![version](https://img.shields.io/badge/version-2.4.0-blue.svg)](./CHANGELOG.md)
 [![license](https://img.shields.io/badge/license-MIT-green.svg)](./plugins/cws-studio/.claude-plugin/plugin.json)
 [![repo](https://img.shields.io/badge/repo-tacticlaunch%2Fcws--studio-black.svg)](https://github.com/tacticlaunch/cws-studio)
 
@@ -53,7 +53,7 @@ LOC + D-brief counts are read straight from each `SKILL.md`. "D-briefs" =
 | Skill | Stage | Purpose | LOC | D-briefs |
 |---|---|---|---:|---:|
 | [`cws-init`](./plugins/cws-studio/skills/cws-init/SKILL.md) | 0 | Scaffold `./.cws/` (state + per-stage artifact stubs) on a fresh project. | 809 | 3 |
-| [`cws-idea`](./plugins/cws-studio/skills/cws-idea/SKILL.md) | 0–1 | CWS account setup + idea validation (10-step scoring workflow). | 1453 | 7 |
+| [`cws-idea`](./plugins/cws-studio/skills/cws-idea/SKILL.md) | 0–1 | CWS account setup + gstack-style idea validation (forcing questions, 3-hypothesis generation, premise challenge). | 1913 | 10 |
 | [`cws-package`](./plugins/cws-studio/skills/cws-package/SKILL.md) | 2a | Listing copy — name, short/full description, SEO, spam check. | 1088 | 7 |
 | [`cws-build`](./plugins/cws-studio/skills/cws-build/SKILL.md) | 2b | Build the minimal Manifest V3 extension; types; donor cloning. | 941 | 4 |
 | [`cws-launch`](./plugins/cws-studio/skills/cws-launch/SKILL.md) | 3 | Banners, icons, Welcome Page, 50+ translations, publishing & moderation. | 1669 | 6 |
