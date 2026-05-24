@@ -136,12 +136,6 @@ Smoke suite for all of the above + `dolphin-cli`:
 bash plugins/cws-studio/tests/smoke.sh
 ```
 
-## Replaces
-
-This plugin supersedes the standalone `cws-extension-validator` skill — that
-skill's content is now `cws-idea` (idea validation), with the rest of the
-launch pipeline added as the other five stages plus companions.
-
 ## Changelog
 
 See [CHANGELOG.md](./CHANGELOG.md).
