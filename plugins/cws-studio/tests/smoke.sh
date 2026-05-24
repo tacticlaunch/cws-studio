@@ -300,6 +300,77 @@ EOF
   assert_contains "socks5 type honored" "\"type\": \"socks5\"" "$out" || return 1
 }
 
+test_skill_frontmatter() {
+  # Every SKILL.md must:
+  #  - have valid YAML frontmatter
+  #  - name field matches directory name
+  #  - description length >= 50 chars
+  #  - reference all 4 shared/* docs via ../../shared/X.md (not bare shared/)
+  local skills_dir="$PLUGIN_ROOT/skills"
+  local fail=0
+  for d in "$skills_dir"/*/; do
+    local name; name=$(basename "$d")
+    local f="$d/SKILL.md"
+    [ -f "$f" ] || { printf "  FAIL %s — missing SKILL.md\n" "$name"; fail=1; continue; }
+    local pyout; pyout=$(/usr/bin/python3 - "$f" "$name" <<'PY'
+import sys, re, yaml
+p, expected_name = sys.argv[1], sys.argv[2]
+text = open(p).read()
+m = re.match(r'^---\s*\n(.*?)\n---\s*\n', text, re.DOTALL)
+if not m:
+    print('NO_FRONTMATTER'); sys.exit(0)
+try:
+    fm = yaml.safe_load(m.group(1))
+except Exception as e:
+    print(f'BAD_YAML: {e}'); sys.exit(0)
+if not isinstance(fm, dict):
+    print('FRONTMATTER_NOT_DICT'); sys.exit(0)
+if fm.get('name') != expected_name:
+    print(f'NAME_MISMATCH name={fm.get("name")!r}'); sys.exit(0)
+desc = fm.get('description') or ''
+if len(str(desc)) < 50:
+    print(f'DESC_SHORT len={len(str(desc))}'); sys.exit(0)
+# bare shared/X.md is broken — must be ../../shared/X.md
+bare = re.findall(r'`shared/[a-z-]+\.md`', text)
+if bare:
+    print(f'BARE_SHARED_REFS {bare[:3]}'); sys.exit(0)
+print('OK')
+PY
+)
+    if [ "$pyout" = "OK" ]; then
+      printf "  ok   %s frontmatter\n" "$name"
+    else
+      printf "  FAIL %s frontmatter — %s\n" "$name" "$pyout"
+      fail=1
+    fi
+  done
+  return $fail
+}
+
+test_marketplace_json() {
+  local mf="$PLUGIN_ROOT/../../.claude-plugin/marketplace.json"
+  local pf="$PLUGIN_ROOT/.claude-plugin/plugin.json"
+  assert_true "marketplace.json valid JSON" /usr/bin/python3 -c "import json; json.load(open('$mf'))" || return 1
+  assert_true "plugin.json valid JSON"      /usr/bin/python3 -c "import json; json.load(open('$pf'))" || return 1
+  local pv; pv=$(/usr/bin/python3 -c "import json; print(json.load(open('$pf'))['version'])")
+  assert_contains "version is set" "." "$pv" || return 1
+  # owner / author shapes
+  /usr/bin/python3 - <<PY || return 1
+import json, sys
+mf = json.load(open('$mf'))
+pf = json.load(open('$pf'))
+errs = []
+if not isinstance(mf.get('owner', {}), dict) or not mf['owner'].get('name'):
+    errs.append('marketplace.owner missing name')
+if not isinstance(pf.get('author', {}), dict) or not pf['author'].get('name'):
+    errs.append('plugin.author missing name')
+if errs:
+    print('FAIL', *errs); sys.exit(1)
+print('OK')
+PY
+  printf "  ok   marketplace owner + plugin author shapes\n"
+}
+
 # ---------- main ------------------------------------------------------------
 
 run_test test_cws_slug
@@ -313,6 +384,8 @@ run_test test_dolphin_cli_proxy6_buy_no_key
 run_test test_dolphin_cli_delete_force_delete
 run_test test_dolphin_cli_create_minimal_payload
 run_test test_dolphin_cli_bulk_parser_formats
+run_test test_skill_frontmatter
+run_test test_marketplace_json
 
 echo
 echo "================================================"
