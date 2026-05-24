@@ -62,7 +62,7 @@ artifact to attack, and the preamble's `CURRENT_STAGE` + `GATES_PASSED`
 echoes drive that routing.
 
 ```bash
-PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/plugins/cache/cws-studio/cws-studio/2.2.0}"
+PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/plugins/cache/cws-studio/cws-studio/2.2.1}"
 BIN="$PLUGIN_ROOT/bin"
 eval "$("$BIN/cws-slug" 2>/dev/null)"
 _BRANCH=$(git branch --show-current 2>/dev/null || echo "no-git")
@@ -304,7 +304,7 @@ attacking:
 - `monetize` → `references/monetize-rubric.md`, `references/billing-cycle.md`
 
 If a reference file doesn't exist in the plugin yet, fall back to the
-bootcamp thresholds baked into Phase 2 below.
+playbook thresholds baked into Phase 2 below.
 
 ---
 
@@ -339,7 +339,7 @@ single new optimized extension can swing the verdict.
   rival named `merge pdf files free` ranks higher on the SERP because
   Google reads the title fields.
 
-Bootcamp threshold: any extension where (a) the head keyword tokens all
+Playbook threshold: any extension where (a) the head keyword tokens all
 appear in the title, and (b) installs > 5K, and (c) last-update < 90 days
 → occupied. Two of three → contested (yellow).
 
@@ -358,7 +358,7 @@ software-heavy to commercial-heavy in a single algorithm update.
 - If ratio ≥ 80% but drift in trajectory (was 95% last month, 82% now) →
   **yellow** with a note: monitor weekly.
 
-Bootcamp insight: "soft" requires not just SaaS in the results but
+Playbook insight: "soft" requires not just SaaS in the results but
 **Chrome extensions specifically** in at least 3 of the top 10. If the
 SERP is full of Loom/Calendly-style SaaS pages without a single extension
 in the top 10, the head keyword is "soft for software" but not "soft for
@@ -377,7 +377,7 @@ A 12-month average can mask a recent collapse.
   back-to-school spikes), check whether the launch window aligns. Launching
   in February against a December-only keyword = 10 months of zero traffic
   to establish behavioral factors.
-- If volume is below the bootcamp floor:
+- If volume is below the playbook floor:
   - Broad name-keyword: < 2K US exact = **red**.
   - Narrow name-keyword: < 500 US exact = **red**.
   - Specialist niche (where conversion is exceptional): < 200 US exact =
@@ -385,7 +385,7 @@ A 12-month average can mask a recent collapse.
 
 ### 2.A.4 Re-check KD on word-count normalization
 
-This is the most-missed item in the bootcamp playbook. **KD compares only
+This is the most-missed item in the playbook playbook. **KD compares only
 within the same word-count bucket** — Semrush's KD score for a 4-word
 phrase is not directly comparable to a 1-word phrase. Operators often
 score a 4-word keyword as "KD 20, soft target" when the same KD on a
@@ -453,7 +453,7 @@ didn't think to query.
   **red** ("the keyword choice itself is wrong; recommend re-running
   /cws-idea step 1.4").
 
-Bootcamp insight: 2–3 lateral queries reliably surface a better keyword in
+Playbook insight: 2–3 lateral queries reliably surface a better keyword in
 ~20% of sessions. Skip this step and you ship on the second-best keyword
 ~1 in 5 launches.
 
@@ -517,7 +517,7 @@ text that scored green 4 weeks ago can score red today.
 
 ### 2.B.2 Name-keyword saturation (8–10 occurrences)
 
-The bootcamp rule: the head keyword should appear **8–10 times across the
+The playbook rule: the head keyword should appear **8–10 times across the
 full listing** (name + short + full + screenshot captions + section
 headers in the full description). Below 8 = lost ranking signal; above 10
 = keyword stuffing flag.
@@ -749,7 +749,7 @@ checks automatically.
 
 ### 2.D.1 Banner conversion check
 
-The banner is the install-rate lever. Bootcamp threshold: a healthy
+The banner is the install-rate lever. Playbook threshold: a healthy
 banner clears **50%+ install rate** in the first 7 days (visits-to-install
 ratio in the CWS dashboard).
 
@@ -774,7 +774,7 @@ flow must work **without sign-in**.
 
 ### 2.D.3 Locale coverage
 
-A bootcamp launch ships with 4–6 locales (en + 3–5 Tier-1 non-English).
+A playbook launch ships with 4–6 locales (en + 3–5 Tier-1 non-English).
 Single-locale launches under-rank in non-English geos.
 
 - Read `_locales/` directory listing in the build.
@@ -813,7 +813,7 @@ Match after first upload → **red**.
 ### 2.D.6 Screenshot framing
 
 Welcome Page and CWS screenshots are highest-leverage visual surface.
-Bootcamp standard:
+Playbook standard:
 - Full browser visible (the address bar should be in the screenshot so
   users see "this is Chrome").
 - Framed border (1–2 px contrast border) so the screenshot doesn't blend
@@ -876,7 +876,7 @@ of:
 
 ### 2.E.2 Bot share — Linux OS ratio in FB Ads
 
-The bootcamp tell: FB Ads with > 20% Linux-OS impressions = bot farms.
+The playbook tell: FB Ads with > 20% Linux-OS impressions = bot farms.
 Real consumer Linux share is ~3–4%.
 
 - Open Facebook Ads Manager → Demographics breakdown → OS.
@@ -886,7 +886,7 @@ Real consumer Linux share is ~3–4%.
 
 ### 2.E.3 CPM vs install cost
 
-Bootcamp range for FB:
+Playbook range for FB:
 - CPM $4–$12 on Tier-1 geos.
 - Install cost $0.30–$0.80 on a well-targeted creative.
 
@@ -898,7 +898,7 @@ Bootcamp range for FB:
 
 ### 2.E.4 Review rate window
 
-Bootcamp pacing: 1–2 reviews per day, organic + assisted. Spikes (> 5/day)
+Playbook pacing: 1–2 reviews per day, organic + assisted. Spikes (> 5/day)
 or zero (< 0.3/day) both flag CWS algorithmic suspicion.
 
 - Read review-count history in CWS dashboard.
@@ -929,7 +929,7 @@ Tier-2/3, the ad targeting is leaky.
 
 ### 2.E.7 Uninstall rate
 
-Bootcamp threshold: 7-day uninstall rate < 30% on a healthy launch.
+Playbook threshold: 7-day uninstall rate < 30% on a healthy launch.
 
 - Pull uninstall events from `chrome.runtime.setUninstallURL` data.
 - > 40% in 7 days → **red** (Welcome Page is misleading or the
@@ -946,7 +946,7 @@ shaky cohort kills behavioral factors and the ranking with them.
 
 ### 2.F.1 Billing cycle decision — cohort-sequential, not parallel A/B
 
-The bootcamp rule: do not parallel-A/B billing cycles across the install
+The playbook rule: do not parallel-A/B billing cycles across the install
 cohort. Different cohorts get different cycles in sequence; a parallel
 test pollutes the conversion signal because the cohorts overlap on
 behavioral-factor measurement.
@@ -1038,7 +1038,7 @@ Refund policy URL must be live and reachable before monetize flips.
 
 ### 2.F.9 Tax compliance for billing geos
 
-Bootcamp note: VAT in EU, GST in AU/IN, sales tax in some US states —
+Playbook note: VAT in EU, GST in AU/IN, sales tax in some US states —
 billing providers handle this automatically only if the merchant config
 is set correctly.
 
@@ -1071,7 +1071,7 @@ Drift findings use the same severity model as Phase 2 (`red` / `yellow` /
 `info`) and feed into the same verdict computation in Phase 3. The verdict
 section labels them `DRIFT` to distinguish from in-stage findings.
 
-Bootcamp insight: most "we shipped the wrong thing" incidents are not bad
+Playbook insight: most "we shipped the wrong thing" incidents are not bad
 work inside a stage — they're a stage artifact that silently fell behind the
 canonical state.json (or vice versa). The challenge is the right time to
 catch this; the per-stage checklists do not.
@@ -1219,7 +1219,7 @@ echo "DASHBOARD_LOCALES: $_DL"
 
 **Fail criteria:**
 - State locale count != launch artifact locale-line count → **red DRIFT**.
-- Launch artifact lists < 4 locales (under bootcamp Tier-1 floor) → see
+- Launch artifact lists < 4 locales (under playbook Tier-1 floor) → see
   Phase 2.D.3; here we cross-check **the count matches state**.
 - Dashboard locale count != state locale count (when dashboard snapshot
   exists) → **yellow DRIFT** (pending submit, or operator added locales

@@ -208,14 +208,14 @@ cookie-warming (visits sites under the profile to seed cookies).
 ### Stage 5 (cws-monetize scale) — N accounts
 
 Repeat the above N times with different names, *different proxies*, and a
-distinct folder per launch. The bootcamp rule "≤ 2 extensions per account"
+distinct folder per launch. The playbook rule "≤ 2 extensions per account"
 still applies — one Dolphin profile per CWS account.
 
 ### Stage 4 (cws-promote ad accounts)
 
 Some teams maintain *separate* Dolphin profiles per ad platform (FB / Google
 / Yandex) to compartmentalize fingerprint risk. The same proxy can be shared
-across them or each gets its own; per the bootcamp guidance, **don't
+across them or each gets its own; per the playbook guidance, **don't
 swap the proxy frequently** — buy long-term and warm the fingerprint.
 
 ---

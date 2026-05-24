@@ -60,7 +60,7 @@ prior learnings filtered for safety/regression entries, and reads
 `./.cws/state.json`. Skip the rest of this skill if the preamble exits.
 
 ```bash
-PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/plugins/cache/cws-studio/cws-studio/2.2.0}"
+PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/plugins/cache/cws-studio/cws-studio/2.2.1}"
 BIN="$PLUGIN_ROOT/bin"
 eval "$("$BIN/cws-slug" 2>/dev/null)"
 _BRANCH=$(git branch --show-current 2>/dev/null || echo "no-git")
@@ -675,10 +675,10 @@ Checklist (4 items):
      to scaffold a separate `.cws/` for it).
    - Fails if any of profile/proxy/Google overlap account #1.
 
-4. **Donor and code differentiated (re-minify, bootcamp rule)** —
+4. **Donor and code differentiated (re-minify, playbook rule)** —
    the source has been re-minified with different settings, CSS class
    names changed, icon SVGs replaced, and at least one visible UI
-   element moved (the "bootcamp rule": a fresh student would call it
+   element moved (the "playbook rule": a fresh student would call it
    the same product, but the bytes are different). Identical bytes
    across two accounts is the most-detectable signal.
    - Source: `02b-build.md` "Re-launch differentiation" section +

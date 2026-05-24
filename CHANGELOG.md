@@ -25,7 +25,7 @@ Polish + backfill pass. Additive over 2.0.0; no breaking changes.
   install, ASCII pipeline diagram, full skill catalog (pipeline /
   companions / ops tables with LOC + D-brief columns read fresh from
   disk), MCP server table, `.cws/` state layout, `bin/` helpers table,
-  bootcamp methodology attribution.
+  methodology attribution.
 
 ### Changed — skill polish (4 underweight skills brought to full depth)
 - **`cws-init`**: 186 → 808 LOC. Three D-briefs (root-ambiguous, schema-
@@ -63,7 +63,7 @@ Polish + backfill pass. Additive over 2.0.0; no breaking changes.
   from lesson 056; Example 1 counted table linked; Examples 2/3 hand-
   counts TODO.
 - **`development.md`**: +52 LOC for Chrome 114+ side-panel form factor
-  (manifest snippet, background opener, marked "not in bootcamp").
+  (manifest snippet, background opener, marked "not in source").
 - **`assets-and-publish.md`**: 534 → 682 LOC. Welcome Page 60-70%
   conversion callout (lesson 115); 10× rule promoted to main Translations
   body (lesson 115); full pre-submit mechanical checklist (lessons

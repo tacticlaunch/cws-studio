@@ -70,7 +70,7 @@ Skip the rest of this skill if the preamble exits — the preamble is the
 gate.
 
 ```bash
-PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/plugins/cache/cws-studio/cws-studio/2.2.0}"
+PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/plugins/cache/cws-studio/cws-studio/2.2.1}"
 BIN="$PLUGIN_ROOT/bin"
 eval "$("$BIN/cws-slug" 2>/dev/null)"
 _BRANCH=$(git branch --show-current 2>/dev/null || echo "no-git")
@@ -328,7 +328,7 @@ large banner (1280×800) shows on the extension's listing page itself.
 Both convert directly to installs; the small banner is the gate before
 the user even sees the listing.
 
-Bootcamp baseline: organic conversion ranges **15–30%**, the highest
+Playbook baseline: organic conversion ranges **15–30%**, the highest
 ever measured is **60%**. Treat 60% as the ceiling, not a target.
 
 ## 1.1 — Direction brief
@@ -371,7 +371,7 @@ Net: pick B unless the product is genuinely UI-less, then C with the
   skeleton-browser frame.
 ```
 
-## 1.2 — Apply the banner mistake list (bootcamp rules)
+## 1.2 — Apply the banner mistake list (playbook rules)
 
 Once direction is chosen, apply these checks. The first failed check is
 the fix list; do not show the next D-brief until they all pass.
@@ -401,7 +401,7 @@ For **B (UI screenshot)**:
 
 For **A (people / lifestyle)**:
 
-10. Acknowledge the conversion penalty up front. Bootcamp data: every
+10. Acknowledge the conversion penalty up front. Playbook data: every
     non-screenshot creative tested under-performed raw screenshots.
 11. If the user insists, frame it: face occupies < 40% of canvas, product
     UI element occupies > 40%, single caption.
@@ -479,7 +479,7 @@ Run this exact verification before accepting the icon:
      icons (store vs tab) is allowed but kills recall — users install
      based on one icon, hunt for a different one, bounce.
 
-## 2.4 — Bootcamp checks
+## 2.4 — Playbook checks
 
 - **Reject outlined / dotted-line / thin-stroke icons** — fail at 16×16.
 - **"Looks too simple" is the signal to use it** — devs gravitate to 3D /
@@ -536,7 +536,7 @@ The Welcome Page is the fix. It opens once, automatically, immediately
 after install, in a new tab. Its only job: get the user to find and pin
 the extension (or click the in-page artifact, if the product has one).
 
-## 3.1 — Critical bootcamp insight
+## 3.1 — Critical studio insight
 
 **Simple text + ungated CTA. No auth wall on first install. -60–80%
 activation if auth-gated.**
@@ -616,7 +616,7 @@ Completeness: A=8/10, B=10/10, C=9/10, D=7/10
 Pros / cons:
 A) Tilda (free subdomain like aipromptgenerator.tilda.ws)
   ✅ 20-minute publish from a no-code editor
-  ✅ Bootcamp-tested — multiple top-3 extensions launched on this
+  ✅ Playbook-tested — multiple top-3 extensions launched on this
   ❌ Branded footer; can't host the Uninstall page or share pages here
 B) Subdomain of product domain (e.g. ext.yourdomain.com) (recommended)
   ✅ One A-record points at Tilda's IP, host all service pages there
@@ -629,7 +629,7 @@ C) Own static hosting (GitHub Pages / Vercel)
 D) No Welcome Page
   ✅ Saves an evening
   ❌ Welcome-Page→activation conversion drops from ~60% to 10–15%
-  ❌ Hard refuse — bootcamp baseline says this is launch-killing
+  ❌ Hard refuse — playbook baseline says this is launch-killing
 Net: own a domain anyway → B; no domain → A; design skills → C; never D.
 ```
 
@@ -656,7 +656,7 @@ Add now:
 
 - **Site-wrapped extensions**: Yandex Metrica + **Webvisor click-maps**,
   GA4, Amplitude (preferred). Webvisor on the Welcome Page is how the
-  bootcamp "users click the screenshot as if it's UI" insight surfaced —
+  playbook "users click the screenshot as if it's UI" insight surfaced —
   install it specifically to validate before optimizing.
 - **Local-page / popup extensions**: event-based analytics. GA4
   Measurement Protocol, Amplitude (preferred), Mixpanel (alternative).
@@ -677,7 +677,7 @@ English level:
 correct this text in the app UI: [text]
 ```
 
-The bootcamp's repeat instruction: don't trust your own English; trust
+The playbook's repeat instruction: don't trust your own English; trust
 the editor pass.
 
 ## 3.8 — Output
@@ -703,7 +703,7 @@ Localizer.
 
 ## 4.1 — Default locale split (this IS the recommendation)
 
-The bootcamp default split:
+The playbook default split:
 
 **Manual name + short description (full description auto-translated):**
 
@@ -734,11 +734,11 @@ ELI10: 50+ locales is non-negotiable (mechanical rule M1). The choice is
 Stakes if we pick wrong: under-investing in Latin-script rich locales caps
   the ranking ceiling on the most valuable non-English markets; over-
   investing burns days on locales where Localizer would have been fine.
-Recommendation: A (bootcamp default) because it's the empirically-tested
+Recommendation: A (default) because it's the empirically-tested
   split from ~10 launches.
 Completeness: A=10/10, B=8/10, C=9/10
 Pros / cons:
-A) Bootcamp default — Latin-script rich (9) + AR/ID/RU manual; rest Localizer
+A) Playbook default — Latin-script rich (9) + AR/ID/RU manual; rest Localizer
    (recommended)
   ✅ Maximizes Tier-1 paying locales (DE/FR/ES + scandinavia)
   ✅ Russian manual triggers Google's expansion testing into paying geos
@@ -750,7 +750,7 @@ B) Everything manual (all 50+)
   ❌ Delays launch by weeks; behavioral factors aren't tested in-flight
 C) Everything Localizer (no manual)
   ✅ Fast — single 30–40 min run
-  ✅ Bootcamp says "even clumsy auto beats no translation"
+  ✅ The playbook says "even clumsy auto beats no translation"
   ❌ Misses 10× rule wins on the rich Latin-script locales
   ❌ Caps the German/French ranking ceiling at maybe 50% of A
 Net: A unless you're shipping a dev-tool where everyone searches in
@@ -1119,7 +1119,7 @@ narrow it.
 Write a short justification per permission now. These get pasted into
 CWS's permissions tab in Phase 8.
 
-Bootcamp-tested justification shape:
+Playbook-tested justification shape:
 
 | Permission | One-line justification |
 |------------|------------------------|
@@ -1225,7 +1225,7 @@ Any FAIL aborts submit. Route to the appropriate skill to fix:
 - Missing `careful-submit` gate → route to `/cws-careful`.
 - Missing `build` gate → route to `/cws-build`.
 
-## 8.3 — Pre-publish gauntlet (bootcamp checklist)
+## 8.3 — Pre-publish gauntlet (playbook checklist)
 
 These are not D-briefs. They are mechanical gates that must all pass.
 
@@ -1316,7 +1316,7 @@ Write it into:
 - Any service-worker URLs templated with `[EXT_ID]` → replace and
   re-build. **Do not publish; re-upload the draft.**
 
-The bootcamp rule (M-grade): **don't pass moderation early just to get
+The playbook rule (M-grade): **don't pass moderation early just to get
 the ID and leave it approved-but-unpublished.** Plausibly CWS adds the
 approved URL to its sitemap and indexes a poor version. Upload as
 draft, grab ID, re-upload draft. Don't submit until the full launch
@@ -1417,13 +1417,13 @@ Replace `<EXTENSION_ID>` with the real value captured in 8.4 step 4.
   one function.
 - **M12** — cws-careful is a hard gate before submit.
 - **M13** — Privacy Policy company name = extension's English name.
-- Bootcamp: **moderation re-checks the entire submission on every
+- Sources: **moderation re-checks the entire submission on every
   update.** A short description that passed v1 can fail v2 even
   unchanged. Plan for it.
-- Bootcamp: **repeated re-submissions attract stricter scrutiny.** If
+- Sources: **repeated re-submissions attract stricter scrutiny.** If
   rejected once, the second pass examines text "with prejudice" — fix
   the underlying spam pattern aggressively, not incrementally.
-- Bootcamp: **obfuscation banned; minification mandatory.** Variable-
+- Sources: **obfuscation banned; minification mandatory.** Variable-
   name shortening + whitespace removal = minification (allowed).
   Replacing characters with non-ASCII glyphs to hide code = obfuscation
   (banned).
@@ -1565,7 +1565,7 @@ republishing fields that didn't need to change.
 | `/cws-retro` | While moderation is pending (1–3 business days SLA) | Baseline snapshot of all metrics before promotion starts. Otherwise you have nothing to compare against |
 | `/cws-resync` | Any post-submit edit | Propagates a single field change without rerunning the whole asset+publish flow |
 
-The bootcamp routing rhythm:
+The playbook routing rhythm:
 
 ```
 cws-launch  →  cws-careful  →  cws-launch (submit)  →  cws-retro (baseline)

@@ -201,7 +201,7 @@ hit to its block (title / short / paragraph 1 / each section / each FAQ
 Q+A) and totals them against the 8–10 rule.
 
 > TODO — not in transcripts — equivalent counted tables for Example 2
-> (Youtube to Text) and Example 3 (Youtube repeat) are not in the bootcamp
+> (Youtube to Text) and Example 3 (Youtube repeat) are not in the playbook
 > and have not been hand-counted here. A future operator should produce
 > them from the full text above and compare totals against the 8–10 rule.
 > Both examples visibly use the name and its variations heavily and

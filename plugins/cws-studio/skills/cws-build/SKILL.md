@@ -46,7 +46,7 @@ On exit, `gates_passed` includes `"build"`.
 ## Preamble (run first)
 
 ```bash
-PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/plugins/cache/cws-studio/cws-studio/2.2.0}"
+PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/plugins/cache/cws-studio/cws-studio/2.2.1}"
 BIN="$PLUGIN_ROOT/bin"
 eval "$("$BIN/cws-slug" 2>/dev/null)"
 _BRANCH=$(git branch --show-current 2>/dev/null || echo "no-git")
@@ -160,7 +160,7 @@ pattern in the SERP:
   feature is "click the icon".
 
 Document which form factor appears in 3 or more of the top 5 results.
-That is your form factor. The bootcamp rule is mechanical: **match the
+That is your form factor. The playbook rule is mechanical: **match the
 SERP, including the dominant format, even if your dev instinct says a
 better pattern exists**. Google has already validated the pattern as the
 one searchers expect. Shipping the "better" alternative is the most
@@ -262,7 +262,7 @@ B) github.com/<owner>/<repo2> — <stars>★, <license>, last commit <date>
   ❌ Last commit <date> means service worker API drift; ~1 day fixing deprecated chrome.* calls before you even start distancing
 C) From scratch (no donor)
   ✅ Zero distancing work, zero license obligations, full creative control over the build shape
-  ❌ For anything beyond a no-UI nano-product, this adds 1-3 days; the bootcamp data says ~90% of keywords have an editable donor reachable in 2-3 hours
+  ❌ For anything beyond a no-UI nano-product, this adds 1-3 days; the playbook data says ~90% of keywords have an editable donor reachable in 2-3 hours
 Net: A is the default if the donor checks out; C only when the donor search comes up genuinely empty. B is the trap — feels close but the API drift eats the savings.
 ```
 
@@ -271,7 +271,7 @@ scratch, record `build.donor_url: "from-scratch"`.
 
 ### Distancing checklist (mechanical, after donor is picked)
 
-The bootcamp rule: change text, CSS, and icons; leave variable names
+The playbook rule: change text, CSS, and icons; leave variable names
 alone. Run through this checklist before any code work:
 
 1. Delete the `_metadata` folder if present (carries technical info
@@ -287,7 +287,7 @@ alone. Run through this checklist before any code work:
    - Donor's GitHub URL if it appears in code or docs.
    - Donor's author handle.
 4. Replace all branding graphics and icons. flaticon.com is the
-   bootcamp's preferred source for icons; pick a unique mark, not a
+   the playbook's preferred source for icons; pick a unique mark, not a
    recolored donor icon. **Never** reuse a copyrighted logo (ChatGPT,
    YouTube, Twitter wordmarks) — instant moderation rejection.
 5. Lightly change CSS: colors (full palette swap), fonts (system stack
@@ -319,7 +319,7 @@ pin it. Match form factor to one of the six types from
 |---|---|---|
 | Popup | **Popup** (`action.default_popup`) | No extra module needed. All libs must be local. |
 | Site-wrapper widget | **Site-service in a tab** | **Fails moderation if "only opens a site"** — must inject a small content-script artifact (button on PDF links in Google SERP, etc.) |
-| In-page artifact | **Content-script injector** | Must inject into pages opened **before** install, not just new tabs. See bootcamp pattern below. |
+| In-page artifact | **Content-script injector** | Must inject into pages opened **before** install, not just new tabs. See playbook pattern below. |
 | Side-panel | **Hybrid** (popup-style with side-panel API) | New API surface; check Chrome version target. |
 | Local-page-in-tab | **Local page in a tab** | No extra module needed for moderation. Bonus simplest moderation path. |
 | No-UI | **No-UI** | Trivial. Often ChatGPT-generatable for nano-products. |
@@ -333,7 +333,7 @@ with a tabs bar where the keyword-match function is tab 3 of 5
 (buried, behavioral factors crash because users searching the keyword
 don't find it on open).
 
-**Mid-level dev sweet spot.** Bootcamp rule from real freelance
+**Mid-level dev sweet spot.** Playbook rule from real freelance
 hires: skip senior developers for micro-products. Seniors can't bring
 themselves to ship "simple"; they over-engineer and add corner cases.
 Mid or mid-plus is the sweet spot for both dev and design. If you're
@@ -345,13 +345,13 @@ layouts.
 **Live demo over GitHub link.** When vetting a freelance dev for a
 build, demand a working installable extension or site you can poke.
 "Code is under NDA" or GitHub-only candidates are walk-aways. The
-bootcamp data is unambiguous: structured plain-message prose predicts
+studio data is unambiguous: structured plain-message prose predicts
 structured code; disorganized DMs predict disorganized code.
 
 ### Content-script injection nuance
 
 If the type is content-script injector or hybrid, hardcode this
-pattern from the bootcamp:
+pattern from the playbook:
 
 ```js
 // On install: inject into all already-open http(s) tabs.
@@ -430,7 +430,7 @@ Now write the manifest. Hard constraints, all mechanical:
 The build is **one function**. List the function in
 `./.cws/02b-build.md` as a single bullet. If you find yourself writing
 "and also" or "with the option to", you are violating the iron rule.
-Strip back to one. No kitchen sink. The bootcamp data is unambiguous:
+Strip back to one. No kitchen sink. The playbook data is unambiguous:
 nano-products convert by being one button. Padding a nano-product with
 arbitrary settings drops install retention because users open the
 extension expecting "click the icon, thing happens" and instead see a
@@ -442,7 +442,7 @@ Permissions are a moderation risk and a re-consent landmine. **Every
 permission costs**. When a Chrome extension widens its permission set
 after release, Chrome forces every existing user to re-accept the
 permission dialog. Users who don't re-accept lose the extension.
-Bootcamp rule: **ship the minimum, widen later through
+Playbook rule: **ship the minimum, widen later through
 `cws-resync` with deliberate user re-consent**.
 
 Common minimum patterns by type:
@@ -537,7 +537,7 @@ red error in the console is a fail.** Fix before advancing.
 
 ### Top-3 popular pages check
 
-The bootcamp rule: **a bug that breaks pages is a ranking death
+The playbook rule: **a bug that breaks pages is a ranking death
 sentence**. Test the extension on the top-3 popular pages a user
 might have open at install time. Standard list:
 
@@ -600,7 +600,7 @@ skill.
 Minify the `.js` files. Two reasons:
 
 1. Smaller payload, faster install.
-2. Distinct fingerprint from the donor's minified output. The bootcamp
+2. Distinct fingerprint from the donor's minified output. The playbook
    rule is **re-minify with different settings than the donor's**.
    Identical minified bundles trip the CWS duplicate-detection
    pipeline at submit time even when name, icons, and CSS differ.
@@ -630,7 +630,7 @@ If those patterns exist, configure the minifier to preserve them
 ### Multi-file builds
 
 Multi-file structures need a proper bundler (esbuild, rollup, vite).
-For a first launch, the bootcamp guidance is to keep it single-file
+For a first launch, the playbook guidance is to keep it single-file
 when possible — bundler config eats a day that should go to the
 distancing pass and the smoke test. If the donor ships a bundler
 config and it works, keep it; if it fights you, simplify to
@@ -798,7 +798,7 @@ Log a `gate_passed` event:
 
 ## Iron rules (mechanical decisions, no D-brief needed)
 
-These are bootcamp-derived and not negotiable. Apply silently; surface
+These are playbook-derived and not negotiable. Apply silently; surface
 only if the user pushes back.
 
 1. **One function only, no kitchen sink.** If you find "and also" in

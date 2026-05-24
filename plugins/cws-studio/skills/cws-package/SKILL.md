@@ -57,7 +57,7 @@ is populated.
 ## Preamble (run first)
 
 ```bash
-PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/plugins/cache/cws-studio/cws-studio/2.2.0}"
+PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/plugins/cache/cws-studio/cws-studio/2.2.1}"
 BIN="$PLUGIN_ROOT/bin"
 eval "$("$BIN/cws-slug" 2>/dev/null)"
 _BRANCH=$(git branch --show-current 2>/dev/null || echo "no-git")
@@ -225,7 +225,7 @@ advance.
 21. **Paste name + short + full together into Turgenev.** They are jointly
     indexed; running only the full description gives the wrong percentages.
 
-These are the bootcamp's non-negotiables. Do not ask the user to vote on
+These are the playbook's non-negotiables. Do not ask the user to vote on
 them.
 
 ---
@@ -321,7 +321,7 @@ trip CWS moderation (banned token) or rank for nothing (low volume, wrong
 form factor). Either case = relaunch under a new name later, which means a
 new extension ID and zero install carry-over.
 Recommendation: B because <reason> is one of the keyword-killer flags from
-the bootcamp.
+the playbook.
 Completeness: A=4/10, B=9/10
 Pros / cons:
 A) Use the locked keyword anyway
@@ -361,7 +361,7 @@ Rules for the display name:
 - ≤ 75 characters total (manifest cap).
 - Includes at most one extra "humanizing" word (`Tool`, `Manager`, `Pro`,
   `App`, `Studio`, `Maker`, `Finder`). Two-word keyword + one humanizer is
-  the bootcamp's preferred shape (`Color Code Picker Tool`).
+  the playbook's preferred shape (`Color Code Picker Tool`).
 - No `best`, `recommended`, `premium`, `free`, `#1`.
 - No brand of a competitor.
 - Optional: mix two popular queries (`Free and Fair Adblocker`) only in
@@ -680,7 +680,7 @@ D6 — Draft has unresolved structural issues — fix now or accept risk?
 Project/branch/task: $SLUG on $_BRANCH — draft is <X> chars, name
 keyword <Y> total, with <list of unresolved issues>.
 ELI10: The draft is close to shippable but still has structural problems
-that the bootcamp flags as moderation-rejection or Turgenev-overspam
+that the playbook flags as moderation-rejection or Turgenev-overspam
 risks. We can either fix each one (one more 15-minute editing pass) or
 accept the borderline shape and let Turgenev verdict (Phase 5) drive a
 forced rework. Almost always: fix now. Turgenev rework usually surfaces
@@ -1018,7 +1018,7 @@ finish cws-package's gate first, then route to **`/cws-challenge`**.
   forces an explicit decision and snapshots state for rollback.
 - **`/cws-build`** — Stage 2b, the actual extension code. Runs in parallel
   with this skill; both gates required before cws-launch.
-- **`/cws-learn`** — record bootcamp-novel lessons from this run. Surfaced
+- **`/cws-learn`** — record playbook-novel lessons from this run. Surfaced
   via `cws-learnings-search --stage package` on the next invocation.
 - **`/cws-resync`** — handles copy rewrites on already-live listings.
 - **`/cws-retro`** — post-launch ranking baseline. Reads

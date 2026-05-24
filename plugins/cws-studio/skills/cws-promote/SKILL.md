@@ -5,7 +5,7 @@ description: >-
   optimization for an *already-approved* Chrome Web Store extension — buy
   the first 100–300 installs to break the cold-start ranking loop, wire UTM
   + GA4 + CWS dashboard analytics correctly (knowing GA4 attribution is
-  broken-by-design), seed 4–5 primary reviews via the bootcamp rules
+  broken-by-design), seed 4–5 primary reviews via the playbook rules
   (kwork.ru / Google form pattern, max 1–2/day, manual screenshot
   verification), and diagnose the install funnel (first_visit → install →
   week-1 retention) with the Linux-OS Facebook-bot filter applied. Triggers
@@ -54,7 +54,7 @@ with `gates_passed += ["promote"]`.
 ## Preamble (run first)
 
 ```bash
-PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/plugins/cache/cws-studio/cws-studio/2.2.0}"
+PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/plugins/cache/cws-studio/cws-studio/2.2.1}"
 BIN="$PLUGIN_ROOT/bin"
 eval "$("$BIN/cws-slug" 2>/dev/null)"
 _BRANCH=$(git branch --show-current 2>/dev/null || echo "no-git")
@@ -197,7 +197,7 @@ write it to a new state field — it's a transient routing input.
 
 `AskUserQuestion D1` — Ad platform pick.
 
-The bootcamp rule: **only warm one ad account at a time.** Trust budget
+The playbook rule: **only warm one ad account at a time.** Trust budget
 splits across accounts; running FB + Google + Yandex in parallel from week 1
 guarantees one of them gets flagged "shotgun advertiser" by ML and clips
 your delivery. Pick the platform that warms fastest in your geo and run it
@@ -267,7 +267,7 @@ PY
 
 ## Phase 2 — Ad-account warm-up (D2)
 
-The bootcamp insight: **warm the ad account on a competitor's URL before
+The playbook insight: **warm the ad account on a competitor's URL before
 pointing it at your own extension.** Reason: a brand-new ad account that
 goes from $0 → real campaign on day 1 trips ML "new spammy advertiser"
 filters. A cold account burns ~$50–100 just clearing initial restrictions
@@ -363,7 +363,7 @@ PY
 
 If the user asks to warm Yandex *and* Google simultaneously: refuse. Each
 ad platform's ML reads parallel-account creation as a "shotgun
-advertiser" signal and clips both. The bootcamp rule is one ad account
+advertiser" signal and clips both. The playbook rule is one ad account
 through full warm-up at a time. Add the second platform after the first
 has cleared 100 installs and shows stable CPI.
 
@@ -384,7 +384,7 @@ Recommend a quick `cws-resync` pass to backfill before paying for ads:
 running ads on a 3-keyword set is the single most common reason new
 launches stall at 30 paid installs and quit.
 
-### 3.2 The bootcamp rule — more keywords beats higher bids
+### 3.2 The playbook rule — more keywords beats higher bids
 
 When traffic doesn't flow, the reflex is to raise the bid. **Wrong.** The
 reflex should be: add more keywords. Specifically, indirect-intent
@@ -408,7 +408,7 @@ Project/branch/task: $SLUG / $_BRANCH — platform: <platform>, keyword count av
 ELI10: We have a keyword list and a daily budget. We can spend the budget
 in two shapes: many keywords with low bids (wider, slower, cheaper per
 install) or few keywords with high bids (faster, more expensive per
-install). The bootcamp rule says wider-cheaper wins for the cold-start
+install). The playbook rule says wider-cheaper wins for the cold-start
 goal because we don't need to win every auction, we just need 100–300
 total installs.
 Stakes if we pick wrong: Bid-ladder shape exhausts daily budget on 3–5
@@ -427,7 +427,7 @@ B) Narrow keyword set (3–5 head terms), high bids (40–60₽ Yandex / $0.20�
   ✅ Faster to first install (3–6h on Google) — useful if you need a same-day demo
   ✅ Easier to read in the dashboard — fewer rows to interpret
   ❌ Burns the daily budget on 3–5 auctions; if a competitor is gaming any of those, you over-pay and stall
-  ❌ Bid-up loop — when delivery slows, the reflex is to raise the bid, which the bootcamp rule explicitly says is wrong
+  ❌ Bid-up loop — when delivery slows, the reflex is to raise the bid, which the playbook rule explicitly says is wrong
 C) Wide keyword set + interest targeting (FB-only; niche products only)
   ✅ Higher CTR on niche products (e.g. JSON formatter → programmers interest)
   ✅ Combines audience boost with cheap delivery
@@ -441,7 +441,7 @@ optimization (week 3+). For FB on niche products, switch A→C.
 ### 3.4 Per-platform campaign config (mechanical)
 
 After D3 picks the shape, walk the user through the platform-specific
-setup. Inline the bootcamp-validated values; do not invent.
+setup. Inline the playbook-validated values; do not invent.
 
 #### 3.4.1 Yandex Direct
 
@@ -552,7 +552,7 @@ State this out loud to the user before they touch GA4:
 > chain. Cross-reference paid spend against the **CWS dev dashboard
 > install count** for the days the campaign ran; that's your real read.
 
-### 4.2 UTM tag patterns (verbatim — these are bootcamp-validated)
+### 4.2 UTM tag patterns (verbatim — these are playbook-validated)
 
 Minimum per platform:
 
@@ -610,7 +610,7 @@ build this GA4 segment **before** computing any conversion:
    Exact casing.
 3. Apply segment to the first_visit + install event report.
 
-Bootcamp insight: after moderation FB sends a flood of bots from Linux
+Playbook insight: after moderation FB sends a flood of bots from Linux
 boxes to your CWS page (verifying you didn't swap the listing post-
 approval). They don't install. Without the filter your conversion
 reads ~5%; *with* the filter it reads ~15% — the truth.
@@ -727,7 +727,7 @@ aggressive and 20 reviews in week 1 looks unnatural. 4–5 reviews is the
 inflection point where the listing's rating shows as a star count (not
 "No reviews yet") and the social-proof reflex kicks in.
 
-### 5.2 The bootcamp iron rules — non-negotiable
+### 5.2 The playbook iron rules — non-negotiable
 
 State these all five before D5. If the user pushes back on any of them,
 this is a hard-stop:
@@ -755,7 +755,7 @@ Use the prebuilt widget at `references/review-widget.html`. The pattern:
 private Google Form where the user vents to you directly (no public CWS
 review).
 
-Two bootcamp tweaks to apply when wiring it in:
+Two playbook tweaks to apply when wiring it in:
 
 - **Label it "Rate us" or use empty stars as a prompt, not as a question.**
   The widget works through *camouflage*: an "unfinished task" reflex
@@ -783,7 +783,7 @@ Project/branch/task: $SLUG / $_BRANCH — extension just approved, 0 reviews
 ELI10: We need 4–5 real reviews from real Google accounts on real devices.
 Three sources exist: friends/family who already use English, paid task
 boards (kwork.ru or Google form distributed via Telegram), or a paid
-review service (ProfitTask — currently broken per recent bootcamp reads).
+review service (ProfitTask — currently broken per recent playbook reads).
 The pace is locked at 1–2/day regardless of source. The decision is just
 which source you can afford and trust.
 Stakes if we pick wrong: Wrong source = reviews that look identical or
@@ -803,7 +803,7 @@ B) kwork.ru / Google form distributed to micro-task workers (recommended if A do
   ✅ Manual screenshot verification is enforceable on kwork — they want their rating, you only mark complete on screenshot proof
   ❌ Higher Chrome anti-bot scrutiny — workers may use VPN by default; specify in the task "no VPN, no proxy, your own home IP"
   ❌ Cost ~600–1500₽ for 4–5 reviews; budget exposure if any get flagged and you re-run
-C) ProfitTask paid review service (NOT recommended per recent bootcamp — confirm before using)
+C) ProfitTask paid review service (NOT recommended per recent playbook — confirm before using)
   ✅ Cheapest historical option — 6₽/review when working
   ✅ Built-in screenshot verification flow
   ❌ Currently broken (site up but tasks don't complete); last confirmed-working date unknown
@@ -854,7 +854,7 @@ reply politely; you can't delete it.
 
 This phase models on gstack's `/qa` live-audit pattern: open the running
 campaign + the running listing, observe real funnel numbers, diagnose
-gaps against bootcamp benchmarks, and propose fixes. Run it at each
+gaps against playbook benchmarks, and propose fixes. Run it at each
 install milestone: **100**, **300**, **1000**.
 
 ### 6.1 The benchmarks (memorize these)
@@ -894,7 +894,7 @@ section. Use the priority order from Phase 4.7:
 ### 6.3 Diagnose conversion gaps
 
 If listing conversion is **below benchmark**, walk these in order. They're
-ranked by frequency in the bootcamp corpus.
+ranked by frequency in the playbook corpus.
 
 1. **Did you apply the Linux-OS filter on GA4?** If no — apply it first.
    ~70% of "low conversion" reads disappear after the filter.
@@ -928,7 +928,7 @@ ranked by frequency in the bootcamp corpus.
 If paid spend per install (CPI) is **above benchmark** (Yandex CIS > 25₽,
 Google > $0.30):
 
-1. **Add more keywords first.** The bootcamp iron rule. Indirect-intent
+1. **Add more keywords first.** The playbook iron rule. Indirect-intent
    keywords from the user's own language. `web to pdf` → `сохранить
    страницу в pdf`, `print page to file`, `archive webpage`.
 2. **Only then raise bids.** Yandex ceiling 30–50₽. Google ceiling
@@ -953,15 +953,15 @@ slow, run D4:
 ```
 D4 — Raise the Yandex bid ceiling past 50₽ or expand keywords?
 Project/branch/task: $SLUG / $_BRANCH — current ceiling 50₽, delivery <10 installs/day
-ELI10: We hit the bootcamp-recommended bid ceiling (30–50₽) and delivery
+ELI10: We hit the playbook-recommended bid ceiling (30–50₽) and delivery
 is still slow. Two options: raise the ceiling past 50₽ (faster, more
 expensive per install, less sustainable), or find 10–20 more keywords
-(slower today, cheaper per install long-term, what the bootcamp explicitly
+(slower today, cheaper per install long-term, what the playbook explicitly
 recommends).
 Stakes if we pick wrong: Raising the ceiling past 50₽ commits you to that
 CPI on this campaign for its lifetime — warmed campaigns hold their bid
 average. You can't easily lower it back after spending at the higher cap.
-Recommendation: B — every bootcamp post says expand keywords first.
+Recommendation: B — every playbook post says expand keywords first.
 Completeness: A=6/10 (works but expensive), B=9/10 (correct play)
 Pros / cons:
 A) Raise ceiling to 60–80₽
@@ -1168,7 +1168,7 @@ Other refusal cases:
   `cws-launch`.
 
 - **Re-running paid promotion past $300 / 300 installs without organic
-  trickle** — that's the bootcamp's explicit "launch a different
+  trickle** — that's the playbook's explicit "launch a different
   product instead" signal. Route to `cws-retro` to assess what's
   blocking organic, then to `cws-idea` for the next product.
 
@@ -1193,7 +1193,7 @@ These run *alongside* `cws-promote`, not after it:
 
 - **`cws-retro`** — weekly snapshot cadence. Run every Monday during
   the paid-promotion window to capture install / conversion /
-  retention deltas. The bootcamp says real conclusions about whether a
+  retention deltas. The playbook says real conclusions about whether a
   product "works" need ~2 months; `cws-retro` is how you accumulate
   the data points to make that call without revisionism.
 
@@ -1204,7 +1204,7 @@ These run *alongside* `cws-promote`, not after it:
   cost out loud before the action.
 
 - **`cws-learn`** — record what worked in this launch's promote stage.
-  The bootcamp accumulates by every operator writing back: which
+  The playbook accumulates by every operator writing back: which
   keyword shapes converted, which review template phrasing got flagged,
   which Yandex bid ceiling actually delivered for which product
   category. `cws-learn` is the write side of the `cws-learnings-search`
@@ -1257,7 +1257,7 @@ End the skill with one `Next: /cws-<skill>` line. Pick by current state:
   ```
   Next: /cws-retro
   Why: Weekly retro is the cadence during paid-promote. Capture the
-  install / conversion / retention deltas; bootcamp says real
+  install / conversion / retention deltas; the playbook says real
   conclusions need ~2 months and the only way to get them
   un-revisionist is the weekly snapshot.
   ```

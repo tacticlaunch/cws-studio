@@ -330,7 +330,7 @@ manually. If name words aren't on top, redistribute their occurrences in the tex
 ## Backfilled sections (transcript-grounded)
 
 The sections below were added to close methodology gaps. Each cites the
-bootcamp source so a future reader can verify. Where the bootcamp does not
+playbook source so a future reader can verify. Where the playbook does not
 cover a topic, the section is marked `TODO — not in transcripts`.
 
 ### Worked name-occurrence audit table — Temp Phone Number
@@ -401,7 +401,7 @@ Notes:
 > Тургеневе`) + video 103 (`Нюанс 18 особенности цветовой разметки`).
 
 Turgenev's Words tab marks some tokens grey ("service words") and excludes
-them from the top-frequency view. The bootcamp never publishes a master
+them from the top-frequency view. The playbook never publishes a master
 list — it explicitly says Turgenev is unpredictable and you must
 **hand-check** every name token. Confirmed examples from the transcripts:
 
@@ -413,11 +413,11 @@ list — it explicitly says Turgenev is unpredictable and you must
 
 Standard English stop-words (`a`, `the`, `of`, `to`, `for`, `with`, `and`,
 `or`, `in`, `on`, `at`) are also greyed out — this is normal stop-word
-filtering and not the problem the bootcamp flags. The problem is when a
+filtering and not the problem the playbook flags. The problem is when a
 **content-bearing** name token (a brand fragment, a product noun, a
 technology acronym) gets dropped into the service-word bucket.
 
-> TODO — not in transcripts — the bootcamp gives only the three examples
+> TODO — not in transcripts — the playbook gives only the three examples
 > above. A future operator should grow this table from first-hand Turgenev
 > runs (likely candidates: other short brand tokens, common file-format
 > tokens like `pdf`, `png`, `gif`, common platform tokens like `gmail`,
@@ -432,7 +432,7 @@ you count it yourself).
 ### FAQ block keyword density
 
 > Source: lessons 055, 056, 057 (`Создаем полное описание`, `Примеры
-> хороших описаний`, `Проверяем тексты на спам`). The bootcamp does **not**
+> хороших описаний`, `Проверяем тексты на спам`). The playbook does **not**
 > give an FAQ-specific keyword-density rule.
 
 What the transcripts do say:
@@ -465,11 +465,11 @@ Operational sub-rule:
 
 ### CWS "above-the-fold" boundary — character count
 
-> TODO — not pinned in transcripts — the bootcamp tells you the fold exists
+> TODO — not pinned in transcripts — the playbook tells you the fold exists
 > (lesson 057 + video 079: "часть текста она видна сразу, часть текста под
 > спойлером") and that above-fold text carries more SEO weight, but it
 > never publishes the exact character count at which CWS truncates the
-> short-description card. The bootcamp shows screenshots of the fold
+> short-description card. The playbook shows screenshots of the fold
 > position rather than naming a count.
 
 What is true per transcripts:
@@ -483,7 +483,7 @@ What is true per transcripts:
   structural element (list) above the fold (video 079).
 
 The figure `~600 chars` that appears elsewhere in this skill is not
-confirmed by the bootcamp. A future operator should measure on a live
+confirmed by the playbook. A future operator should measure on a live
 CWS listing (open three live products at standard zoom, count the chars
 to the "Read more" link) and replace the figure here. Until then, use
 **"first 1–2 paragraphs"** as the operating heuristic rather than a char
@@ -506,15 +506,15 @@ Example: `URL Shortener Google` in main description — `URL Shortener
 Google` — this is allowed, yes; if we look at the short description,
 when we see speech in short description we count forms…"
 
-The bootcamp confirms cognates are **allowed** and treated as the same
+The playbook confirms cognates are **allowed** and treated as the same
 word for moderation, but **never quantifies** them. The "~2.5× weighting"
 heuristic that appears in the case-study insights above is a
-post-bootcamp folk rule, not from the transcripts.
+post-playbook folk rule, not from the transcripts.
 
 **Downgrade the rule** to: a morphologically varied third occurrence
 (`Summarize / Summarizer / Summarized`) reads as cleaner human prose and
 softens Turgenev's repeat scoring vs three identical hits. Do not treat
-it as ~2.5× math — that number is not in the bootcamp.
+it as ~2.5× math — that number is not in the playbook.
 
 ### Translation count-preservation across locales
 
@@ -541,13 +541,13 @@ What happens to keyword counts during Localizer auto-translation:
    - Prompted without the limit → translation comes back **over 132
      chars**, getting truncated on upload (final keywords cut off).
 
-   The bootcamp's explicit policy:
+   The playbook's explicit policy:
    > "по другим языкам гораздо меньше конкуренция, чем английском" —
    > non-English competition is much lower, so even truncated short
    > descriptions still beat skipping translation entirely.
 
 3. **Name** auto-translation is the same risk on a 75-char field. The
-   bootcamp recommends (lesson 127) **hand-translating** names + short
+   the playbook recommends (lesson 127) **hand-translating** names + short
    descriptions for the high-value languages:
    - **Wealthy-country list (latinise-friendly)**: DE, FR, ES, IT, NL,
      SV, DA, NO, FI — translate name + short description manually.
@@ -569,7 +569,7 @@ Operating rule:
 |---|---|---|---|
 | `name` | 1× (the keyword) | No — handcraft per language for top markets | Yes |
 | `description` (short, 132) | 3× main + 2× supporting | Auto, accept truncation OR handcraft for top markets | Handcraft path: yes; auto: skip — competition is lower |
-| Full description | 8–10× name + ~30 total keys | Auto via Localizer | Skip per-language — bootcamp does not require it |
+| Full description | 8–10× name + ~30 total keys | Auto via Localizer | Skip per-language — sources do not require it |
 
 > TODO — not in transcripts — no per-language Turgenev re-check is
 > documented. A future operator may want to run Turgenev (or a local

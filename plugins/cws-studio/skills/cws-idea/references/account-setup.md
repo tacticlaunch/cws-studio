@@ -16,10 +16,10 @@ Use an **antidetect browser** instead.
 ## Step 1 — Proxy (hard gate; reliability first)
 
 A bad proxy kills the launch later — Google flags the dev account, CWS rejects
-the build, ad accounts ban on first impression. **Pick from the bootcamp-vetted
+the build, ad accounts ban on first impression. **Pick from the playbook-vetted
 list. No free public proxies. No VPNs.**
 
-Bootcamp-vetted (lesson 011, listed best→fallback):
+Playbook-vetted (lesson 011, listed best→fallback):
 
 | Provider | Type | Payment | Auto-buy? | Use when |
 |---|---|---|---|---|

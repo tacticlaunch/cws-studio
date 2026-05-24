@@ -54,7 +54,7 @@ not replace the analysis itself.
 ## Preamble (run first)
 
 ```bash
-PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/plugins/cache/cws-studio/cws-studio/2.2.0}"
+PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/plugins/cache/cws-studio/cws-studio/2.2.1}"
 BIN="$PLUGIN_ROOT/bin"
 eval "$("$BIN/cws-slug" 2>/dev/null)"
 _BRANCH=$(git branch --show-current 2>/dev/null || echo "no-git")
@@ -299,7 +299,7 @@ do **not** surface at the gate.
 
 **12 concrete examples across all 6 stages:**
 
-1. **Idea**: Generate 5–8 keyword alternatives. (Always do — bootcamp
+1. **Idea**: Generate 5–8 keyword alternatives. (Always do — playbook
    methodology requires it; never score only the user's first guess.)
 2. **Idea**: Drop a hypothesis that fails any of the 4 hard gates
    (one-function / volume / softness / occupation). (Single failed gate
@@ -709,7 +709,7 @@ through 1.5).
   if recommended pick has a hard-refuse condition (occupation, low
   volume, low softness) — surface immediately, do not buffer.
 - **D5 — Occupation tie-break (top 2 within 3 points).** **Taste.**
-  Recommend narrow/low-KD per bootcamp rule (P1: faster ranking ceiling
+  Recommend narrow/low-KD per playbook rule (P1: faster ranking ceiling
   proof). Buffer for gate.
 - **D6 — Donor selection (3+ candidates).** **Taste.** Recommend newest
   + cleanest license (P5 + P3). Buffer for gate.
@@ -825,7 +825,7 @@ pass.
 - **Ad copy variant.** **Taste.** Recommend verb-first headline per
   P3. Buffer for gate.
 - **Budget ceiling for warm-up week.** **Taste.** Recommend $50/day
-  baseline (bootcamp default). Buffer.
+  baseline (default). Buffer.
 - **Reviews widget timing.** **Taste.** Recommend week 1 enable (P1 —
   faster install-to-review loop). Buffer.
 - **Campaign geo (Tier-1 only vs Tier-1+2+3).** **Mechanical** — all
@@ -843,9 +843,9 @@ perfect the funnel pre-launch.
 - **Billing cycle (monthly / annual / hybrid).** **Taste.** Recommend
   monthly + annual-discount-on-cancel (P5 — simpler than full hybrid).
   Buffer for gate.
-- **Pricing tier.** **Taste.** Recommend at niche median (bootcamp
+- **Pricing tier.** **Taste.** Recommend at niche median (playbook
   data; design-niche bias upward). Buffer for gate.
-- **Free trial length.** **Taste.** Recommend 7 days by P3 (bootcamp
+- **Free trial length.** **Taste.** Recommend 7 days by P3 (playbook
   default). Buffer.
 - **Paywall placement.** **Mechanical** — never on first install
   (M5 in launch). Auto-place after first successful function use.
@@ -978,7 +978,7 @@ Brief: D2 — Pick proxy provider for Stage 0. Four options: Space Proxy,
   [Full brief truncated for example]
 Principle(s) applied: P3 — two options fix the same thing (Space Proxy
   vs Proxyline both work for RU), pick cleaner (Space Proxy's RUB
-  acquirer has fewer card declines per bootcamp data).
+  acquirer has fewer card declines per studio data).
 Chosen: A (Space Proxy)
 Rationale: P3 — RUB payment fluency wins over API automation when no API
   key is exported anyway.
@@ -1004,7 +1004,7 @@ What you said:        "name it 'Free Color Picker'"
 What we recommend:    drop the `Free` prefix, ship as 'Color Picker'
 Why:                  I11 — `Free` in the name attracts non-paying
                       audience; behavioral factors collapse when monetization
-                      lands in Stage 5. Bootcamp data: BF drops 30-50%
+                      lands in Stage 5. Playbook data: BF drops 30-50%
                       week-over-week post-monetization on `Free`-named
                       extensions.
 Missing context:      if you've already validated paid conversion on a
@@ -1012,7 +1012,7 @@ Missing context:      if you've already validated paid conversion on a
                       apply to your audience.
 If we're wrong, cost: ~3 days of name change + locale re-translation
                       after Stage 5 monetize triggers BF collapse.
-RISK: not just a preference — this is a ranking-death risk per bootcamp data.
+RISK: not just a preference — this is a ranking-death risk per studio data.
 User decision: hold ground / override / accept change?
 [Pending user response]
 Timestamp: 2026-05-24T14:41:33Z
@@ -1348,8 +1348,8 @@ overrides them.
 11. **Trademark-bearing name** (Spotify, Slack, Notion, etc. as head
     keyword). User Challenge — moderation rejection risk + legal risk;
     autoplan won't auto-pick a trademark-name.
-12. **Anti-bootcamp niche choice** (saturated verticals like VPN,
-    screenshot, ad blocker). Surface as User Challenge with bootcamp
+12. **Anti-playbook niche choice** (saturated verticals like VPN,
+    screenshot, ad blocker). Surface as User Challenge with playbook
     saturation data; never auto-proceed.
 13. **Personal Google account use** for the dev console. User Challenge —
     one ban = lose everything tied to that account, including personal

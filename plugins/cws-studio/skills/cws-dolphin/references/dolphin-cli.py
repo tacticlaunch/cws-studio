@@ -393,7 +393,7 @@ PROVIDERS = [
         "type": "static residential, IPv4",
         "pay": "RUB / crypto / card",
         "api": False,
-        "good_for": "CWS dev account (bootcamp pick #1)",
+        "good_for": "CWS dev account (recommended pick #1)",
         "notes": "Buy 2-week static IP, label 'for Facebook'. IP:port:login:password.",
     },
     {

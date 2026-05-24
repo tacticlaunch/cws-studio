@@ -101,7 +101,7 @@ expansion → `cws-monetize`).
 # CWS Studio — Dolphin{anty} automation
 
 Programmatic Dolphin{anty} profile management. Replaces the manual clicking
-the bootcamp workflow used to require. Used by `cws-idea` (Stage 0 account
+the playbook workflow used to require. Used by `cws-idea` (Stage 0 account
 setup), `cws-promote` (per-ad-platform profile rotation), and `cws-monetize`
 (portfolio scaling).
 
@@ -162,7 +162,7 @@ The wrapper exposes these subcommands (run `python references/dolphin-cli.py
    Losing the cookie state means 2FA re-verification next login, which
    means SMS, which means potentially burning a phone number.
 5. **One profile per Google account, not per extension.** Two extensions
-   can share one account (bootcamp guideline); they cannot share two
+   can share one account (playbook guideline); they cannot share two
    profiles — fingerprint inconsistency tanks behavioral factors.
 6. **Max 2 extensions per CWS account, max 2-3 extensions per portfolio
    tied to the same profile.** Chrome's code-reuse detector pattern-matches
@@ -261,7 +261,7 @@ account-setup gate (or portfolio expansion).
 ELI10: Each provider trades off price, payment options, country coverage,
 and API availability. We bias toward the one with a public buy API
 (Proxy6) when the operator is set up for it; otherwise Space Proxy is
-the bootcamp default for the US/RU mix. Free public proxies are never
+the playbook default for the US/RU mix. Free public proxies are never
 on the table — they're banned on day one.
 Stakes if we pick wrong: a dirty / hosting-ASN proxy burns a fresh CWS
 account on first Google sign-in (≈ $50 of phone-verification slot + a
@@ -269,7 +269,7 @@ account on first Google sign-in (≈ $50 of phone-verification slot + a
 moderator sees a geo mismatch with the developer billing address.
 Recommendation: A if PROXY6_API_KEY is set OR the operator is comfortable
 with crypto/card on Proxy6 — it's the only one we can fully automate.
-B (Space Proxy) is the bootcamp default if RU card payment is available.
+B (Space Proxy) is the playbook default if RU card payment is available.
 C (paste existing) if the operator already bought elsewhere.
 Completeness: A=10/10 B=9/10 C=9/10 D=8/10 E=8/10 F=7/10 G=10/10
 Pros / cons:
@@ -277,7 +277,7 @@ A) Proxy6 — autonomous buy via API (recommended if PROXY6_API_KEY set)
   ✅ Only provider with a public buy API; full automation via dolphin-cli.
   ✅ ~$1.50 / IP / month, supports 50+ countries including US / DE / GB.
   ❌ Requires PROXY6_API_KEY env var; ban risk slightly higher than premium tiers.
-B) Space Proxy — bootcamp default, manual buy
+B) Space Proxy — default, manual buy
   ✅ Static IPv4 labeled "for Facebook" — pre-screened against ad-platform bans.
   ✅ RU card payment supported; 2-week trial slot per IP.
   ❌ No public buy API; we paste credentials from the browser into proxies.txt.
@@ -340,7 +340,7 @@ Order parameters (mechanical, do not ask):
 
 - Tier: "for Facebook" (Space Proxy label) / static residential (Proxyline) /
   generic IPv4 (Proxy6, Proxy-Sale) / mobile (iProxy)
-- Country: ISO2 from the operator (bootcamp default: `us` for the CWS
+- Country: ISO2 from the operator (default: `us` for the CWS
   developer account; ad-platform profiles match the ad account country)
 - Period: **14 days** (Stage 0 trial; long enough to validate the launch
   cohort, short enough to abandon if dirty)
@@ -971,7 +971,7 @@ Each operation reads/writes `.cws/state.json`:
 ```
 
 The convention: **one profile per CWS developer account, NOT per
-extension** (iron rule #5; bootcamp rule restated). Two extensions can
+extension** (iron rule #5; playbook rule restated). Two extensions can
 share one account; they cannot share two profiles.
 
 ## Reference docs

@@ -458,7 +458,7 @@ real-friend reviews for the first launch. Module IV lesson 202 "Добавляе
 первичные отзывы" is the canonical ProfitTask walkthrough — kept here as
 the on-disk reference even though the service is currently broken.)
 
-**Default path for V1 (what bootcamp actually recommends right now):**
+**Default path for V1 (what playbook actually recommends right now):**
 1. Recruit **4–5 real people** — relatives, friends, anyone willing to log
    into their own Google account.
 2. Each leaves an English review on the CWS listing, **max 1–2 per day per
@@ -476,8 +476,8 @@ template each day). When the service comes back online this is the
 
 ### kwork.ru workflow — alternative seeding channel
 
-> **TODO — not covered in bootcamp transcripts; pattern from operator
-> practice. The bootcamp explicitly lists ProfitTask as the only
+> **TODO — not covered in source transcripts; pattern from operator
+> practice. The playbook explicitly lists ProfitTask as the only
 > paid-seeding tool, and currently broken. The kwork.ru pattern below is
 > documented from external operator playbooks for parity, not from the
 > source transcripts.**
@@ -492,7 +492,7 @@ The pattern, when used externally:
    (mirrors the ProfitTask price band documented in lesson 202). On
    kwork.ru proper, tasks typically start at 500₽ for a small batch
    (5–10 reviews) — significantly more expensive per review than
-   ProfitTask, which is why bootcamp doesn't recommend it as the default.
+   ProfitTask, which is why playbook doesn't recommend it as the default.
 3. **Distribution via Telegram (when on-platform tools fail).** Post the
    task spec + shortened link into Russian-language micro-task Telegram
    channels (look for `@microtask`-style groups). Cap incoming reviews at
@@ -504,13 +504,13 @@ The pattern, when used externally:
 5. **Same hard rules apply:** no VPN, no proxy, different devices, English
    reviews only, rewrite template daily.
 
-Because kwork is not validated in the bootcamp transcripts, treat it as a
+Because kwork is not validated in the playbook transcripts, treat it as a
 fallback when ProfitTask is down and your friend network is exhausted.
 The default for V1 stays: **4–5 real-friend reviews**.
 
 ## install_id propagation pattern
 
-> **TODO — not covered in bootcamp transcripts. The bootcamp recommends
+> **TODO — not covered in source transcripts. The playbook recommends
 > Amplitude (and falls back to Mixpanel) for popup/local-page extensions
 > via the Measurement Protocol pattern (lessons 177 "Нюанс 27" and 221
 > "Нюанс 11"), but never documents a specific user-id generation scheme.
@@ -586,13 +586,13 @@ client-generated UUID gives you a stable user-id without a sign-in flow.
 
 ## 1000-install milestone benchmarks
 
-> **TODO — not covered in bootcamp transcripts at the per-milestone level.
-> Module IV bootcamp finishes around the 100–300 install range (the cap
+> **TODO — not covered in source transcripts at the per-milestone level.
+> Module IV sources finish around the 100–300 install range (the cap
 > set by the $30–150 paid-promo budget). Module V "Финальный созвон"
 > (lesson 243) and the Module IV group call (lesson 181) reference
 > products with thousands of users in passing but do not enumerate
 > healthy benchmarks at 1000 installs specifically. The numbers below are
-> the working operator pattern, calibrated to the bootcamp's stated
+> the working operator pattern, calibrated to the playbook's stated
 > overall conversion bands.**
 
 By the time an extension crosses **1000 cumulative installs**, the
@@ -602,17 +602,17 @@ the launch. Healthy benchmarks at this stage:
 
 | Metric | Healthy band at 1000 installs | Source |
 |---|---|---|
-| **Weekly retained users** (from CWS dashboard `Users` graph) | ≥ 60% of installs from the same 28-day window (so ≥ 600 if the 1000 came in over the last month) | Inverse of the "normal uninstall rate 15–30%" band from the existing "Conversion diagnostics" section above; bootcamp does not state the retained-user benchmark directly |
-| **Organic share of new installs** | ≥ 50% (paid spend is capped at $30–150 → ~100–300 paid, so anything past install ~300 is organic by definition) | Derived from bootcamp's $300 paid-spend ceiling rule |
+| **Weekly retained users** (from CWS dashboard `Users` graph) | ≥ 60% of installs from the same 28-day window (so ≥ 600 if the 1000 came in over the last month) | Inverse of the "normal uninstall rate 15–30%" band from the existing "Conversion diagnostics" section above; sources do not state the retained-user benchmark directly |
+| **Organic share of new installs** | ≥ 50% (paid spend is capped at $30–150 → ~100–300 paid, so anything past install ~300 is organic by definition) | Derived from the playbook's $300 paid-spend ceiling rule |
 | **Review count target** | 5–10 organic reviews + your initial 4–5 seeded = 10–15 total at 1000 installs | Pattern from the "review widget converts ~1–2% of users to actual reviewers" insight in the existing "Reviews — additions" section |
 | **Average rating** | ≥ 4.5★ (review widget filters 1–3★ to your Google Form, so public CWS reviews skew 4–5★ by design) | Mechanical consequence of the review widget — see the existing "Reviews" section |
 | **CWS listing-page conversion** (`install / first_visit`) | Stable 15–30% organic, 10–20% from ads — should not be degrading | Existing "Analyzing installs" section |
-| **Listing-page weekly user count growth** | Week-over-week growth ≥ 10% | Bootcamp's "10–20 organic installs/day after 2 months is a good result" baseline |
+| **Listing-page weekly user count growth** | Week-over-week growth ≥ 10% | The playbook's "10–20 organic installs/day after 2 months is a good result" baseline |
 
 **What 1000 installs unlocks:**
 - **Monetization is now safe to add** for products with running costs —
-  enough volume that the paying tail can cover infra (recall: bootcamp
-  states ~60% of paying purchases come from US across all bootcamp
+  enough volume that the paying tail can cover infra (recall: playbook
+  states ~60% of paying purchases come from US across all playbook
   products — lesson 181). At sub-1000 the paying tail is too sparse to
   read signal.
 - **Add the flaticon attribution** to the listing (required by flaticon
@@ -624,7 +624,7 @@ the launch. Healthy benchmarks at this stage:
 
 **What 1000 installs does NOT unlock:**
 - Real conclusions about the product. Per Module V lesson 243, the
-  bootcamp position is: ~2 months for "does it work", ~6 months for "is
+  playbook position is: ~2 months for "does it work", ~6 months for "is
   it growing", ~1 year for finals. 1000 installs hit before any of those
   windows for healthy launches.
 - A second product launch from the same operator account on the same day
@@ -633,14 +633,14 @@ the launch. Healthy benchmarks at this stage:
 
 ## Second-platform unlock criteria
 
-> **TODO — not covered in bootcamp transcripts as an explicit gate.
-> Module IV bootcamp lesson 182 "Зачем запускать платную рекламу"
+> **TODO — not covered in source transcripts as an explicit gate.
+> Module IV source lesson 182 "Зачем запускать платную рекламу"
 > recommends testing 2 ad platforms but does not formalize a CPI-stability
 > trigger for "platform 2 is safe to add." The criteria below are the
-> working operator pattern, calibrated to the bootcamp's stated 100–300
+> working operator pattern, calibrated to the playbook's stated 100–300
 > install paid-spend window.**
 
-**Default position from bootcamp:** run at least 1 ad platform, ideally
+**Default position from playbook:** run at least 1 ad platform, ideally
 test 2 in parallel from day 1 if budget allows (Yandex + Google, or FB +
 Google depending on geo / RU-BY status). The "test 2 platforms" stance is
 explicit in lesson 183.
@@ -682,11 +682,11 @@ rather than doubling it.
 
 ## Negative-keyword starter lists per donor category
 
-> **TODO — partial coverage in bootcamp transcripts. Module IV lesson
+> **TODO — partial coverage in source transcripts. Module IV lesson
 > 235 "Быстрый чекап 3 Оптимизация рекламы" covers the *principle* of
 > negative-keywording (only negate keywords that have ≥100–200
 > impressions AND are clearly off-topic AND are burning meaningful
-> budget — don't waste time negating long-tail noise). The bootcamp
+> budget — don't waste time negating long-tail noise). The playbook
 > does NOT publish per-category starter lists. The lists below are the
 > working operator pattern — paste them into Google Ads / Yandex Direct
 > as a starting negative list, then prune based on impression data per

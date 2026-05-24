@@ -50,7 +50,7 @@ gated in `state.json`.
 ## Preamble (run first)
 
 ```bash
-PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/plugins/cache/cws-studio/cws-studio/2.2.0}"
+PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/plugins/cache/cws-studio/cws-studio/2.2.1}"
 BIN="$PLUGIN_ROOT/bin"
 eval "$("$BIN/cws-slug" 2>/dev/null)"
 _BRANCH=$(git branch --show-current 2>/dev/null || echo "no-git")
@@ -148,7 +148,7 @@ the cost in one line, decline, and continue.
 | I7 | Occupation rule: a competitor extension is "well-optimized" only if name-overlap AND desc > 3K chars AND > 30 translations. Missing any one → still winnable. | The three-factor rule prevents false-positive drops on early-stage rivals. |
 | I8 | Never use `app-database.com` for competitor lookup. Login-walled, unreliable count. | Use chromewebstore directly + `phrase_organic` SERP cross-check. |
 | I9 | Never count on donations as monetization. | Donations earn 2–3 orders of magnitude less than IAP. Out of scope. |
-| I10 | Refuse the gold-standard saturated niches the bootcamp flagged dead: screenshot tools (~1,800 extensions), ad blockers (1,800+), VPN (270 named), generic AI summarizers. | Whole-vertical saturation; the *keyword* may look free but near-form rivals crowd installs. |
+| I10 | Refuse the gold-standard saturated niches the playbook flagged dead: screenshot tools (~1,800 extensions), ad blockers (1,800+), VPN (270 named), generic AI summarizers. | Whole-vertical saturation; the *keyword* may look free but near-form rivals crowd installs. |
 | I11 | Never put `Free` in the name keyword. | Moderation rejection risk; attracts non-paying audience; collapses BF on monetization. |
 | I12 | Never put `Google`, `Chrome`, `Extension`, or articles `the`/`a` in the name unless they appear in the keyword itself. | These words add nothing and dilute the keyword's SEO weight. |
 | I13 | Read the SERP form factor, not just whether it's "software." | `hashtag finder` SERP wants generators, not scrapers. Wrong form → BF tank. |
@@ -185,7 +185,7 @@ Three cases route elsewhere:
 
 - **Pure brainstorm — "is there a market for X."** If the user has no intent
   to launch in the next 30 days, cws-idea is overkill (it walks the full
-  Stage 0). Run the bootcamp's idea-validation procedure in your head from
+  Stage 0). Run the playbook's idea-validation procedure in your head from
   the seed only, surface 2–3 keyword candidates with rough volume estimates
   from WebSearch, and recommend the user come back to cws-idea when they're
   ready to actually launch. Never gate Phase 0 for a brainstorm.
@@ -320,7 +320,7 @@ Record D1's answer to `./.cws/00-account-setup.md` as `## Geo` first thing.
 
 ## 0.2 — Provider pick (D2; only on A or B-full)
 
-The four bootcamp-vetted providers. Recommend by payment availability and
+The four vetted providers. Recommend by payment availability and
 auto-buy support. The provider catalog (from `references/account-setup.md`)
 inlined here so the D-brief options carry real pros/cons.
 
@@ -343,7 +343,7 @@ Country-specific payment matrix:
 ```
 D2 — Proxy provider pick
 Project/branch/task: $SLUG, Stage 0 setting up a foreign proxy
-ELI10: Four bootcamp-vetted providers. Pick by who'll take your payment
+ELI10: Four vetted providers. Pick by who'll take your payment
   and whether you want me to buy via API or you'll buy manually and paste
   credentials.
 Stakes if we pick wrong: a hosting-ASN proxy gets the Google account
@@ -362,7 +362,7 @@ B) Proxyline (RU/BY fallback)
   ❌ Higher hosting-ASN incidence than Space Proxy — must validate 0.4
 C) Proxy-Sale (fallback #2)
   ✅ REST API, RUB + crypto, swappable in 24h
-  ❌ Less battle-tested in the bootcamp than the top two
+  ❌ Less battle-tested in the playbook than the top two
 D) Proxy6 (recommended for autonomous flow)
   ✅ Public buy API — `cws-dolphin proxy6-buy` runs end-to-end
   ✅ Accepts crypto universally; works for any geo
@@ -391,7 +391,7 @@ cws-dolphin proxy6-buy --country us --period 14 --count 1 --yes
 
 Expected output: a JSON blob with `proxy_id_in_proxy6`, `ip`, `port`,
 `login`, `password`, `country: us`, and `imported_to_dolphin: true` with
-the Dolphin internal proxy ID. The 14-day period is the bootcamp default
+the Dolphin internal proxy ID. The 14-day period is the playbook default
 (most providers only allow swaps within the first 24h window; 14 days
 gives you 13 spare days of operation after the swap window closes).
 
@@ -402,7 +402,7 @@ fall through to Flow B and prompt the user.
 
 Print the provider URL and the exact order parameters. The user buys in
 their browser and pastes credentials back. Don't try to scrape the
-provider UI — the bootcamp providers all have anti-bot.
+provider UI — the playbook providers all have anti-bot.
 
 Order parameters (read out loud, do not paraphrase):
 
@@ -725,7 +725,7 @@ C) A workflow / job you want automated
   ❌ "Job" can be too abstract — multiple keywords may serve it
 D) I have nothing — brainstorm 10 candidates from gold-standard niches
   ✅ Surfaces options you wouldn't have thought of
-  ✅ Bootcamp-vetted starting set (PDF, screenshot/recording, social-page utils, AI assistants on common pages)
+  ✅ Playbook-vetted starting set (PDF, screenshot/recording, social-page utils, AI assistants on common pages)
   ❌ Generic; not tied to your interest — risk of low motivation to ship
 Net: A or B give the cleanest path; D is fine but expect lower commitment.
 ```
@@ -974,13 +974,13 @@ ELI10: Two keywords cleared the gates and scored within 3 points. The
 Stakes if we pick wrong: not catastrophic — both can launch. But the
   wrong pick gives up 30-50% of ranking ceiling or doubles the
   time-to-rank.
-Recommendation: <pick by I18 + bootcamp rule "start narrow/low-KD if
+Recommendation: <pick by I18 + playbook rule "start narrow/low-KD if
   torn"> because if low competition doesn't convert, high competition
   won't either.
 Completeness: A=8/10, B=8/10
 Pros / cons:
 A) <narrow / low-KD keyword> (recommended)
-  ✅ Faster to rank — bootcamp data: ~6 weeks vs ~16 weeks
+  ✅ Faster to rank — studio data: ~6 weeks vs ~16 weeks
   ✅ Lower ad spend to seed BF in the warm-up phase
   ❌ Lower ceiling — caps at ~3K weekly installs vs ~15K
 B) <broad / high-KD keyword>
@@ -1341,7 +1341,7 @@ variants and ColorZilla edge cases.`
 
 # Edge cases table
 
-12 rows. Each row is a real situation that's bit the bootcamp; the action
+12 rows. Each row is a real situation that's bit the playbook; the action
 column is the canonical response.
 
 | Edge case | Action |
@@ -1350,9 +1350,9 @@ column is the canonical response.
 | Donor repo archived mid-validation | Re-run donor discovery; if no fresh donor, downgrade simplicity score to ≤4; consider fork-then-port if user is a dev. |
 | Head keyword has trademark conflict (Spotify, Slack, etc.) | I12 applies. Modify the keyword (`hex color picker for Spotify` → `hex color picker for music players`) or drop the candidate. |
 | Target country is OFAC-sanctioned (IR, KP, CU, SY) | Stage 0 still possible but legal risk falls on user; explicit one-line warning, route to user-challenge brief asking for confirmation before proceeding. |
-| User demands a niche the bootcamp explicitly flagged dead (I10) | Surface the bootcamp flag with the saturation count; recommend a sibling niche; if user insists, proceed but document the override in the artifact's confidence-flags section. |
+| User demands a niche the playbook explicitly flagged dead (I10) | Surface the playbook flag with the saturation count; recommend a sibling niche; if user insists, proceed but document the override in the artifact's confidence-flags section. |
 | Proxy validates green but Semrush returns "rate-limited" repeatedly | Likely a Semrush API quota issue, not a proxy issue. Pause, ask user to check their Semrush API plan, resume. |
-| Multiple finalists tie on every numeric column | Apply D5; if D5 also ties, fall to bootcamp tie-breaker: fewer near-form CWS rivals (count in chromewebstore search) wins. |
+| Multiple finalists tie on every numeric column | Apply D5; if D5 also ties, fall to playbook tie-breaker: fewer near-form CWS rivals (count in chromewebstore search) wins. |
 | User wants to validate two ideas in parallel | I16 applies. Decline, ask which one to validate first. The second one can run after the first ships. |
 | User's seed keyword has zero US volume but normal volume in IN/PH | Per `idea-validation.md`: non-English-native query. Drop; can't rank Tier-1. Recommend pivoting to a Tier-1-native keyword. |
 | Donor's license is GPL and user plans closed-source paid tier | Surface as D-brief: license-compatible donor (MIT/Apache) vs port-from-scratch. Default: find a different donor. |

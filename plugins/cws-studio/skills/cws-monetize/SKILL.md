@@ -44,7 +44,7 @@ existing user base costs ~30% of installs; copying yourself across accounts
 gets the whole portfolio banned.
 
 Read the canon before you touch any toggle:
-`references/monetization-scaling.md` (bootcamp numbers, lift ordering,
+`references/monetization-scaling.md` (studio numbers, lift ordering,
 acquirer-availability hidden gate, cohort sizing, portfolio safety).
 
 Deliverable: a fully-wired monetization configuration, behavioral-factor
@@ -55,7 +55,7 @@ weekly_users_at_enable}`.
 ## Preamble (run first)
 
 ```bash
-PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/plugins/cache/cws-studio/cws-studio/2.2.0}"
+PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/plugins/cache/cws-studio/cws-studio/2.2.1}"
 BIN="$PLUGIN_ROOT/bin"
 eval "$("$BIN/cws-slug" 2>/dev/null)"
 _BRANCH=$(git branch --show-current 2>/dev/null || echo "no-git")
@@ -258,14 +258,14 @@ get to test billing-cycle or trial because no one starts the funnel.
 The pricing **tier band**, not the dollar amount. Three bands:
 
 - **Light**: $1.99–$4.99/mo. Impulse buy. Highest start-the-funnel rate.
-- **Medium-low**: $5–$9.99/mo. Bootcamp's converting sweet spot for utility
+- **Medium-low**: $5–$9.99/mo. The playbook's converting sweet spot for utility
   extensions with ~3K weekly users. Maximises absolute subscription revenue
   in this niche.
 - **High**: $14.99+/mo. Demands a clear professional use case. Lower
   conversion, higher LTV. Wrong for utility-shaped products at this stage.
 
 The "expensive" trap: founders open at $100/mo "to see what serious users will
-pay" and get zero data because the funnel collapses pre-paywall-view. Bootcamp
+pay" and get zero data because the funnel collapses pre-paywall-view. Playbook
 finding: start at the low end of the band and ratchet up. You can always raise.
 You cannot recover from a dead first cohort.
 
@@ -282,7 +282,7 @@ ELI10: We pick a price range, not an exact number. Too low and we can't earn
   best at $5–9.99/mo on first launch.
 Stakes if we pick wrong: opening at $100/mo means zero paying users in the
   first 500-viewer cohort → no signal → 6 weeks of paywall iteration wasted.
-Recommendation: B (medium-low $5–9.99/mo) because bootcamp convertson this band for ~3K-user utility extensions; ratchet up later
+Recommendation: B (medium-low $5–9.99/mo) because playbook convertson this band for ~3K-user utility extensions; ratchet up later
 Completeness: A=8/10, B=10/10, C=6/10
 Pros / cons:
 A) Light $1.99–4.99/mo
@@ -290,13 +290,13 @@ A) Light $1.99–4.99/mo
   ✅ Easiest first-cohort sample-size hit (500 viewers in days, not weeks)
   ❌ Below the ~$1,015/mo own-merchant breakeven you'll need 200+ paying users
 B) Medium-low $5–9.99/mo (recommended)
-  ✅ Bootcamp data shows highest absolute revenue in this band at ~3K weekly users
+  ✅ Playbook data shows highest absolute revenue in this band at ~3K weekly users
   ✅ Above the $1,015/mo own-merchant breakeven with ~150 paying users
   ❌ Slightly lower funnel-start vs Light; demands a clearer value prop on the paywall
 C) High $14.99+/mo
   ✅ Higher LTV per paying user; better for B2B-shaped extensions
   ❌ Funnel collapse risk on utility-shaped products; first cohort may not hit 3 paying users
-Net: A is for cheap data, B is the bootcamp default, C demands a B2B value prop you haven't built.
+Net: A is for cheap data, B is the playbook default, C demands a B2B value prop you haven't built.
 ```
 
 Auto-mode (`cws-autoplan`) decides B unless the extension is explicitly B2B-
@@ -313,7 +313,7 @@ that's a sub-decision inside the cohort log.
 
 ## Phase 2 — Billing-cycle composition (D2, TASTE)
 
-This is the biggest lever. Bootcamp's lift-ordering rule:
+This is the biggest lever. The playbook's lift-ordering rule:
 **billing-cycle composition > trial design > price.** Cycle composition can
 double or halve conversion at fixed price. Get it right.
 
@@ -327,14 +327,14 @@ realistic compositions:
 - **Annual only (with discount).** Highest LTV. Best fee economics. Lowest
   funnel-start because users hate annual commits on a utility they just
   installed. Wrong for first-paywall-launch on this niche.
-- **Hybrid (monthly + annual, annual recommended in UI).** Bootcamp's
+- **Hybrid (monthly + annual, annual recommended in UI).** The playbook's
   highest-converting setup. Lets price-sensitive users self-select; pulls
   the high-intent ones into annual via a 30–40% discount anchor.
 
 ### Why this is TASTE not Mechanical
 
 Reasonable people disagree. Annual-only fans argue LTV economics dominate;
-monthly-only fans argue funnel-start dominates at small sample sizes. Bootcamp
+monthly-only fans argue funnel-start dominates at small sample sizes. Playbook
 data leans hybrid, but the founder's call on whether the audience will commit
 to annual is non-trivial. Surface to user in `cws-autoplan` rather than
 auto-deciding.
@@ -352,7 +352,7 @@ Stakes if we pick wrong: annual-only on a utility extension scares users at
   paywall; monthly-only on a high-intent audience leaves 40% LTV on the
   table. Either wrong = next two months of cohorts test the wrong axis.
 Recommendation: C (hybrid monthly + annual, annual featured) because
-  bootcamp data shows hybrid converts best in this band
+  studio data shows hybrid converts best in this band
 Completeness: A=7/10, B=8/10, C=10/10
 Pros / cons:
 A) Monthly only
@@ -364,10 +364,10 @@ B) Annual only (with discount)
   ✅ Cleanest churn picture — annual users hide their churn for 12 months
   ❌ Funnel-start collapse risk on utility extensions; first cohort may miss 3 paying users
 C) Hybrid monthly + annual, annual featured (recommended)
-  ✅ Bootcamp's converting composition for ~3K weekly-user utilities
+  ✅ The playbook's converting composition for ~3K weekly-user utilities
   ✅ Lets the audience self-segment; annual anchor pulls high-intent buyers up
   ❌ Two price points to maintain; sample size per cycle is halved vs single-cycle
-Net: A maximises funnel-start, B maximises LTV, C is bootcamp's converting hybrid.
+Net: A maximises funnel-start, B maximises LTV, C is the playbook's converting hybrid.
 ```
 
 Auto-mode flags this for taste review in the final approval gate — never
@@ -386,14 +386,14 @@ Trials are the second-biggest lever after billing-cycle. Three real choices:
 
 - **No trial.** Direct paywall on first qualifying action. Highest conversion
   on light-tier impulse buyers. Lowest activation on medium-tier.
-- **3-day trial.** Bootcamp default for medium-low tier. Short enough to keep
+- **3-day trial.** Playbook default for medium-low tier. Short enough to keep
   urgency, long enough to demonstrate value on a tool used several times a
   week.
-- **7-day trial.** Bootcamp default for high tier. Demands the user has time
+- **7-day trial.** Playbook default for high tier. Demands the user has time
   to integrate the tool into a workflow. Too long for impulse tools — the
   user forgets and gets a "surprise charge" that triggers refund + chargeback.
 
-Bootcamp also tested **card-first-then-trial** vs **open trial**. Card-first
+Playbook also tested **card-first-then-trial** vs **open trial**. Card-first
 converts higher on desktop and irritates on mobile; on web it's mixed. Treat
 this as a sub-decision inside D3 — present it in the brief.
 
@@ -410,7 +410,7 @@ Stakes if we pick wrong: 7-day trial on a $4.99 light-tier tool → 40%
   trial-end refund rate eats your acquirer goodwill. No-trial on a $14.99
   high-tier tool → 0.3% conversion on a paywall view that should hit 1.5%.
 Recommendation: B (3-day card-first) because D1 picked medium-low tier;
-  3-day card-first is bootcamp's converting default for $5–9.99/mo utilities
+  3-day card-first is the playbook's converting default for $5–9.99/mo utilities
 Completeness: A=7/10, B=10/10, C=8/10, D=6/10
 Pros / cons:
 A) No trial, direct paywall
@@ -418,17 +418,17 @@ A) No trial, direct paywall
   ✅ Cleanest revenue accounting — no trial-end refund spike
   ❌ Lowest activation rate; medium-tier users won't commit without sampling
 B) 3-day card-first (recommended for medium-low tier)
-  ✅ Bootcamp's converting default in $5–9.99/mo band; ~1.3–1.6% paywall conversion
+  ✅ The playbook's converting default in $5–9.99/mo band; ~1.3–1.6% paywall conversion
   ✅ Card-first filters trial-tourists who never convert; cleaner cohort data
   ❌ Card-first irritates on mobile; ~15% paywall abandon vs open trial
 C) 7-day open trial
   ✅ Highest activation rate; users have time to integrate into workflow
   ✅ Lowest paywall-view irritation; most "feels fair" of the three
-  ❌ Surprise-charge refund spike at day 7; bootcamp reports ~25% on impulse tools
+  ❌ Surprise-charge refund spike at day 7; playbook reports ~25% on impulse tools
 D) 7-day card-first
   ✅ Filters trial-tourists AND gives time to integrate
   ❌ Worst of both worlds on light-medium tier; only appropriate for high tier (D1=C)
-Net: A is impulse-only, B is bootcamp's medium-low default, C is open-trial fans, D is high-tier only.
+Net: A is impulse-only, B is the playbook's medium-low default, C is open-trial fans, D is high-tier only.
 ```
 
 Auto-mode: mechanical decision keyed off D1.
@@ -452,14 +452,14 @@ Where the paywall fires inside the user flow. Four placements:
   3–5 times). Decent on heavy-use tools; data-sparse on tools used once a
   week.
 - **Soft-paywall** (free core remains free; paywall is on premium features —
-  bulk export, advanced filters, etc.). Bootcamp's converting placement on
+  bulk export, advanced filters, etc.). The playbook's converting placement on
   utility extensions. Free core keeps Tier-2/3 engagement alive (preserves
   behavioral-factor signal); paid features convert the high-intent subset.
 - **Hard-paywall** (core function locked behind subscription after a free
   threshold). Higher per-converted revenue, lower funnel-start, kills the
   free-tier engagement signal that ranks the listing.
 
-Mechanical default: **soft-paywall**. Bootcamp's wrap-up call is explicit —
+Mechanical default: **soft-paywall**. The playbook's wrap-up call is explicit —
 soft-paywall on this niche beats hard-paywall both on revenue *and* on rank
 preservation. The free tier doubles as your behavioral-factor moat.
 
@@ -476,7 +476,7 @@ Stakes if we pick wrong: hard-paywall on a utility extension → Tier-2/3 users
   uninstall on paywall view → behavioral-factor signal craters → rank drop
   greater than the expected 2-position monetization dip → permanent SEO
   damage.
-Recommendation: C (soft-paywall, premium features) because bootcamp data is
+Recommendation: C (soft-paywall, premium features) because studio data is
   explicit — soft-paywall outperforms hard on revenue AND rank preservation
 Completeness: A=4/10, B=7/10, C=10/10, D=6/10
 Pros / cons:
@@ -487,13 +487,13 @@ B) After N uses (paywall after 3–5 core actions)
   ✅ Demonstrates value before asking for payment; decent on heavy-use tools
   ❌ Data-sparse on tools used once a week; cohort sizes take 6+ weeks to converge
 C) Soft-paywall (free core + paid features) (recommended)
-  ✅ Bootcamp's converting placement on utility extensions in this band
+  ✅ The playbook's converting placement on utility extensions in this band
   ✅ Free core preserves Tier-2/3 engagement signal that powers organic rank
   ❌ Lower per-converted revenue than hard; needs a genuine "premium feature" to gate
 D) Hard-paywall after free threshold
   ✅ Highest per-converted revenue per user
   ❌ Kills the free-tier engagement signal; observed behavioral-factor crash
-Net: A=B2B onboarding, B=heavy-use tools, C=bootcamp default, D=revenue-maximisers willing to take the rank hit.
+Net: A=B2B onboarding, B=heavy-use tools, C=default, D=revenue-maximisers willing to take the rank hit.
 ```
 
 Auto-mode: mechanical, recommend C unless D4 has been overridden in an earlier
@@ -513,7 +513,7 @@ Paywall placement → Gated feature).
 ## Phase 5 — Billing provider (D5, TASTE — acquirer-availability gate)
 
 This is the hidden gate that bankrupts most launches at this stage. Stripe and
-Paddle have different policies; the bootcamp insight is that **brand-piracy
+Paddle have different policies; the playbook insight is that **brand-piracy
 and scraper-shaped products get silently rejected (Stripe) or upfront-rejected
 (Paddle)**. If your product is brand-shaped or scraper-shaped, you have to know
 *before* you wire the paywall.
@@ -616,7 +616,7 @@ user base. This is the most expensive single mistake in Stage 5:
 
 - Widening triggers Chrome's permission-change dialog on every existing
   installation.
-- Bootcamp observed retention hit: **~30% click Remove on the dialog.**
+- Playbook observed retention hit: **~30% click Remove on the dialog.**
 - If you're at 3K weekly users, that's ~900 users gone in one update push.
 - Stacking the widening with the monetization toggle doubles the loss.
 
@@ -646,7 +646,7 @@ If the gate passes, emit a brief acknowledging the cost:
 D6 — Confirm host_permissions widening on existing user base
 Project/branch/task: $SLUG / $_BRANCH — widening from <current> to <all_urls>
 ELI10: We're adding broad permissions to an already-shipped extension. Chrome
-  will show every existing user a scary dialog. Bootcamp data: about 30% click
+  will show every existing user a scary dialog. Playbook data: about 30% click
   Remove. At our current 3K weekly users that's ~900 lost installs in one
   update push.
 Stakes if we pick wrong: 30% existing-user retention loss stacked on a 2-
@@ -679,7 +679,7 @@ write a `WONTFIX` note and continue.
 
 ## Phase 7 — Sequential cohort rollout
 
-Bootcamp's iron rule from `references/monetization-scaling.md`:
+The playbook's iron rule from `references/monetization-scaling.md`:
 **300–500 unique paywall-viewers per variant minimum. Sequential cohorts, not
 parallel A/B.** Below 300 viewers, the ~1% paying conversion gives you <3
 paying users — every "result" is noise.
@@ -690,13 +690,13 @@ paying users — every "result" is noise.
   whatever calendar time it takes to hit 500 viewers (typically 3–10 days at
   3K weekly users).
 - **Cohort 2**: 500 viewers on the second-most-promising variant (usually the
-  D2 alternative — annual-only vs hybrid is the bootcamp-favored second test).
+  D2 alternative — annual-only vs hybrid is the playbook-favored second test).
 - **Cohort 3**: 500 viewers on the third variant (typically D3 trial duration
   flip — 3-day vs 7-day).
 
 ### Tier-1-first
 
-Per the bootcamp rule: paywall fires for **Tier-1 only** (US/UK/CA/AU + EN-
+Per the playbook rule: paywall fires for **Tier-1 only** (US/UK/CA/AU + EN-
 language EU). Tier-2/3 see the free experience. This preserves their
 engagement signal for behavioral-factor ranking. Implementation: the paywall
 checks `navigator.language` and the IP-geo against a Tier-1 allowlist.
@@ -704,7 +704,7 @@ checks `navigator.language` and the IP-geo against a Tier-1 allowlist.
 ### Cut paid traffic
 
 Before Cohort 1 starts, **cut any remaining paid traffic from cws-promote.**
-The bootcamp instruction is explicit: cut paid traffic *abruptly* when ~250
+The playbook instruction is explicit: cut paid traffic *abruptly* when ~250
 installs have landed. Paywall flip on a paid-traffic-mixed cohort gives you
 the conversion of paid traffic, not the conversion of your organic audience —
 the audience that determines whether the SEO survives.
@@ -734,7 +734,7 @@ flipping order: D2 (cycle) before D3 (trial) before D1 (price).
 
 ### Skip the analytics platform
 
-Per bootcamp: **skip Amplitude/Mixpanel** until several thousand users. At
+Per the playbook: **skip Amplitude/Mixpanel** until several thousand users. At
 3K weekly users, ~500-viewer cohorts, ~5 paying users per arm — funnel
 analytics tools mislead at this sample size. Use a hand-rolled funnel:
 
@@ -764,22 +764,22 @@ Google account isolation per `../cws-idea/references/account-setup.md` rules). N
 re-skinning the first extension on a new account — Chrome detects code-reuse
 signals at distance and bans the whole network.
 
-Hard constraint from bootcamp: **max 2–3 extensions per portfolio.** Above 3,
+Hard constraint from playbook: **max 2–3 extensions per portfolio.** Above 3,
 the founder's wrap-up call is explicit: the whole network gets banned. The
 exception: **genuinely different niches** (e.g. converter + AI chat) may share
 one operator account. Same-niche near-duplicates may not.
 
 ### When NOT to spawn a second
 
-- First product MRR < ~$2K–$5K solo. Bootcamp's "don't delegate before $2K–$5K
+- First product MRR < ~$2K–$5K solo. The playbook's "don't delegate before $2K–$5K
   MRR" applies to portfolio scaling too — scaling out before the first product
   is dialed multiplies whatever you haven't yet fixed.
-- Relaunch cadence < 3–4 months from first launch. Bootcamp data: the first
+- Relaunch cadence < 3–4 months from first launch. Playbook data: the first
   launch often outperforms later ones because Google's 6-month consolidation
   hasn't completed. Spawning early cannibalizes the per-country experiment.
 - The 7-year first-success trap. If the first extension was your first-ever
   success, **stay on it** through the 6-month consolidation cycle and beyond.
-  The bootcamp founder's case: 7-year gap between first lucky hit and second
+  The playbook founder's case: 7-year gap between first lucky hit and second
   working launch. Don't abandon the method because the first one worked.
 
 ### Brief
@@ -791,7 +791,7 @@ ELI10: We've got a monetizing extension. Now we decide whether to start a
   second one on the same operator account. Chrome detects code-reuse across
   accounts, so we can have at most 2–3 extensions per operator. Spawning the
   second one early cannibalizes the first; spawning it too late leaves money
-  on the table. Bootcamp says wait until first product is stable and
+  on the table. The playbook says wait until first product is stable and
   monetizing for ≥4 weeks AND in a genuinely different niche.
 Stakes if we pick wrong: spawn a near-duplicate on a second account = whole
   portfolio banned. Spawn early = first product loses operator attention
@@ -813,9 +813,9 @@ B) Queue cws-idea for a different-niche candidate; defer build to 8+ weeks (reco
   ✅ Honors the 7-year first-success trap insight; doesn't abandon the working product
   ❌ 8 weeks of opportunity cost on the second product's launch curve
 C) Don't scale; stay solo on the first product
-  ✅ Maximum focus; bootcamp's revenue leaders are all solo on one product
+  ✅ Maximum focus; the playbook's revenue leaders are all solo on one product
   ❌ Single-product revenue ceiling; one freeze = 100% revenue gone
-Net: A is fast-follower mode, B is the bootcamp-disciplined play, C is the maximum-focus play.
+Net: A is fast-follower mode, B is the playbook-disciplined play, C is the maximum-focus play.
 ```
 
 Auto-mode flags this for taste — never auto-decides portfolio scaling.
@@ -965,7 +965,7 @@ Log the gate:
 ## When NOT to use cws-monetize
 
 - **Pre-3K-weekly users**: blocked. Phase 0 refuses to advance. The hard floor
-  is non-negotiable. Bootcamp finding: monetizing below 3K kills the
+  is non-negotiable. Playbook finding: monetizing below 3K kills the
   behavioral-factor signal before it consolidates. Recent in-house launches
   wait until ~100K users; 3K is the studio's documented floor for solo
   builders, not the optimal point.
@@ -995,14 +995,14 @@ Log the gate:
   host_permissions widening. Skip this and Phase 0 refuses.
 - **`cws-challenge`** — adversarial stress-test of the billing-cycle decision
   (D2). The lift-ordering rule says D2 is the biggest lever — challenge it
-  before committing 1500 viewers across 3 cohorts. Bootcamp's wrap-up call
+  before committing 1500 viewers across 3 cohorts. The playbook's wrap-up call
   explicitly recommends stress-testing the cycle composition against the
   audience persona.
 - **`cws-retro`** — monthly cadence after monetization is live. Tracks
   conversion drift, refund-rate drift, rank-position recovery from the
   2-position dip, geo-localized pricing experiments.
 - **`cws-learn`** — record what worked. Every cohort log entry that crosses
-  a verdict threshold should be promoted to a learning. The bootcamp data
+  a verdict threshold should be promoted to a learning. The playbook data
   itself is somebody else's learning bank; build your own.
 
 ---

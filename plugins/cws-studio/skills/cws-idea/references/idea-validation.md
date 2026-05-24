@@ -230,8 +230,7 @@ convert, high competition won't either.
 
 ## Case-study insights from product reviews
 
-Distilled from live reviews of participants' hypotheses — decision heuristics
-and anti-patterns the instructor calls out when participants get rejected.
+Decision heuristics and anti-patterns surfaced when hypotheses get rejected.
 
 ### Idea sourcing & niche choice
 
@@ -408,7 +407,7 @@ and anti-patterns the instructor calls out when participants get rejected.
   of {KD zone, head volume, softness purity}. Minimize the *number* of
   compromises; don't refuse the launch over any single red-zone metric.
 
-## Idea-selection FAQ (from bootcamp)
+## Idea-selection FAQ (from playbook)
 
 - Compare **unoccupied fattest keywords across niches**, but only niches of
   roughly equal breadth (don't compare `dark mode` with `crm for gmail`).

@@ -1,6 +1,6 @@
 # CWS Studio
 
-[![version](https://img.shields.io/badge/version-2.2.0-blue.svg)](./CHANGELOG.md)
+[![version](https://img.shields.io/badge/version-2.2.1-blue.svg)](./CHANGELOG.md)
 [![license](https://img.shields.io/badge/license-MIT-green.svg)](./plugins/cws-studio/.claude-plugin/plugin.json)
 [![repo](https://img.shields.io/badge/repo-tacticlaunch%2Fcws--studio-black.svg)](https://github.com/tacticlaunch/cws-studio)
 
@@ -135,16 +135,6 @@ Smoke suite for all of the above + `dolphin-cli`:
 ```
 bash plugins/cws-studio/tests/smoke.sh
 ```
-
-## Bootcamp methodology
-
-CWS Studio's pipeline structure, scoring rubric, and listing-copy patterns
-were distilled from the **Captain Builders bootcamp** (Igor Zuev / Captain
-Labs) — 85 HTML lessons and 164 video transcripts across 5 modules. The raw
-source materials are kept outside the plugin so the skills can be reworked
-without re-extracting; see
-[`~/Downloads/cws-bootcamp-transcripts/README.md`](file:///Users/devall/Downloads/cws-bootcamp-transcripts/README.md)
-for the inventory.
 
 ## Replaces
 

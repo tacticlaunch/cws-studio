@@ -6,7 +6,7 @@ description: >-
   split), GA4 (first_visit, install, with the Linux-bot exclusion), ad-platform
   spend and cost-per-install, review velocity and rating, and the head-keyword
   SERP position. Computes per-funnel deltas vs the previous retro, flags any
-  metric outside bootcamp benchmark norms, and stamps a dated snapshot under
+  metric outside playbook benchmark norms, and stamps a dated snapshot under
   `./.cws/retro/YYYY-MM-DD.md` so trends are visible across weeks and months.
   Two cadences — weekly during the early launch window (< 90 days post-publish
   or < 5K weekly users), monthly afterwards. Triggers on "how's my extension
@@ -35,7 +35,7 @@ triggers:
 
 You are running a CWS launch operator's standing retro. Pulls the dashboard,
 GA4, ads, reviews, SERP — diffs every funnel stage against the previous retro
-and against bootcamp benchmark norms — writes a dated snapshot to
+and against playbook benchmark norms — writes a dated snapshot to
 `./.cws/retro/YYYY-MM-DD.md` — recommends exactly one next skill.
 
 A retro is **observational**. It never pushes code, never flips a stage gate,
@@ -45,7 +45,7 @@ points at whichever skill ought to act on what it found.
 ## Preamble (run first)
 
 ```bash
-PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/plugins/cache/cws-studio/cws-studio/2.2.0}"
+PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/plugins/cache/cws-studio/cws-studio/2.2.1}"
 BIN="$PLUGIN_ROOT/bin"
 eval "$("$BIN/cws-slug" 2>/dev/null)"
 _BRANCH=$(git branch --show-current 2>/dev/null || echo "no-git")
@@ -129,7 +129,7 @@ Read the preamble echo: `CURRENT_STAGE`, `GATES_PASSED`, `PUBLISHED_AT`,
 - `DAYS_SINCE_PUBLISH < 90` **AND** `LATEST_WEEKLY_USERS < 5000` → **weekly**.
 - `DAYS_SINCE_PUBLISH ≥ 90` **AND** `LATEST_WEEKLY_USERS ≥ 5000` → **monthly**.
 
-The 5K threshold is the published bootcamp transition: pre-5K, behavioral
+The 5K threshold is the published playbook transition: pre-5K, behavioral
 signal swings week-to-week and a missed regression kills you; post-5K (and
 post-monetization), week-to-week noise dominates and monthly is the right
 zoom level (`cws-monetize/references/monetization-scaling.md` — "grow to
@@ -305,7 +305,7 @@ GA4 inside CWS is the only place where the listing-visit funnel is visible.
 Two events matter: `first_visit` (unique listing visit) and `install` (the
 beacon CWS fires when a user installs from the listing).
 
-The bootcamp's published quirk: **after CWS moderation, Facebook ad bots
+The playbook's published quirk: **after CWS moderation, Facebook ad bots
 flood the listing from Linux**. They don't install but they inflate
 `first_visit`. The fix is a GA4 segment that excludes `OS contains Linux`.
 The "real" conversion is typically **~3x higher** than the unfiltered number
@@ -324,13 +324,13 @@ benchmark check below will throw a false regression flag.
 Stakes if we pick wrong: a 22% real conversion will display as 7%, the
 retro will demand `cws-resync`, you'll waste a week debugging a healthy
 product, and meanwhile actual regressions get drowned in noise.
-Recommendation: A (segment is applied) because the bootcamp procedure
+Recommendation: A (segment is applied) because the playbook procedure
 requires this exact segment to be live before the first retro, and if it
 isn't the answer is to go set it up before continuing.
 Completeness: A=10/10, B=4/10
 Pros / cons:
 A) Segment applied — paste the segmented first_visit + install (recommended)
-  ✅ Numbers will match the bootcamp's 15-30% organic conversion benchmark
+  ✅ Numbers will match the playbook's 15-30% organic conversion benchmark
   ✅ Distinguishes real users from FB moderation-check bots cleanly
   ❌ Operator needs to confirm in GA4 that the segment is on, not assumed
 B) No segment — paste raw numbers and accept ~3x inflated first_visit
@@ -354,7 +354,7 @@ Compute:
 
 - **install_rate = install / first_visit**
 - **ga4_install_drift = abs(install_ga4 − installs_cws) / installs_cws** —
-  the GA4-vs-CWS drift. Bootcamp documents that GA4 attribution is
+  the GA4-vs-CWS drift. Playbook documents that GA4 attribution is
   imperfect and CWS install count lags 5-7 days (cws-retro original stub
   notes). A drift over 20% is the alarm.
 
@@ -449,7 +449,7 @@ Find the operator's extension in each list (match by `STORE_URL` or
   top 10).
 - **search_position_google** — rank on Google SERP (same scheme).
 
-The "head" benchmark from the bootcamp is **top-3 on Google for the name
+The "head" benchmark from the playbook is **top-3 on Google for the name
 keyword by month 6**. Earlier than month 6, rank moves; the regression
 detector cares about *direction* (improving / flat / dropping) more than
 absolute number.
@@ -466,7 +466,7 @@ ELI10: When a paid ad campaign starts pulling Linux clicks above ~5%, it
 almost always means a bot farm has gotten into the audience. They click,
 inflate spend, never install. CPI explodes.
 Stakes if we pick wrong: missing this lets a bot infiltration burn ad
-budget for a full cadence cycle. Bootcamp threshold: Linux > 5% of
+budget for a full cadence cycle. Playbook threshold: Linux > 5% of
 ad clicks = alarm.
 Recommendation: paste the number from the ad platform's OS breakdown if it
 exists, or "unknown" if the platform doesn't expose it.
@@ -601,7 +601,7 @@ Mechanical rule:
 If only one of the two is true, this rule doesn't fire (it could be ad
 seasonality, a Google update, etc).
 
-The "ceiling" half of this rule — bootcamp says 60% banner-conversion is
+The "ceiling" half of this rule — the playbook says 60% banner-conversion is
 the historic ceiling (`cws-launch/references/assets-and-publish.md` L287),
 average organic 15-30% (L289). If `install_rate > 60%`, that's almost
 certainly the same measurement-error case as Rule 4.1's anomaly; folded
@@ -613,7 +613,7 @@ into `install_rate_anomaly`.
 > 
 > Where `cost_ceiling_$` is the operator's documented ARPU floor (read
 > from state.json `monetize.arpu_target` if set; default `0.50` USD as
-> the conservative bootcamp ad-economics number).
+> the conservative playbook ad-economics number).
 >
 > Below $0.05: likely a counting error (installs being attributed to ads
 > that wouldn't have happened).
@@ -634,7 +634,7 @@ If no ads are running, skip this rule.
 > change, content-script issue) or the Linux exclusion segment is
 > over/under-shooting.
 >
-> Source: the cws-retro original stub plus the bootcamp acknowledgement
+> Source: the cws-retro original stub plus the playbook acknowledgement
 > that GA4 attribution is imperfect and CWS install count lags 5–7 days.
 > The 20% threshold is the studio-internal alarm point — outside that
 > band the install_rate computation itself can't be trusted.
@@ -652,7 +652,7 @@ unknown.
 > Source: studio-internal threshold derived from the FB bot pattern
 > documented in promotion.md L156-160 + L400-404 ("Real conversion often
 > jumps 3× after the Linux filter"). The 5% is the published audience-quality
-> tripwire used by the bootcamp's ad pause runbook.
+> tripwire used by the playbook's ad pause runbook.
 
 Skip if no ads or if `linux_os_share_ads is null`.
 
@@ -665,7 +665,7 @@ Skip if no ads or if `linux_os_share_ads is null`.
 > red.
 >
 > Source: cws-retro original stub + promotion.md L177-178 — "When haters
-> type, grateful users stay silent" — bootcamp benchmark for healthy
+> type, grateful users stay silent" — playbook benchmark for healthy
 > listing.
 
 ---
@@ -736,7 +736,7 @@ Three to five paragraphs. Operator voice. No banners, no celebration, no
    matters most for the next seven (or thirty) days. If multiple flags
    fired, pick the one that gates the most downstream skills. If no flags
    fired, say so explicitly: "No benchmark flags this cycle — everything
-   sits inside the bootcamp norms."
+   sits inside the playbook norms."
 
 4. **(Optional) Context paragraph.** Anything the numbers don't show — a
    manual review the operator ran, a Google update, a known shipping
@@ -1008,7 +1008,7 @@ suspect). Pick one — never list both.
 
 ```
 Next: /cws-promote
-Why: Funnel is inside every bootcamp benchmark this cycle. Push another
+Why: Funnel is inside every playbook benchmark this cycle. Push another
 ad pulse with the documented Linux-bot exclusion live and re-retro in
 seven days.
 ```
